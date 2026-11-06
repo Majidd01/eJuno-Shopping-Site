@@ -1,0 +1,22 @@
+{% render 'ejuno-backend-config' %}
+{{ 'ejuno-vendor-onboarding.css' | asset_url | stylesheet_tag }}
+{{ 'ejuno-showcase-form.css' | asset_url | stylesheet_tag }}
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+{% render 'ejuno-showcase-form-mount' %}
+<script src="{{ 'ejuno-showcase-form.js' | asset_url }}" defer></script>
+{%- comment -%} Card 723: match site typography (Georgia headings, Inter labels/inputs/buttons). {%- endcomment -%}
+<style>
+  .ejuno-showcase-form__title,.ejuno-showcase-form h2{font-family:Georgia,"Times New Roman",Times,serif !important;font-size:36px !important;font-weight:400 !important;line-height:1.12 !important;color:#201c19 !important;letter-spacing:normal !important}
+  .ejuno-showcase-form h3{font-family:Georgia,"Times New Roman",Times,serif !important;font-weight:400 !important;color:#201c19 !important}
+  .ejuno-showcase-form label{font-family:Inter,"Helvetica Neue",Arial,sans-serif !important;font-size:13px !important;font-weight:600 !important;color:#201c19 !important}
+  .ejuno-showcase-form input,.ejuno-showcase-form textarea,.ejuno-showcase-form select:not([class^="ql-"]){font-family:Inter,"Helvetica Neue",Arial,sans-serif !important;font-size:16px !important;font-weight:400 !important;color:#201c19 !important}
+  .ejuno-showcase-form input::placeholder,.ejuno-showcase-form textarea::placeholder{color:#8a8079 !important;font-weight:400 !important}
+  .ejuno-showcase-form .ql-editor{font-family:Inter,"Helvetica Neue",Arial,sans-serif;font-size:16px;color:#201c19}
+  .ejuno-showcase-form button.btn,.ejuno-showcase-form .btn{font-family:Inter,"Helvetica Neue",Arial,sans-serif !important;font-size:16px !important;font-weight:600 !important;letter-spacing:.04em !important}
+  .ejuno-showcase-form .add-more-btn{font-size:14px !important}
+  .ejuno-showcase-form__lead{font-family:Inter,"Helvetica Neue",Arial,sans-serif !important;font-size:16px !important;line-height:1.6 !important;color:#5a524b !important}
+  @media (max-width:749px){.ejuno-showcase-form__title,.ejuno-showcase-form h2{font-size:30px !important}}
+  .ejuno-showcase-form__title span{font:inherit !important;color:inherit !important;letter-spacing:inherit !important}
+  .ejuno-showcase-form .ejuno-showcase-form__eyebrow{font-family:Inter,"Helvetica Neue",Arial,sans-serif !important;font-size:11px !important;font-weight:700 !important;letter-spacing:.18em !important;text-transform:uppercase !important;color:var(--olive,#5a524b) !important;margin-bottom:10px !important}
+</style>

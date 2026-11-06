@@ -1,0 +1,953 @@
+{% comment %} Venue / service / product PDP — V5 UI + live eJuno booking API {% endcomment %}
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% liquid
+  assign ejuno_catalog_pdp = false
+  assign ejuno_service_pdp = false
+  assign ejuno_product_type = product.type | downcase | strip
+  assign ejuno_vendor_type = product.metafields.custom.vendorType.value | default: product.metafields.custom.vendorType | downcase | strip
+  if ejuno_product_type == 'product' or ejuno_vendor_type == 'product' or ejuno_vendor_type contains 'product vendor'
+    assign ejuno_catalog_pdp = true
+  endif
+  unless ejuno_catalog_pdp
+    for tag in product.tags
+      assign ejuno_tag = tag | downcase | strip
+      if ejuno_tag == 'catalog' or ejuno_tag == 'shop' or ejuno_tag == 'shop product' or ejuno_tag == 'registry product'
+        assign ejuno_catalog_pdp = true
+        break
+      endif
+    endfor
+  endunless
+  if ejuno_product_type == 'service' or ejuno_vendor_type == 'service'
+    assign ejuno_service_pdp = true
+  endif
+  # Card 716: service categories (product.type holds the category, e.g. "Photo & Film") also count as services.
+  assign ej_service_types = 'photo & film|beauty & fashion|design & artistry|entertainment|gastronomy & bar|catering|celebrant|wedding party|wedding planner|planning|music|florist|officiant' | split: '|'
+  if ej_service_types contains ejuno_product_type
+    assign ejuno_service_pdp = true
+  endif
+  for c in product.collections
+    assign ej_ch = c.handle | downcase
+    if ej_ch == 'services' or ej_ch == 'all-services' or ej_ch == 'photo-film' or ej_ch == 'beauty-fashion' or ej_ch == 'design-artistry' or ej_ch == 'entertainment' or ej_ch == 'gastronomy-bar'
+      assign ejuno_service_pdp = true
+    endif
+  endfor
+  if ejuno_catalog_pdp
+    assign ejuno_service_pdp = false
+  endif
+  assign ejuno_booking_cta_label = 'Request availability'
+  if ejuno_service_pdp
+    assign ejuno_booking_cta_label = 'Request availability'
+  endif
+  assign ejuno_date_placeholder = 'Select dates'
+%}
+
+<section
+  class="pdp-top ejuno-pdp ejuno-booking-scope ejuno-pdp--gate ejuno-pdp--api-loading{% if ejuno_catalog_pdp %} ejuno-pdp--catalog{% endif %}{% if ejuno_service_pdp %} ejuno-pdp--service{% endif %}"
+  data-product-id="{{ product.id }}"
+  data-product-tags="{{ product.tags | join: '|' | escape }}"
+  data-ejuno-catalog-hint="{% if ejuno_catalog_pdp %}1{% else %}0{% endif %}"
+  data-ejuno-service-hint="{% if ejuno_service_pdp %}1{% else %}0{% endif %}"
+  aria-busy="true"
+>
+  <div id="ejuno-pdp-screen-loader" class="ejuno-pdp-screen-loader" aria-live="polite" aria-busy="true">
+    <div class="ejuno-pdp-screen-loader__spinner" role="status" aria-label="Loading venue"></div>
+  </div>
+  <div class="container">
+    <div class="pdp-titlebar">
+      <div>
+        {%- comment -%} Eyebrow = real location · venue type. Never uses the "Lake Como · Historic Villa" placeholder; hidden when empty. JS refines from backend venueLocation/venueCategory. {%- endcomment -%}
+        {%- liquid
+          assign ej_eb_parts = ''
+          assign ej_eb_locs = product.metafields.custom.location.value | default: product.metafields.custom.location
+          for l in ej_eb_locs limit: 2
+            assign l_s = l | strip
+            if l_s != blank
+              assign ej_eb_parts = ej_eb_parts | append: l_s | append: '||'
+            endif
+          endfor
+          assign ej_eb_type = product.metafields.custom.vendorType.value | default: product.metafields.custom.vendorType | default: product.type | strip
+          if ej_eb_type != blank
+            assign ej_eb_parts = ej_eb_parts | append: ej_eb_type
+          endif
+          assign ej_eb_list = ej_eb_parts | split: '||'
+          assign ej_eb = ej_eb_list | join: ' · ' | strip
+        -%}
+        <div class="eyebrow ejuno-pdp-eyebrow" data-ejuno-eyebrow{% if ej_eb == blank %} hidden{% endif %}>{{ ej_eb | escape }}</div>
+        <style>.ejuno-pdp-eyebrow[hidden]{display:none!important}</style>
+        <script>
+          (function(){
+            function clean(v){v=(v==null?'':String(v)).trim();return /^(null|undefined|regular|n\/a|-)$/i.test(v)?'':v;}
+            function first(v){if(Array.isArray(v)){for(var i=0;i<v.length;i++){var c=clean(v[i]&&typeof v[i]==='object'?(v[i].name||v[i].label):v[i]);if(c)return c;}return '';}return clean(v);}
+            function pretty(s){s=s.replace(/_/g,' ');return s.charAt(0).toUpperCase()+s.slice(1);}
+            function apply(pd){
+              var ch=document.querySelector('[data-ejuno-booking-card-title]');if(pd&&ch&&/^service$/i.test(String(pd.type||''))){ch.textContent=ch.textContent.replace(/venue/g,'service').replace(/Venue/g,'Service');}else if(pd&&ch&&/^venue$/i.test(String(pd.type||''))){ch.textContent=ch.textContent.replace(/service/g,'venue').replace(/Service/g,'Venue');}
+              var el=document.querySelector('[data-ejuno-eyebrow]');if(!el||!pd)return;
+              var vl=pd.venueLocation||{};
+              var region=first(vl.regions&&vl.regions.length?vl.regions:vl.region), city=clean(vl.city);
+              var type=first(pd.venueCategory)||clean(pd.venueType)||clean(pd.type);
+              var parts=[];[region,city].forEach(function(p){if(p&&parts.map(function(x){return x.toLowerCase();}).indexOf(p.toLowerCase())<0)parts.push(pretty(p));});
+              if(type)parts.push(pretty(type));
+              if(!parts.length)return;
+              el.textContent=parts.join(' \u00b7 ');el.hidden=false;
+            }
+            window.addEventListener('productDetailsLoaded',function(e){apply((e&&e.detail)||window.productDetails);});
+            if(window.productDetails)apply(window.productDetails);
+          })();
+        </script>
+        <h1 class="h1 ejuno-pdp-title">{{ product.title }}</h1>
+      </div>
+      <button
+        type="button"
+        class="btn primary ejuno-pdp-booking-ui ejuno-pdp-titlebar-booking"
+        data-ejuno-request-booking
+        data-ejuno-scroll-booking
+        {% unless ejuno_catalog_pdp %}hidden{% endunless %}
+      >
+        {{ ejuno_booking_cta_label }}
+      </button>
+      <button
+        type="submit"
+        form="ejuno-product-form"
+        class="btn primary ejuno-pdp-commerce-ui"
+        hidden
+        data-ejuno-add-to-cart
+        data-add-label="{{ section.settings.add_to_cart_label | escape }}"
+        data-sold-out-label="Sold out"
+        {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+      >
+        {% if current_variant.available %}{{ section.settings.add_to_cart_label }}{% else %}Sold out{% endif %}
+      </button>
+    </div>
+
+    {%- comment -%} Trello 567: selected variant's featured media leads the gallery (?variant= aware) {%- endcomment -%}
+    {%- assign ejuno_variant_media = current_variant.featured_media -%}
+    <div
+      class="pdp-gallery"
+      data-ejuno-variant-media='{ {%- for v in product.variants -%}{%- if v.featured_media -%}"{{ v.id }}":{{ v.featured_media | image_url: width: 1600 | json }},{%- endif -%}{%- endfor -%}"_":null}'
+      data-ejuno-current-variant="{{ current_variant.id }}"
+      data-ejuno-media-widths='{ {%- for m in product.media -%}{%- if m.preview_image -%}{%- assign ejfn = m.preview_image.src | split: '?' | first | split: '/' | last | downcase -%}{{ ejfn | json | escape }}:{{ m.preview_image.width | default: 0 }},{%- endif -%}{%- endfor -%}"_":0}'
+      {% if product.media.size > 0 %}
+        data-shopify-media-order='[{% if ejuno_variant_media %}{{ ejuno_variant_media | image_url: width: 1600 | json }}{% for media in product.media %}{% if media.id != ejuno_variant_media.id %},{{ media | image_url: width: 1600 | json }}{% endif %}{% endfor %}{% else %}{% for media in product.media %}{{ media | image_url: width: 1600 | json }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endif %}]'
+      {% endif %}
+    >
+      {% if product.media.size > 0 %}
+        {%- liquid
+          assign ejuno_ordered = ''
+          if ejuno_variant_media
+            assign ejuno_ordered = ejuno_variant_media.id | append: ','
+          endif
+          for media in product.media
+            if ejuno_variant_media and media.id == ejuno_variant_media.id
+              continue
+            endif
+            assign ejuno_ordered = ejuno_ordered | append: media.id | append: ','
+          endfor
+          assign ejuno_ordered_ids = ejuno_ordered | split: ','
+          assign ej_srcset_steps = '400,600,800,1000,1200,1600,2000,2400' | split: ','
+        -%}
+        {% for mid in ejuno_ordered_ids limit: 4 %}
+          {%- assign media = nil -%}
+          {%- for m in product.media -%}{%- assign mid_s = m.id | append: '' -%}{%- if mid_s == mid -%}{%- assign media = m -%}{%- break -%}{%- endif -%}{%- endfor -%}
+          {%- comment -%} Trello 670 #3: srcset capped at the original width (no upscaled sizes) {%- endcomment -%}
+          {%- assign ej_ow = media.preview_image.width | default: 2400 | at_most: 5760 -%}
+          {%- assign ej_src_w = ej_ow | at_most: 1600 -%}
+          {%- capture ej_srcset -%}
+            {%- for ej_w_s in ej_srcset_steps -%}
+              {%- assign ej_w = ej_w_s | plus: 0 -%}
+              {%- if ej_w < ej_ow -%}{{ media | image_url: width: ej_w }} {{ ej_w }}w, {% endif -%}
+            {%- endfor -%}
+            {{- media | image_url: width: ej_ow }} {{ ej_ow }}w
+          {%- endcapture -%}
+          {% if forloop.first %}
+            <img class="main" src="{{ media | image_url: width: ej_src_w }}" srcset="{{ ej_srcset }}" sizes="(max-width: 760px) 92vw, 46vw" alt="{{ media.alt | default: product.title | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="eager">
+          {% elsif forloop.index == 4 %}
+            <img class="wide" src="{{ media | image_url: width: ej_src_w }}" srcset="{{ ej_srcset }}" sizes="(max-width: 760px) 92vw, 46vw" alt="{{ media.alt | default: product.title | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy">
+          {% else %}
+            <img src="{{ media | image_url: width: ej_src_w }}" srcset="{{ ej_srcset }}" sizes="(max-width: 760px) 92vw, 23vw" alt="{{ media.alt | default: product.title | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy">
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <img class="main" src="{{ 'PDP-IMG-001.webp' | asset_url }}" alt="{{ product.title | escape }}" width="1672" height="941" loading="eager">
+        <img src="{{ 'PDP-IMG-002.webp' | asset_url }}" alt="" width="1672" height="941" loading="lazy">
+        <img src="{{ 'PDP-IMG-003.webp' | asset_url }}" alt="" width="1672" height="941" loading="lazy">
+        <img class="wide" src="{{ 'PDP-IMG-004.webp' | asset_url }}" alt="" width="1672" height="941" loading="lazy">
+      {% endif %}
+    </div>
+
+    <div class="pdp-info">
+      <main class="pdp-main">
+        <div class="ejuno-pdp-skeleton ejuno-pdp-skeleton--desc" data-ejuno-pdp-skeleton aria-hidden="true">
+          <span class="ejuno-skeleton-line ejuno-skeleton-line--lg"></span>
+          <span class="ejuno-skeleton-line"></span>
+          <span class="ejuno-skeleton-line"></span>
+          <span class="ejuno-skeleton-line ejuno-skeleton-line--short"></span>
+        </div>
+        <div class="ejuno-pdp-description article-body ejuno-pdp-description--lead">
+          {% if product.description != blank %}
+            {{ product.description }}
+          {% endif %}
+          <div id="ejuno-variant-description-mount"></div>
+        </div>
+
+        <div class="ejuno-pdp-quickfacts">
+          <div class="ejuno-pdp-skeleton ejuno-pdp-skeleton--main" data-ejuno-pdp-skeleton aria-hidden="true">
+            <div class="ejuno-skeleton-grid ejuno-skeleton-grid--facts">
+              <span class="ejuno-skeleton-block"></span>
+              <span class="ejuno-skeleton-block"></span>
+              <span class="ejuno-skeleton-block"></span>
+            </div>
+            <span class="ejuno-skeleton-line ejuno-skeleton-line--lg"></span>
+            <span class="ejuno-skeleton-line"></span>
+            <span class="ejuno-skeleton-line ejuno-skeleton-line--short"></span>
+          </div>
+          <div id="ejuno-roomdetails-mount" class="ejuno-roomdetails-mount ejuno-sr-only" aria-hidden="true"></div>
+
+          <div class="pdp-facts ejuno-pdp-facts">
+            <div id="ejuno-dynamic-facts-mount" class="ejuno-dynamic-facts-mount"></div>
+            {% if section.blocks.size > 0 %}
+              {% for block in section.blocks %}
+                {% if block.type == 'fact' %}
+                  {% liquid
+                    assign fact_extra = ''
+                    if block.settings.label == 'Guests'
+                      assign fact_extra = 'ejuno-fact-guests-fallback'
+                    endif
+                  %}
+                  <div
+                    class="fact ejuno-pdp-fact{% if fact_extra != blank %} {{ fact_extra }}{% endif %}"
+                    data-ejuno-fact="{{ block.settings.label | downcase | handle }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    <span class="ejuno-pdp-fact__icon" data-ejuno-fact-icon aria-hidden="true"></span>
+                    <div class="ejuno-pdp-fact__copy">
+                      <small>{{ block.settings.label }}</small>
+                      <strong>{{ block.settings.value }}</strong>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% elsif product.tags.size > 0 %}
+              {% for tag in product.tags limit: 6 %}
+                {% render 'ejuno-pdp-fact', label: 'Detail', value: tag %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div id="ejuno-highlights-mount"></div>
+        <div id="ejuno-addons-mount" class="ejuno-addons-mount productView-container"></div>
+        <div id="cdp-addons-validation-message" class="cdp-section-validation" aria-live="polite"></div>
+        <div id="cdp-venue-validation-message" class="cdp-section-validation" aria-live="polite"></div>
+        <div id="ejuno-dwelling-mount" class="ejuno-dwelling-mount"></div>
+        {% render 'ejuno-pdp-listing-details' %}
+        {%- comment -%} Card 716: reviews block, filled by ejuno-product-booking-scripts from the backend publishedReviews; stays hidden when there are none. {%- endcomment -%}
+        <section id="ejuno-pdp-reviews" class="ejuno-pdp-reviews" aria-labelledby="ejuno-pdp-reviews-title" hidden>
+          <div class="ejuno-pdp-reviews__head">
+            <h2 id="ejuno-pdp-reviews-title" class="h3">Reviews</h2>
+            <div class="ejuno-pdp-reviews__summary" data-ejuno-reviews-summary></div>
+          </div>
+          <div id="published-reviews-wrapper" class="ejuno-pdp-reviews__wrap" style="display:none">
+            <div id="published-reviews-section" class="ejuno-pdp-reviews__list" style="display:none"></div>
+          </div>
+        </section>
+        <style>
+          .ejuno-pdp-reviews{margin:40px 0 8px;padding-top:32px;border-top:1px solid rgba(32,28,25,.12)}
+          .ejuno-pdp-reviews[hidden]{display:none!important}
+          .ejuno-pdp-reviews__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:18px}
+          .ejuno-pdp-reviews__head .h3{margin:0;font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:28px;color:#201c19}
+          .ejuno-pdp-reviews__summary{font-size:14px;color:#5a524b}
+          .ejuno-pdp-reviews__summary .star,#avgRating .star{color:#d9d2ca}
+          .ejuno-pdp-reviews__summary .star.filled,#avgRating .star.filled{color:#9a5468}
+          .ejuno-pdp-reviews__wrap{flex-direction:column;width:100%}
+          .ejuno-pdp-reviews__list{width:100%}
+          .ejuno-pdp-reviews .published-review{font-family:Inter,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.6;color:#201c19;max-width:100%;box-sizing:border-box}
+          .ejuno-pdp-reviews .published-review img{max-width:100%}
+          .ejuno-api-spans #avgRating{display:none!important}
+          .ejuno-pdp-reviews .published-review .star{color:#d9d2ca!important}
+          .ejuno-pdp-reviews .published-review .star.filled{color:#9a5468!important}
+        </style>
+        <script>
+          (function(){
+            function sync(){
+              var sec=document.getElementById('ejuno-pdp-reviews'),list=document.getElementById('published-reviews-section'),avg=document.getElementById('avgRating');
+              if(!sec||!list)return;
+              var n=list.querySelectorAll('.published-review').length;
+              sec.hidden=!n;
+              var sum=sec.querySelector('[data-ejuno-reviews-summary]');
+              if(sum)sum.innerHTML=(n&&avg&&!avg.hidden)?avg.innerHTML:'';
+            }
+            function start(){var list=document.getElementById('published-reviews-section');if(list&&window.MutationObserver){new MutationObserver(sync).observe(list,{childList:true});}sync();}
+            window.addEventListener('productDetailsLoaded',function(){setTimeout(sync,0);});
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+          })();
+        </script>
+      </main>
+
+      <aside id="ejuno-request-availability" class="booking-card ejuno-booking-card">
+        <div class="ejuno-pdp-skeleton ejuno-pdp-skeleton--booking" data-ejuno-pdp-skeleton aria-hidden="true">
+          <span class="ejuno-skeleton-line ejuno-skeleton-line--title"></span>
+          <span class="ejuno-skeleton-block ejuno-skeleton-block--field"></span>
+          <span class="ejuno-skeleton-block ejuno-skeleton-block--field"></span>
+          <span class="ejuno-skeleton-block ejuno-skeleton-block--field"></span>
+          <span class="ejuno-skeleton-block ejuno-skeleton-block--btn"></span>
+        </div>
+        {%- liquid
+          assign ej_card_heading = section.settings.card_heading
+          if ejuno_service_pdp
+            assign ej_card_heading = ej_card_heading | replace: 'this venue', 'this service' | replace: 'This venue', 'This service' | replace: 'venue', 'service' | replace: 'Venue', 'Service'
+          endif
+        -%}
+        <h3 class="ejuno-pdp-booking-ui" data-ejuno-booking-card-title>{{ ej_card_heading }}</h3>
+        <h3 class="ejuno-pdp-commerce-ui" data-ejuno-commerce-card-title hidden>{{ section.settings.catalog_card_heading }}</h3>
+
+        <div class="ejuno-pdp-booking-ui">
+          <div class="ejuno-booking-package-field">
+            {% if product.variants.size > 1 %}
+              <label class="ejuno-booking-field__label" for="ejuno-variant-select">Package</label>
+              <div class="ejuno-booking-select-wrap">
+                <select id="ejuno-variant-select" class="ejuno-booking-select" name="id">
+                  {% for variant in product.variants %}
+                    <option
+                      value="{{ variant.id }}"
+                      {% if variant.id == current_variant.id %}selected{% endif %}
+                      {% unless variant.available %}disabled{% endunless %}
+                    >
+                      {{ variant.title }} — {% render 'ejuno-money', cents: variant.price %}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% else %}
+              <span class="ejuno-booking-field__label">Package</span>
+              <div class="ejuno-booking-select-wrap ejuno-booking-select-wrap--static" aria-hidden="true">
+                <span class="ejuno-booking-select-display">
+                  {{ current_variant.title }} — {% render 'ejuno-money', cents: current_variant.price %}
+                </span>
+              </div>
+            {% endif %}
+          </div>
+
+          <button
+            type="button"
+            class="field ejuno-booking-field"
+            data-ejuno-open-dates
+            data-ejuno-date-summary
+            data-ejuno-date-empty-label="{{ ejuno_date_placeholder | escape }}"
+          >
+            <span class="ejuno-booking-field__label">{{ section.settings.field_date }}</span>
+            <span class="ejuno-booking-field__value">{{ ejuno_date_placeholder }}</span>
+          </button>
+
+          {% unless ejuno_service_pdp or ejuno_catalog_pdp %}
+            <div class="field ejuno-booking-field ejuno-booking-field--static ejuno-booking-field--guests">
+              <span class="ejuno-booking-field__label">{{ section.settings.field_guests }}</span>
+              <span class="ejuno-booking-field__value" id="ejuno-guest-capacity-hint">From selected package</span>
+            </div>
+          {% endunless %}
+
+          <button type="button" class="btn primary ejuno-booking-submit" data-ejuno-request-booking style="width:100%;margin-top:10px">
+            {{ ejuno_booking_cta_label }}
+          </button>
+        </div>
+
+        <div class="ejuno-pdp-commerce-ui" hidden>
+          {% form 'product', product, id: 'ejuno-product-form', class: 'ejuno-product-form' %}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" id="ejuno-product-variant-id">
+            {% if product.variants.size > 1 %}
+              <div class="ejuno-commerce-field">
+                <label class="ejuno-booking-field__label" for="ejuno-commerce-variant-select">Option</label>
+                <div class="ejuno-commerce-select-wrap">
+                  <select id="ejuno-commerce-variant-select" class="ejuno-commerce-select" aria-label="Select option">
+                    {% for variant in product.variants %}
+                      <option
+                        value="{{ variant.id }}"
+                        data-available="{% if variant.available %}true{% else %}false{% endif %}"
+                        {% if variant.id == current_variant.id %}selected{% endif %}
+                      >
+                        {{ variant.title }} — {% render 'ejuno-money', cents: variant.price %}{% unless variant.available %} (Sold out){% endunless %}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            {% else %}
+              <p class="ejuno-booking-price ejuno-commerce-price">{% render 'ejuno-money', cents: current_variant.price %}</p>
+            {% endif %}
+            <button
+              type="submit"
+              name="add"
+              class="btn primary ejuno-add-to-cart"
+              style="width:100%;margin-top:12px"
+              data-add-label="{{ section.settings.add_to_cart_label | escape }}"
+              data-sold-out-label="Sold out"
+              {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+            >
+              {% if current_variant.available %}{{ section.settings.add_to_cart_label }}{% else %}Sold out{% endif %}
+            </button>
+            <button
+              type="button"
+              class="btn secondary ejuno-registry-trigger"
+              data-ejuno-registry-trigger
+              style="width:100%;margin-top:10px"
+            >
+              {{ section.settings.registry_label }}
+            </button>
+            <div class="ejuno-plan-action" data-ejuno-plan-action hidden>
+              <button
+                type="button"
+                class="btn secondary ejuno-plan-trigger"
+                data-ejuno-plan-trigger
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-controls="ejuno-plan-menu"
+              >
+                <span class="ejuno-plan-trigger__label">{{ section.settings.plan_label | default: 'Add to Wedding Plan' }}</span>
+              </button>
+              <div id="ejuno-plan-dropdown-mount" class="ejuno-plan-dropdown-mount" hidden>
+                <p class="ejuno-plan-select-label">Select wedding plan</p>
+                <div class="ejuno-plan-menu" id="ejuno-plan-menu" role="listbox" aria-label="Wedding plans"></div>
+              </div>
+            </div>
+          {% endform %}
+        </div>
+
+        <div id="ejuno-booking-details-mount" class="ejuno-booking-details-mount" aria-live="polite"></div>
+      </aside>
+    </div>
+  </div>
+  <div class="ejuno-pdp-sticky-cta ejuno-pdp-booking-ui" aria-hidden="false">
+    <button type="button" class="btn primary" data-ejuno-request-booking data-ejuno-scroll-booking>
+      {{ ejuno_booking_cta_label }}
+    </button>
+  </div>
+  <div class="ejuno-pdp-sticky-cta ejuno-pdp-commerce-ui" hidden>
+    <button
+      type="submit"
+      form="ejuno-product-form"
+      class="btn primary ejuno-add-to-cart"
+      data-ejuno-add-to-cart
+      data-add-label="{{ section.settings.add_to_cart_label | escape }}"
+      data-sold-out-label="Sold out"
+      {% unless current_variant.available %}disabled aria-disabled="true"{% endunless %}
+    >
+      {% if current_variant.available %}{{ section.settings.add_to_cart_label }}{% else %}Sold out{% endif %}
+    </button>
+  </div>
+
+  {% if section.settings.show_pdp_guide %}
+    {% render 'ejuno-pdp-guide',
+      catalog: ejuno_catalog_pdp,
+      service: ejuno_service_pdp,
+      section: section
+    %}
+  {% endif %}
+</section>
+
+{% render 'ejuno-backend-config' %}
+{% render 'ejuno-product-booking-dom', ejuno_service_pdp: ejuno_service_pdp %}
+<script src="{{ 'ejuno-cdp-booking-extras.js' | asset_url }}" defer></script>
+<script src="{{ 'ejuno-highlight-icons.js' | asset_url }}"></script>
+<script src="{{ 'ejuno-pdp-fact-icons.js' | asset_url }}"></script>
+{% render 'ejuno-product-booking-scripts' %}
+<script src="{{ 'cdp-addons-core.js' | asset_url }}" defer></script>
+<script src="{{ 'cdp-addon-gallery.js' | asset_url }}" defer></script>
+<script src="{{ 'ejuno-pdp-media.js' | asset_url }}" defer></script>
+{{ 'ejuno-product-booking-theme.css' | asset_url | stylesheet_tag }}
+{{ 'ejuno-standalone-addon.css' | asset_url | stylesheet_tag }}
+{{ 'ejuno-pdp-guide.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'ejuno-product-booking-v5.js' | asset_url }}" defer></script>
+<script src="{{ 'ejuno-pdp-guide.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+.ejuno-booking-field {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  min-height: 56px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+.ejuno-pdp .ejuno-booking-card button.field.ejuno-booking-field {
+  color: inherit;
+}
+.ejuno-booking-field--static {
+  cursor: default;
+}
+.ejuno-booking-field__label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ejuno-booking-field__value {
+  font-size: 15px;
+  line-height: 1.45;
+  color: #201c19;
+  white-space: normal;
+  word-break: break-word;
+  width: 100%;
+  overflow: visible;
+}
+.ejuno-booking-field.has-dates,
+.ejuno-booking-field[data-has-dates='1'] {
+  border-color: var(--berry);
+  background: rgba(155, 80, 104, 0.08);
+  box-shadow: 0 0 0 1px rgba(155, 80, 104, 0.12);
+}
+.ejuno-booking-field.has-dates .ejuno-booking-field__label,
+.ejuno-booking-field[data-has-dates='1'] .ejuno-booking-field__label {
+  color: var(--berry);
+  font-weight: 700;
+}
+.ejuno-booking-field.has-dates .ejuno-booking-field__value,
+.ejuno-booking-field[data-has-dates='1'] .ejuno-booking-field__value {
+  color: var(--ink);
+  font-weight: 600;
+}
+.ejuno-pdp .ejuno-booking-card button.ejuno-booking-field.has-dates:hover,
+.ejuno-pdp .ejuno-booking-card button.ejuno-booking-field[data-has-dates='1']:hover {
+  border-color: var(--berry);
+  background: rgba(155, 80, 104, 0.12);
+}
+.ejuno-booking-card > .ejuno-pdp-booking-ui > h3,
+.ejuno-booking-card > h3.ejuno-pdp-booking-ui {
+  margin-bottom: 20px;
+}
+.ejuno-booking-package-field {
+  margin-bottom: 12px;
+}
+.ejuno-booking-package-field .ejuno-booking-field__label {
+  display: block;
+  margin-bottom: 8px;
+}
+.ejuno-booking-select-wrap {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  padding: 0 16px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.ejuno-booking-select-wrap:hover {
+  border-color: #cfc4b8;
+  background: #fff;
+}
+.ejuno-booking-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+  z-index: 2;
+}
+.ejuno-booking-select-wrap .ejuno-select-chevron-hit {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  width: 44px;
+  height: 52px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.ejuno-booking-select-wrap.is-list-open .ejuno-select-chevron-hit {
+  height: 48px;
+}
+.ejuno-booking-select-wrap--static::after {
+  display: none;
+}
+.ejuno-booking-select-wrap.is-list-open {
+  align-items: stretch;
+  padding: 0 14px 10px;
+}
+.ejuno-booking-select-wrap.is-list-open::after {
+  top: 26px;
+  transform: rotate(225deg);
+  border-color: var(--berry);
+}
+.ejuno-booking-select {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 14px 32px 14px 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  accent-color: var(--berry);
+}
+.ejuno-booking-select:not(.is-list-open) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ejuno-booking-select:focus {
+  outline: none;
+}
+.ejuno-booking-select-wrap:focus-within {
+  border-color: var(--berry);
+  box-shadow: 0 0 0 3px rgba(155, 80, 104, 0.12);
+  background: #fff;
+}
+.ejuno-booking-select-display {
+  display: block;
+  width: 100%;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.ejuno-booking-price {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.ejuno-dates-modal[hidden] {
+  display: none !important;
+}
+.ejuno-dates-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.ejuno-dates-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 18, 15, 0.45);
+}
+.ejuno-dates-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 24px 28px 28px;
+  background: linear-gradient(165deg, #faf6f0 0%, var(--paper) 42%, #f3ece4 100%);
+}
+.ejuno-dates-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink);
+}
+.ejuno-dates-modal__title {
+  margin: 0 0 16px;
+  font-family: var(--serif);
+  font-weight: 400;
+}
+.ejuno-pdp-description--lead {
+  max-width: none;
+  width: 100%;
+  margin: 12px 0 20px;
+  padding: 0;
+  text-align: left;
+}
+
+.ejuno-pdp .ejuno-pdp-description--lead p,
+.ejuno-pdp .ejuno-pdp-description--lead div,
+.ejuno-pdp .ejuno-pdp-description--lead li {
+  text-align: left !important;
+}
+
+.ejuno-pdp .ejuno-pdp-description--lead p:first-child {
+  margin-top: 0;
+}
+
+.ejuno-pdp-quickfacts {
+  margin: 28px 0;
+}
+
+.ejuno-pdp--service .ejuno-pdp-quickfacts {
+  display: none !important;
+}
+
+.ejuno-pdp .pdp-info {
+  align-items: start;
+  padding-top: 24px;
+  padding-bottom: 48px;
+}
+.ejuno-booking-card {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+  max-height: calc(100vh - 108px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  z-index: 2;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ejuno-booking-card::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.ejuno-booking-card.ejuno-booking-card--select-open {
+  overflow: visible;
+  z-index: 40;
+}
+.ejuno-booking-card.ejuno-booking-card--select-open .ejuno-booking-package-field {
+  position: relative;
+  z-index: 41;
+}
+.ejuno-booking-details-mount:not(:empty) {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.ejuno-booking-details-mount .ejuno-booking-detail-row {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #4d4540;
+}
+.ejuno-booking-details-mount .ejuno-booking-detail-row:last-child {
+  margin-bottom: 0;
+}
+.ejuno-booking-details-mount .ejuno-booking-detail-row b,
+.ejuno-booking-details-mount .ejuno-booking-detail-row #perNightPriceLabel {
+  display: inline;
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--ink);
+  font-weight: 700;
+  margin-bottom: 0;
+}
+.ejuno-booking-details-mount .ejuno-booking-detail-row small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.ejuno-booking-details-mount #venueLocationValue,
+.ejuno-booking-details-mount #depositPackage,
+.ejuno-booking-details-mount #perNightPriceValue,
+.ejuno-booking-details-mount #ejunoVendorNameValue {
+  display: inline;
+  font-weight: 400;
+  color: #4d4540;
+}
+.ejuno-booking-card.ejuno-booking-card--vendor-clip {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.ejuno-booking-card.ejuno-booking-card--vendor-clip::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.ejuno-booking-details-mount .ejuno-booking-vendor-spacer {
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.ejuno-booking-details-mount .ejuno-booking-vendor-row {
+  margin-top: 0;
+  margin-bottom: 4px;
+  padding-bottom: 12px;
+}
+.ejuno-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+.ejuno-dynamic-facts-mount {
+  display: contents;
+}
+.ejuno-pdp-facts.ejuno-pdp-facts--api-guests .ejuno-fact-guests-fallback,
+.ejuno-pdp:not(.ejuno-pdp--catalog) .ejuno-pdp-fact:not(.fact--api) {
+  display: none;
+}
+.ejuno-pdp-facts {
+  margin: 0;
+}
+.ejuno-plan-dropdown-mount {
+  margin-top: 10px;
+}
+.ejuno-plan-dropdown-mount[hidden] {
+  display: none !important;
+}
+.ejuno-plan-action {
+  width: 100%;
+  margin-top: 10px;
+}
+.ejuno-plan-action[hidden] {
+  display: none !important;
+}
+.ejuno-plan-trigger {
+  width: 100%;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.ejuno-plan-trigger.is-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+.ejuno-plan-trigger.is-open {
+  border-color: rgba(155, 80, 104, 0.45);
+  background: rgba(155, 80, 104, 0.06);
+  color: var(--berry-dark, #7a3d52);
+}
+.ejuno-plan-select-label {
+  display: block;
+  margin: 0 0 8px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ejuno-plan-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(38, 28, 20, 0.1);
+  box-sizing: border-box;
+}
+.ejuno-plan-menu__item {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 14px 16px;
+  border: 0;
+  border-bottom: 1px solid rgba(222, 213, 202, 0.7);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.ejuno-plan-menu__item:last-child {
+  border-bottom: 0;
+}
+.ejuno-plan-menu__item:hover,
+.ejuno-plan-menu__item:focus-visible {
+  background: rgba(155, 80, 104, 0.07);
+  color: var(--berry-dark, #7a3d52);
+  outline: none;
+}
+.ejuno-plan-menu__item.is-create {
+  color: var(--berry, #9b5068);
+  font-weight: 600;
+}
+.ejuno-plan-menu__empty {
+  padding: 16px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Venue detail",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Fallback eyebrow (unused)" },
+    { "type": "text", "id": "button_label", "label": "Primary button", "default": "Request Availability" },
+    { "type": "text", "id": "heading", "label": "Fallback heading", "default": "A lakefront setting with genuine presence" },
+    { "type": "textarea", "id": "text", "label": "Fallback text", "default": "Venue detail is where imagery should become immersive and information should become practical." },
+    { "type": "text", "id": "card_heading", "label": "Booking card heading", "default": "Plan around this venue" },
+    { "type": "text", "id": "catalog_card_heading", "label": "Product card heading", "default": "Add to your order" },
+    { "type": "text", "id": "add_to_cart_label", "label": "Add to cart button", "default": "Add to cart" },
+    { "type": "text", "id": "registry_label", "label": "Add to registry button", "default": "Add to registry" },
+    { "type": "text", "id": "field_date", "label": "Date field label", "default": "Preferred dates" },
+    { "type": "text", "id": "field_guests", "label": "Guests field label", "default": "Guest estimate" },
+    { "type": "text", "id": "field_type", "label": "Type field label", "default": "Celebration type" },
+    { "type": "text", "id": "plan_label", "label": "Plan button", "default": "Add to Wedding Plan" },
+    { "type": "url", "id": "plan_url", "label": "Planning hub URL" },
+    {
+      "type": "checkbox",
+      "id": "show_pdp_guide",
+      "label": "Show floating booking guide",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "guide_title",
+      "label": "Guide dialog title",
+      "default": "How it works"
+    },
+    {
+      "type": "text",
+      "id": "guide_fab_label",
+      "label": "Guide button label",
+      "default": "Guide"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "fact",
+      "name": "Venue fact",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Guests" },
+        { "type": "text", "id": "value", "label": "Value", "default": "Up to 120" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Venue detail" }]
+}
+{% endschema %}

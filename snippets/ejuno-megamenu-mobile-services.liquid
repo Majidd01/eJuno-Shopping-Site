@@ -1,0 +1,9 @@
+{%- comment -%} Trello 689 BUG-08: each category opens its own page on tablet/mobile, matching the desktop services megamenu. {%- endcomment -%}
+<a class="mobile-nav__sublink mobile-nav__sublink--all" href="/pages/all-services">All Services</a>
+<a class="mobile-nav__sublink" href="/collections/gastronomy-bar">Gastronomy &amp; Bar</a>
+<a class="mobile-nav__sublink" href="/collections/design-artistry">Design &amp; Artistry</a>
+<a class="mobile-nav__sublink" href="/collections/photo-film">Photo &amp; Film</a>
+<a class="mobile-nav__sublink" href="/collections/{%- if collections['entertainment-1'].id != blank -%}entertainment-1{%- else -%}entertainment{%- endif -%}">Entertainment</a>
+<a class="mobile-nav__sublink" href="/collections/enhancements">Enhancements</a>
+<a class="mobile-nav__sublink" href="/collections/beauty-fashion">Beauty &amp; Fashion</a>
+<a class="mobile-nav__sublink" href="{%- if collections['transport'].id != blank -%}/collections/transport{%- else -%}{{ routes.search_url }}?q=transport&amp;type=product{%- endif -%}">Transport</a>

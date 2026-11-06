@@ -1,0 +1,59 @@
+<section class="section"><div class="container"><div class="benefit-grid"><div class="benefit"><div class="eyebrow">01</div><h3>Be Discovered in Context</h3><p style="color:var(--muted)">Appear alongside venues, inspiration and planning journeys, not in isolation.</p></div><div class="benefit"><div class="eyebrow">02</div><h3>Show the Quality of Your Work</h3><p style="color:var(--muted)">Use a richer visual presentation to communicate fit and style.</p></div><div class="benefit"><div class="eyebrow">03</div><h3>Build Better Enquiries</h3><p style="color:var(--muted)">Give couples enough context to understand what you offer before they contact you.</p></div></div></div></section><section class="section tight"><div class="container"><div class="plan-map"><div class="eyebrow">Partner journey</div><div class="plan-steps" style="margin-top:18px"><div class="plan-step"><small>Step 01</small><h3>Apply</h3><p>Share your business and portfolio.</p></div><div class="plan-step"><small>Step 02</small><h3>Review</h3><p>eJuno checks fit and positioning.</p></div><div class="plan-step"><small>Step 03</small><h3>Showcase</h3><p>Publish a stronger marketplace presence.</p></div></div></div></div></section>
+
+{% schema %}
+{
+  "name": "Vendor content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Vendor content"
+    }
+  ]
+}
+{% endschema %}

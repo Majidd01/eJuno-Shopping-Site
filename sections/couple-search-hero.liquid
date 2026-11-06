@@ -1,0 +1,55 @@
+{% render 'ejuno-couple-search-hero',
+  eyebrow: section.settings.eyebrow,
+  heading: section.settings.heading,
+  lead: section.settings.text,
+  search_placeholder: section.settings.search_placeholder,
+  api_base: section.settings.api_base,
+  website_base: section.settings.website_base
+%}
+
+{% schema %}
+{
+  "name": "Couple search hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Find a Wed"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find a Wedding"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Lead",
+      "default": "Type a name to find their wedding website and registry."
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Enter couple name"
+    },
+    {
+      "type": "text",
+      "id": "api_base",
+      "label": "Couples search API",
+      "default": "https://ejuno-dev.skylinxtech.co/api/couples/public"
+    },
+    {
+      "type": "text",
+      "id": "website_base",
+      "label": "Wedding website base URL",
+      "default": "https://ejuno-staging.web.app/wedding-planning/"
+    }
+  ],
+  "presets": [{ "name": "Couple search hero" }]
+}
+{% endschema %}

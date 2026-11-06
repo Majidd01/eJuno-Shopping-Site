@@ -1,0 +1,28 @@
+<section class="section"><div class="container"><div class="section-head"><div class="copy"><div class="eyebrow">{{ section.settings.eyebrow }}</div><h2 class="h2">{{ section.settings.heading }}</h2></div></div><div class="ej-cols"><div class="ej-cols__item"><span class="ej-cols__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg></span><h3>Essential Details</h3><p>Put the location, timings and useful information where guests can actually find it.</p></div><div class="ej-cols__item"><span class="ej-cols__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><h3>Your Story</h3><p>Make it personal without making it cluttered.</p></div><div class="ej-cols__item"><span class="ej-cols__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="4" stroke="currentColor" stroke-width="1.6"/><path d="m8.5 12 2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3>RSVP Journey</h3><p>Let guests RSVP online and keep every response with the rest of your planning.</p></div></div></div></section>
+
+{% schema %}
+{
+  "name": "wedding-website 3",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Everything your guests need"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "One place for the guest experience"
+    }
+  ],
+  "presets": [
+    {
+      "name": "wedding-website 3"
+    }
+  ]
+}
+{% endschema %}

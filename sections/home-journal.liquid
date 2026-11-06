@@ -1,0 +1,272 @@
+{%- liquid
+  # Trello 656: falls back to the renamed Inspiration blog if the picked handle no longer exists.
+  assign jblog = blogs[section.settings.blog_handle]
+  if jblog.handle == blank or jblog.articles_count == 0
+    assign j_handles = 'inspiration,destinations' | split: ','
+    for h in j_handles
+      if blogs[h].articles_count > 0 and jblog.articles_count == 0
+        assign jblog = blogs[h]
+      endif
+    endfor
+  endif
+  assign j_cta = section.settings.cta_url
+  if j_cta == blank
+    assign j_cta = jblog.url | default: '/blogs/destinations'
+  endif
+-%}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="copy">
+        <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.text }}</p>
+      </div>
+      {% if section.settings.cta_label != blank %}
+        <a href="{%- render 'ejuno-blog-href', url: j_cta -%}" class="btn ghost">{{ section.settings.cta_label }}</a>
+      {% endif %}
+    </div>
+    {%- liquid
+      assign use_articles = false
+      if section.settings.use_latest_articles and jblog != blank and jblog.articles_count > 0
+        assign use_articles = true
+      endif
+      assign j_fallbacks = 'HOME-IMG-007.webp,HOME-IMG-008.webp,HOME-IMG-003.webp' | split: ','
+    -%}
+    {%- if use_articles -%}
+    <div class="journal-row">
+      {% for article in jblog.articles limit: 3 %}
+        {%- liquid
+          comment
+            Trello 729: optional per-article theme-asset override (article-handle:asset, comma separated).
+          endcomment
+          assign j_ovr = ''
+          assign j_ah = article.handle | split: '/' | last
+          assign j_map = section.settings.image_overrides | default: '' | split: ','
+          for pair in j_map
+            assign kv = pair | strip | split: ':'
+            if kv[0] == j_ah and kv[1] != blank
+              assign j_ovr = kv[1] | strip
+              break
+            endif
+          endfor
+          if j_ovr != blank
+            assign img = j_ovr | asset_url
+            assign w = 1600
+            assign h = 1600
+          elsif article.image
+            assign img = article.image | image_url: width: 1200
+            assign w = article.image.width
+            assign h = article.image.height
+          else
+            assign img = j_fallbacks[forloop.index0] | asset_url
+            assign w = 1200
+            assign h = 800
+          endif
+          assign j_line = article.excerpt | strip_html | strip
+          if j_line == blank
+            assign j_line = article.content | strip_html | strip
+          endif
+        -%}
+        <a href="{{ article.url }}" class="journal-card">
+          <img src="{{ img }}" alt="{{ article.image.alt | default: article.title | escape }}" width="{{ w }}" height="{{ h }}" loading="lazy">
+          <div class="body">
+            <div class="eyebrow">{% if article.tags.size > 0 %}{{ article.tags.first }}{% else %}Story{% endif %}</div>
+            <h3>{{ article.title }}</h3>
+            <p>{{ j_line | truncatewords: 18 }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    {%- else -%}
+    <div class="journal-row">
+      {% for block in section.blocks %}
+        {% liquid
+          if block.settings.image != blank
+            assign img = block.settings.image | image_url: width: 1200
+            assign alt = block.settings.image.alt | default: block.settings.title
+            assign w = block.settings.image.width
+            assign h = block.settings.image.height
+          else
+            assign img = block.settings.fallback_asset | asset_url
+            assign alt = block.settings.title
+            assign w = 1200
+            assign h = 800
+          endif
+        %}
+        {%- comment -%} Trello 675: a card linked to a real article uses that article's photo. {%- endcomment -%}
+        {%- comment -%} Trello 735 reopen 2 Nov: a card URL whose article doesn't exist (wrong blog handle / deleted) gave a 404. Resolve the real article (any of our blogs) and link to article.url; if none exists, link to the blog page instead. {%- endcomment -%}
+        {%- liquid
+          assign j_href = block.settings.url
+          assign j_art = nil
+          if block.settings.url contains '/blogs/'
+            assign j_key = block.settings.url | split: '/blogs/' | last | split: '?' | first | split: '#' | first
+            assign j_art = articles[j_key]
+            if j_art == blank
+              assign j_ah = j_key | split: '/' | last
+              assign j_try = jblog.handle | append: ',inspiration,destinations,news' | split: ','
+              for jb in j_try
+                if jb != blank
+                  assign j_k2 = jb | append: '/' | append: j_ah
+                  assign j_art = articles[j_k2]
+                  if j_art != blank
+                    break
+                  endif
+                endif
+              endfor
+            endif
+            if j_art != blank
+              assign j_href = j_art.url
+            else
+              assign j_href = j_cta
+            endif
+            if j_art != blank and j_art.image and block.settings.image == blank
+              assign img = j_art.image | image_url: width: 1200
+              assign alt = j_art.image.alt | default: block.settings.title
+              assign w = j_art.image.width
+              assign h = j_art.image.height
+            endif
+          endif
+        -%}
+        <a href="{%- render 'ejuno-blog-href', url: j_href -%}" class="journal-card" {{ block.shopify_attributes }}>
+          <img src="{{ img }}" alt="{{ alt | escape }}" width="{{ w }}" height="{{ h }}" loading="lazy">
+          <div class="body">
+            <div class="eyebrow">{{ block.settings.eyebrow }}</div>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.text }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home journal",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Inspiration"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ideas worth keeping"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Real advice and places worth knowing, to help you plan a wedding in Italy that feels like yours."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Browse Inspiration"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA URL"
+    },
+    {
+      "type": "textarea",
+      "id": "image_overrides",
+      "label": "Article image overrides (article-handle:theme-asset, comma separated)"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_latest_articles",
+      "label": "Show latest blog articles (cards are used if the blog is empty)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "blog_handle",
+      "label": "Blog handle",
+      "default": "destinations"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Story card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Fallback asset",
+          "default": "HOME-IMG-007.webp"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Design"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "The reception details guests actually remember"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Read the story and take the useful ideas into your own planning."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home journal",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "fallback_asset": "HOME-IMG-007.webp",
+            "eyebrow": "Design",
+            "title": "The reception details guests actually remember"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "fallback_asset": "HOME-IMG-008.webp",
+            "eyebrow": "Planning",
+            "title": "How to build a destination weekend that feels personal"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "fallback_asset": "HOME-IMG-003.webp",
+            "eyebrow": "Destinations",
+            "title": "Choosing between a city, coast or countryside wedding"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

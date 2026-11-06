@@ -1,0 +1,95 @@
+{%- comment -%}
+  Trello 779: check-in & check-out (range) calendar mode is decided by the listing's
+  guestAccommodation flag (shown on the PDP as "Overnight stay").
+  Rule: Service -> single date. Olivers Travel -> unchanged (non-regular = range).
+  Otherwise: guestAccommodation Yes/true -> range; No/false -> single date;
+  flag missing -> range only for venueType "accommodation" (legacy fallback).
+  Also makes sure range-mode requests carry checkInDate + checkOutDate.
+  Rendered from ejuno-product-booking-dom; used by usesCheckInCheckOutDates() in booking-scripts.
+{%- endcomment -%}
+<script>
+(function () {
+  function stayFlag(pd) {
+    var v = pd && pd.guestAccommodation;
+    if (v == null || v === '') v = pd && pd.overnightStay;
+    if (v === true) return 'yes';
+    if (v === false) return 'no';
+    v = String(v == null ? '' : v).trim().toLowerCase();
+    if (v === 'yes' || v === 'true') return 'yes';
+    if (v === 'no' || v === 'false') return 'no';
+    return '';
+  }
+  window.ejunoStayFlag = stayFlag;
+  window.ejunoUsesRange = function (pd, ps) {
+    if (!pd) return false;
+    if (ps === 'olivers_travel') return pd.venueType !== 'regular';
+    var f = stayFlag(pd);
+    if (f) return f === 'yes';
+    return pd.venueType === 'accommodation';
+  };
+  function rangeOn() {
+    try { return typeof window.usesCheckInCheckOutDates === 'function' && !!window.usesCheckInCheckOutDates(); } catch (e) { return false; }
+  }
+  window.addEventListener('ejuno:datesConfirmed', function (e) {
+    var d = e && e.detail && e.detail.dates;
+    if (Array.isArray(d) && d.length) window.ejunoStayDates = d.slice();
+  });
+  function stayDates() {
+    var s = window.selectedDates;
+    if (Array.isArray(s) && s.length >= 2) return s;
+    return Array.isArray(window.ejunoStayDates) ? window.ejunoStayDates : [];
+  }
+  function addStayDates(rd) {
+    var s = stayDates();
+    if (!rd || typeof rd !== 'object' || rd.kind === 'standalone_addon' || rd._standaloneAddon) return rd;
+    if (rd.checkOutDate || rd.checkoutDate || !Array.isArray(s) || s.length < 2 || !rangeOn()) return rd;
+    rd.checkInDate = String(s[0]).slice(0, 10);
+    rd.checkOutDate = String(s[s.length - 1]).slice(0, 10);
+    if (!rd.date) rd.date = rd.checkInDate;
+    return rd;
+  }
+  window.ejunoAddStayDates = addStayDates;
+  function wrapSend() {
+    var bp = window.ejunoBuildVendorConfirmationPayload;
+    if (typeof bp === 'function' && !bp._ej779) {
+      var wb = function (r) {
+        var out = bp.apply(this, arguments);
+        try {
+          var ci = r && r.checkInDate, co = r && (r.checkOutDate || r.checkoutDate);
+          if (out && out.kind !== 'standalone_addon' && ci && co && rangeOn()) {
+            out.checkInDate = String(ci).slice(0, 10);
+            out.checkOutDate = String(co).slice(0, 10);
+          }
+        } catch (e) {}
+        return out;
+      };
+      wb._ej779 = true;
+      window.ejunoBuildVendorConfirmationPayload = wb;
+    }
+    var o = window.ejunoSendVendorConfirmation;
+    if (typeof o !== 'function' || o._ej779) return;
+    var w = function (rd, opts) { return o.call(this, addStayDates(rd), opts); };
+    w._ej779 = true;
+    window.ejunoSendVendorConfirmation = w;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wrapSend); else wrapSend();
+  var of = window.fetch;
+  if (typeof of === 'function' && !of._ej779) {
+    var wf = function (u, init) {
+      try {
+        var url = typeof u === 'string' ? u : (u && u.url) || '';
+        if (init && String(init.method || '').toUpperCase() === 'POST' && typeof init.body === 'string' && /\/api\/reservations\/?(\?|$)/.test(url)) {
+          var b = JSON.parse(init.body);
+          if (b && !(b.checkOutDate || b.checkoutDate)) {
+            addStayDates(b);
+            if (b.checkOutDate) init = Object.assign({}, init, { body: JSON.stringify(b) });
+          }
+        }
+      } catch (e) {}
+      return of.apply(this, arguments.length > 1 ? [u, init] : [u]);
+    };
+    wf._ej779 = true;
+    window.fetch = wf;
+  }
+})();
+</script>

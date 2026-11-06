@@ -1,0 +1,27 @@
+{%- comment -%} Trello 656: old Blog URLs (/blog, /blogs/blog, /blogs/news, /blogs/journal) land on Inspiration instead of a 404. {%- endcomment -%}
+<script>
+  (function () {
+    var p = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+    var insp = {{ blogs['inspiration'].url | default: '/blogs/inspiration' | json }};
+    var m = p.match(/^\/blogs\/(blog|news|journal)(\/([^\/]+))?$/);
+    var target = '';
+    if (p === '/blog' || p === '/blogs' || p === '/pages/blog' || p === '/pages/inspiration') target = insp;
+    else if (m) target = insp + (m[3] ? '/' + m[3] : '');
+    if (target) window.location.replace(target + window.location.search);
+  })();
+</script>
+
+<section class="utility-head">
+  <div class="container">
+    <div class="eyebrow">404</div>
+    <h1 class="h1">Page not found</h1>
+    <p class="lead">The page you were looking for does not exist.</p>
+    <div style="margin-top:24px"><a class="btn primary" href="{{ routes.root_url }}">Back home</a></div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "404",
+  "settings": []
+}
+{% endschema %}

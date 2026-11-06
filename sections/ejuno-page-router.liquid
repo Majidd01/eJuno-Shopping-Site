@@ -1,0 +1,87 @@
+{%- comment -%}
+  Default page template: render full V5 content when the page has no template suffix in admin.
+{%- endcomment -%}
+{%- case page.handle -%}
+  {%- when 'plan-your-wedding' -%}
+    {% render 'ejuno-page-plan-your-wedding' %}
+  {%- when 'all-services' -%}
+    {% render 'ejuno-page-all-services' %}
+  {%- when 'vendor-marketplace' -%}
+    {% render 'ejuno-page-vendor-marketplace' %}
+  {%- when 'vendor-detail' -%}
+    {% render 'ejuno-vendor-detail-mount' %}
+  {%- when 'vendordetail' -%}
+    {% render 'ejuno-vendor-detail-mount' %}
+  {%- when 'vendor_detail' -%}
+    {% render 'ejuno-vendor-detail-mount' %}
+  {%- when 'vendor' -%}
+    {% render 'ejuno-page-vendor' %}
+  {%- when 'showcase-your-work' -%}
+    {% render 'ejuno-page-showcase-your-work' %}
+    {% render 'ejuno-showcase-form-include' %}
+  {%- when 'vendor-onboarding' -%}
+    {% render 'ejuno-vendor-kyc-mount', agreement_html: blank %}
+  {%- when 'couple-wedding-website' -%}
+    {% render 'ejuno-page-couple-wedding-website' %}
+  {%- when 'platform-reviews' -%}
+    {% render 'ejuno-page-platform-reviews' %}
+  {%- when 'wedding-website' -%}
+    {% render 'ejuno-page-wedding-website' %}
+  {%- when 'registry' -%}
+    {% render 'ejuno-page-registry' %}
+  {%- when 'guest-list' -%}
+    {% render 'ejuno-page-guest-list' %}
+  {%- when 'budget' -%}
+    {% render 'ejuno-page-budget' %}
+  {%- when 'seating-plan' -%}
+    {% render 'ejuno-hidden-page-redirect', redirect_url: '/pages/plan-your-wedding' %}
+  {%- when 'wedding-check-list' -%}
+    {% render 'ejuno-page-wedding-check-list' %}
+  {%- when 'contact' -%}
+    {% render 'ejuno-page-contact' %}
+  {%- when 'faqs' -%}
+    {% render 'ejuno-page-faqs' %}
+  {%- when 'thankyou', 'thank-you', 'thank_you' -%}
+    <section class="utility-head ejuno-thankyou">
+      <div class="container" style="text-align:center;max-width:640px;margin:0 auto;">
+        <h1 class="h1" style="font-size:clamp(42px,5vw,64px);">Thank you</h1>
+        <p class="lead" style="margin:18px auto 0;color:var(--muted);font-size:18px;line-height:1.65;">
+          Your response has been recorded. You will receive an email after our team reviews your submission.
+        </p>
+      </div>
+    </section>
+  {%- when 'privacy-policy', 'terms-of-service', 'cookie-policy', 'return-and-refund-policy', 'shipping-delivery-policy' -%}
+    {%- comment -%} Trello 668: a legal page left on the default template opens its designed policy template instead of an empty page. {%- endcomment -%}
+    {%- if page.content == blank -%}
+      <script>if(!/[?&]view=/.test(location.search)){location.replace(location.pathname+'?view={{ page.handle }}'+location.hash);}</script>
+      <noscript><meta http-equiv="refresh" content="0;url={{ page.url }}?view={{ page.handle }}"></noscript>
+    {%- endif -%}
+    <section class="utility-head">
+      <div class="container">
+        <h1 class="h1">{{ page.title }}</h1>
+      </div>
+    </section>
+    <section class="section tight">
+      <div class="container article-body">
+        {{ page.content }}
+      </div>
+    </section>
+  {%- else -%}
+    <section class="utility-head">
+      <div class="container">
+        <h1 class="h1">{{ page.title }}</h1>
+      </div>
+    </section>
+    <section class="section tight">
+      <div class="container article-body">
+        {{ page.content }}
+      </div>
+    </section>
+{%- endcase -%}
+
+{% schema %}
+{
+  "name": "eJuno page content",
+  "settings": []
+}
+{% endschema %}

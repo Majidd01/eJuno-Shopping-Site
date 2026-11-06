@@ -1,0 +1,64 @@
+{%- comment -%}
+  Trello 657: Venue dropdown. Two sections: Wedding Venues and Accommodation (with property types).
+  Honeymoon Villas are merged into Villas, so there is no separate Honeymoon item.
+  Optional params: venue_url, accommodation_url, villa_url, types ("Label:tag,..." where tag "@villa" links to the Villas collection).
+{%- endcomment -%}
+{%- liquid
+  assign mm_venue_url = venue_url | default: '/collections/venue'
+  assign mm_accom_url = accommodation_url | default: '/collections/accommodation'
+  assign mm_villa_url = villa_url | default: '/collections/villa'
+  assign mm_types = types | default: 'Villa:@villa,Hotel:hotel,Resort:resort,Estate:estate,Other:other'
+  assign mm_type_defs = mm_types | split: ','
+  assign mm_accom_handle = mm_accom_url | split: '/' | last
+  assign mm_tags = '|'
+  if collections[mm_accom_handle] != blank
+    for t in collections[mm_accom_handle].all_tags
+      assign th = t | handleize
+      assign mm_tags = mm_tags | append: th | append: '|'
+    endfor
+  endif
+-%}
+<div id="explore-megamenu" class="header-megamenu shop-megamenu" hidden>
+  <div class="shop-megamenu__panel">
+    <div class="shop-megamenu__inner container">
+      <header class="shop-megamenu__intro">
+        <p class="shop-megamenu__intro-text">Wedding venues and places to stay across Italy.</p>
+      </header>
+      <div class="shop-megamenu__grid ejuno-venue-mm">
+        <a class="shop-megamenu__item ejuno-venue-mm__card" href="{{ mm_venue_url }}">
+          <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 20V10l8-6 8 6v10" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.6"/></svg>
+          </span>
+          <span class="shop-megamenu__copy">
+            <strong>Wedding Venues</strong>
+            <span>Castles and historic properties, restaurants and event spaces for your ceremony and celebration.</span>
+          </span>
+        </a>
+        <a class="shop-megamenu__item ejuno-venue-mm__card" href="{{ mm_accom_url }}">
+            <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="shop-megamenu__copy">
+              <strong>Accommodation</strong>
+              <span>Villas, hotels, resorts and estates for you and your guests.</span>
+            </span>
+          </a>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  /* Trello 657 follow-up: two equal cards; property types sit inside the Accommodation card. */
+  .header-megamenu .ejuno-venue-mm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;align-items:stretch}
+  .header-megamenu .ejuno-venue-mm__card{height:100%;box-sizing:border-box;align-items:flex-start}
+  .header-megamenu .ejuno-venue-mm__card--accom{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+  .header-megamenu .ejuno-venue-mm__card--accom:hover{transform:none}
+  .ejuno-venue-mm__head{display:flex;align-items:center;gap:14px;color:inherit;text-decoration:none}
+  .ejuno-venue-mm__head:hover .shop-megamenu__copy strong{color:var(--berry,#9b5068)}
+  .ejuno-venue-mm__types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-left:56px}
+  .ejuno-venue-mm__type{display:block;text-align:center;padding:7px 10px;border:1px solid var(--line,#e5ddd3);border-radius:999px;font-size:13px;line-height:1.2;color:#5c534c;text-decoration:none;background:#fff;white-space:nowrap;transition:border-color .2s,color .2s}
+  .ejuno-venue-mm__type:hover,.ejuno-venue-mm__type:focus-visible{border-color:var(--berry,#9b5068);color:var(--berry,#9b5068)}
+  .header-megamenu .ejuno-venue-mm > a.ejuno-venue-mm__card{align-items:center}
+  /* Trello 657: chips removed - two balanced cards. */
+  .header-megamenu .ejuno-venue-mm__card{align-items:center}
+</style>

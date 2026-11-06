@@ -1,0 +1,43 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "market-hero",
+      "settings": {
+        "use_collection_context": true,
+        "eyebrow": "",
+        "heading": ""
+      }
+    },
+    "grid": {
+      "type": "result-grid",
+      "settings": {
+        "products_per_page": 12,
+        "show_filter_counts": true,
+        "show_search": true,
+        "auto_search_placeholder": true,
+        "auto_feature_first": true,
+        "feature_first_product": true,
+        "search_placeholder": "",
+        "search_label": "Search",
+        "filter_apply_label": "Apply all",
+        "load_more_label": "Show more",
+        "load_more_loading": "Loading...",
+        "pinned_product_handle": "villa-califano",
+        "pin_only_venues": true
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "grid"
+  ]
+}

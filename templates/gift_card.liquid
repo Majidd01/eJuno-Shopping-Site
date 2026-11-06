@@ -1,0 +1,19 @@
+{% layout none %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% render 'ejuno-money', cents: gift_card.balance %} gift card — {{ shop.name }}</title>
+  {{ 'ejuno.css' | asset_url | stylesheet_tag }}
+</head>
+<body>
+  <section class="utility-head">
+    <div class="container">
+      <div class="eyebrow">{{ shop.name }}</div>
+      <h1 class="h1">Gift card</h1>
+      <p class="lead">Balance: {% render 'ejuno-money', cents: gift_card.balance %}</p>
+      <p>{{ gift_card.code | format_code }}</p>
+    </div>
+  </section>
+</body>
+</html>

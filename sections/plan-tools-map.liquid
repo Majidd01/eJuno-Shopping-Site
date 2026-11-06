@@ -1,0 +1,254 @@
+<section class="section tight">
+  <div class="container">
+    <div class="plan-map plan-map--open">
+      <div class="plan-map__block plan-map__block--phases">
+        <header class="plan-map__header">
+          <p class="plan-map__kicker">{{ section.settings.phases_kicker }}</p>
+          <h2 class="plan-map__title">{{ section.settings.phases_heading }}</h2>
+          {% if section.settings.phases_lead != blank %}
+            <p class="plan-map__lead">{{ section.settings.phases_lead }}</p>
+          {% endif %}
+        </header>
+        {%- comment -%} Trello 679: the three phases as one line with three points, no boxes. {%- endcomment -%}
+        <ol class="ej-journey">
+          {% for block in section.blocks %}
+            {% if block.type == 'step' %}
+              {%- assign ph_label = block.settings.eyebrow | split: '·' | last | strip -%}
+              <li class="ej-journey__item" {{ block.shopify_attributes }}>
+                <span class="ej-journey__dot" aria-hidden="true"></span>
+                <span class="ej-journey__label">{{ ph_label }}</span>
+                <h3 class="ej-journey__title">{{ block.settings.title }}</h3>
+                <p class="ej-journey__text">{{ block.settings.text }}</p>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ol>
+      </div>
+
+      <div class="plan-map__divider" aria-hidden="true"></div>
+
+      <div class="plan-map__block plan-map__block--tools">
+        <header class="plan-map__header">
+          <p class="plan-map__kicker">{{ section.settings.tools_kicker }}</p>
+          <h2 class="plan-map__title">{{ section.settings.tools_heading }}</h2>
+          {% if section.settings.tools_lead != blank %}
+            <p class="plan-map__lead">{{ section.settings.tools_lead }}</p>
+          {% endif %}
+        </header>
+        {%- comment -%} Trello 679/680: one alternating photo row per tool (photo left, then right), each with its own image. {%- endcomment -%}
+        {%- assign ptr_fallbacks = section.settings.tool_fallbacks | default: 'WEB-IMG-001.webp,REG-IMG-001.webp,SEA-IMG-001.webp,HOME-IMG-007.webp,JNL-IMG-003.webp' | split: ',' -%}
+        {%- assign ptr_i = 0 -%}
+        <div class="ej-tool-rows">
+          {% for block in section.blocks %}
+            {% if block.type == 'tool' %}
+              {%- assign ptr_fb = ptr_fallbacks[ptr_i] | default: 'PLAN-IMG-001.webp' | strip -%}
+              {%- assign ptr_mod = ptr_i | modulo: 2 -%}
+              <article class="ej-tool-row{% if ptr_mod == 1 %} ej-tool-row--flip{% endif %}" {{ block.shopify_attributes }}>
+                <a class="ej-tool-row__media" href="{{ block.settings.url }}" tabindex="-1" aria-hidden="true">
+                  {%- if block.settings.image != blank -%}
+                    {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '480, 800, 1200', sizes: '(min-width: 990px) 46vw, 100vw', alt: block.settings.image.alt | default: block.settings.title }}
+                  {%- else -%}
+                    <img src="{{ ptr_fb | asset_url }}" alt="{{ block.settings.title | escape }}" width="1200" height="900" loading="lazy">
+                  {%- endif -%}
+                </a>
+                <div class="ej-tool-row__copy">
+                  {%- if block.settings.eyebrow != blank -%}<p class="ej-tool-row__eyebrow">{{ block.settings.eyebrow }}</p>{%- endif -%}
+                  <h3 class="ej-tool-row__name"><a href="{{ block.settings.url }}">{{ block.settings.title }}</a></h3>
+                  <p class="ej-tool-row__text">{{ block.settings.text }}</p>
+                  <a class="ej-tool-row__link" href="{{ block.settings.url }}">{{ section.settings.tool_link_label | default: 'Open' }} &rarr;</a>
+                </div>
+              </article>
+              {%- assign ptr_i = ptr_i | plus: 1 -%}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Plan tools map",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "image_picker", "id": "tools_photo", "label": "Tools photo (no longer used: each tool row has its own photo)" },
+    { "type": "text", "id": "tools_photo_fallback", "label": "Fallback theme asset for tools photo", "default": "PLAN-IMG-001.webp" },
+    { "type": "text", "id": "tool_link_label", "label": "Tool link label", "default": "Open" },
+    { "type": "text", "id": "tool_fallbacks", "label": "Fallback theme assets for rows (comma separated, in order)", "default": "WEB-IMG-001.webp,REG-IMG-001.webp,SEA-IMG-001.webp,HOME-IMG-007.webp,JNL-IMG-003.webp" },
+    {
+      "type": "text",
+      "id": "phases_kicker",
+      "label": "Phases kicker",
+      "default": "Step 1 · Your roadmap"
+    },
+    {
+      "type": "text",
+      "id": "phases_heading",
+      "label": "Phases heading",
+      "default": "Three phases of planning"
+    },
+    {
+      "type": "textarea",
+      "id": "phases_lead",
+      "label": "Phases lead",
+      "default": "A simple roadmap of how most weddings come together. Follow it in order, or jump to the step you need."
+    },
+    {
+      "type": "text",
+      "id": "tools_kicker",
+      "label": "Tools kicker",
+      "default": "Step 2 · Open a tool"
+    },
+    {
+      "type": "text",
+      "id": "tools_heading",
+      "label": "Tools heading",
+      "default": "Six tools to run the plan"
+    },
+    {
+      "type": "textarea",
+      "id": "tools_lead",
+      "label": "Tools lead",
+      "default": "Each card below opens a dedicated workspace in eJuno: website, registry, guests, budget, seating, and checklist."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Phase",
+      "settings": [
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "01 · Shape the day"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Venue & Vision"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Place, style, season and scale."
+        }
+      ]
+    },
+    {
+      "type": "tool",
+      "name": "Tool",
+      "settings": [
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Wedding Website"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Details, communication and RSVP journey."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "URL"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Row photo",
+          "info": "Trello 679: Website = template on a phone, Registry = honeymoon detail, Guest List = place cards, Budget = set reception table, Checklist = planning notebook."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Plan tools map",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "eyebrow": "01 · Shape the day",
+            "title": "Venue & Vision",
+            "text": "Place, style, season and scale."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "eyebrow": "02 · Organise it",
+            "title": "People & Money",
+            "text": "Guests, budget, checklist and seating."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "eyebrow": "03 · Share it",
+            "title": "Website & Registry",
+            "text": "Give guests a clear home for the wedding."
+          }
+        },
+        {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Wedding Website",
+            "text": "Details, communication and RSVP journey.",
+            "url": "/pages/wedding-website"
+          }
+        },
+        {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Registry",
+            "text": "Add your favourite venues and wedding services to your registry and share it with guests so they can contribute to your special day.",
+            "url": "/pages/registry"
+          }
+        },
+        {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Guest List",
+            "text": "Households, RSVPs, dietary needs and travel plans.",
+            "url": "/pages/guest-list"
+          }
+        },
+        {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Budget",
+            "text": "Plan, track and understand the spend.",
+            "url": "/pages/budget"
+          }
+        },
+        {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Checklist",
+            "text": "Know what matters now and what comes later.",
+            "url": "/pages/wedding-check-list"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

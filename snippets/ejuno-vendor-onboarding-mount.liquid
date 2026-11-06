@@ -1,0 +1,394 @@
+﻿{% comment %} Partner application form (API parity) — not the KYC email link page. {% endcomment %}
+{% render 'ejuno-backend-config' %}
+{{ 'ejuno-vendor-onboarding.css' | asset_url | stylesheet_tag }}
+<link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+<script src="{{ 'ejuno-vendor-onboarding.js' | asset_url }}" defer></script>
+<script src="{{ 'ejuno-country-flags.js' | asset_url }}" defer></script>
+<div id="vendorForm" class="ejuno-vendor-form wedding_form_containernew flex_center">
+  <div class="wedding_form_wrapper containernew flex_center">
+    <div class="wedding_form_content">
+      <p class="eyebrow ejuno-vendor-form__eyebrow">Partner application</p>
+      <h2>
+        Become a Partner - <span>eJuno</span>
+      </h2>
+      <p class="value-prop">
+        Join wedding vendors who use eJuno to reach couples planning their wedding in Italy.
+      </p>
+      <p class="ejuno-vendor-form__note">
+        Share a few details and our team will review your application.
+        <span class="ejuno-vendor-form__lang">Please submit this form in English.</span>
+      </p>
+      <form>
+        <div class="form-group">
+          <div>
+            <label for="first-name">First name <span class="required">*</span></label>
+            <input type="text" id="first-name" placeholder="First name" required>
+            <div class="field-error" id="first-name-error">First name is required</div>
+          </div>
+          <div>
+            <label for="last-name">Last name <span class="required">*</span></label>
+            <input type="text" id="last-name" placeholder="Last name" required>
+            <div class="field-error" id="last-name-error">Last name is required</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label for="email">Email address <span class="required">*</span></label>
+            <input type="email" id="email" placeholder="Enter your email address" required>
+            <div class="field-error" id="email-error">Please enter a valid email address</div>
+          </div>
+        </div>
+        <div class="form-group phone-group">
+          <div style="flex: 0 0 95px;">
+            <label for="country-code">Code</label>
+            <select id="country-code">
+              <option value="+39" data-iso="it" data-name="Italy" selected>Italy (+39)</option>
+              <option value="+93" data-iso="af" data-name="Afghanistan">Afghanistan (+93)</option>
+              <option value="+355" data-iso="al" data-name="Albania">Albania (+355)</option>
+              <option value="+213" data-iso="dz" data-name="Algeria">Algeria (+213)</option>
+              <option value="+1" data-iso="as" data-name="American Samoa">American Samoa (+1)</option>
+              <option value="+376" data-iso="ad" data-name="Andorra">Andorra (+376)</option>
+              <option value="+244" data-iso="ao" data-name="Angola">Angola (+244)</option>
+              <option value="+1" data-iso="ai" data-name="Anguilla">Anguilla (+1)</option>
+              <option value="+1" data-iso="ag" data-name="Antigua and Barbuda">Antigua and Barbuda (+1)</option>
+              <option value="+54" data-iso="ar" data-name="Argentina">Argentina (+54)</option>
+              <option value="+374" data-iso="am" data-name="Armenia">Armenia (+374)</option>
+              <option value="+297" data-iso="aw" data-name="Aruba">Aruba (+297)</option>
+              <option value="+61" data-iso="au" data-name="Australia">Australia (+61)</option>
+              <option value="+43" data-iso="at" data-name="Austria">Austria (+43)</option>
+              <option value="+994" data-iso="az" data-name="Azerbaijan">Azerbaijan (+994)</option>
+              <option value="+1" data-iso="bs" data-name="Bahamas">Bahamas (+1)</option>
+              <option value="+973" data-iso="bh" data-name="Bahrain">Bahrain (+973)</option>
+              <option value="+880" data-iso="bd" data-name="Bangladesh">Bangladesh (+880)</option>
+              <option value="+1" data-iso="bb" data-name="Barbados">Barbados (+1)</option>
+              <option value="+375" data-iso="by" data-name="Belarus">Belarus (+375)</option>
+              <option value="+32" data-iso="be" data-name="Belgium">Belgium (+32)</option>
+              <option value="+501" data-iso="bz" data-name="Belize">Belize (+501)</option>
+              <option value="+229" data-iso="bj" data-name="Benin">Benin (+229)</option>
+              <option value="+1" data-iso="bm" data-name="Bermuda">Bermuda (+1)</option>
+              <option value="+975" data-iso="bt" data-name="Bhutan">Bhutan (+975)</option>
+              <option value="+591" data-iso="bo" data-name="Bolivia">Bolivia (+591)</option>
+              <option value="+599" data-iso="bq" data-name="Bonaire, Sint Eustatius and Saba">Bonaire, Sint Eustatius and Saba (+599)</option>
+              <option value="+387" data-iso="ba" data-name="Bosnia and Herzegovina">Bosnia and Herzegovina (+387)</option>
+              <option value="+267" data-iso="bw" data-name="Botswana">Botswana (+267)</option>
+              <option value="+55" data-iso="br" data-name="Brazil">Brazil (+55)</option>
+              <option value="+246" data-iso="io" data-name="British Indian Ocean Territory">British Indian Ocean Territory (+246)</option>
+              <option value="+673" data-iso="bn" data-name="Brunei Darussalam">Brunei Darussalam (+673)</option>
+              <option value="+359" data-iso="bg" data-name="Bulgaria">Bulgaria (+359)</option>
+              <option value="+226" data-iso="bf" data-name="Burkina Faso">Burkina Faso (+226)</option>
+              <option value="+257" data-iso="bi" data-name="Burundi">Burundi (+257)</option>
+              <option value="+238" data-iso="cv" data-name="Cabo Verde">Cabo Verde (+238)</option>
+              <option value="+855" data-iso="kh" data-name="Cambodia">Cambodia (+855)</option>
+              <option value="+237" data-iso="cm" data-name="Cameroon">Cameroon (+237)</option>
+              <option value="+1" data-iso="ca" data-name="Canada">Canada (+1)</option>
+              <option value="+1" data-iso="ky" data-name="Cayman Islands">Cayman Islands (+1)</option>
+              <option value="+236" data-iso="cf" data-name="Central African Republic">Central African Republic (+236)</option>
+              <option value="+235" data-iso="td" data-name="Chad">Chad (+235)</option>
+              <option value="+56" data-iso="cl" data-name="Chile">Chile (+56)</option>
+              <option value="+86" data-iso="cn" data-name="China">China (+86)</option>
+              <option value="+61" data-iso="cx" data-name="Christmas Island">Christmas Island (+61)</option>
+              <option value="+61" data-iso="cc" data-name="Cocos (Keeling) Islands">Cocos (Keeling) Islands (+61)</option>
+              <option value="+57" data-iso="co" data-name="Colombia">Colombia (+57)</option>
+              <option value="+269" data-iso="km" data-name="Comoros">Comoros (+269)</option>
+              <option value="+242" data-iso="cg" data-name="Congo">Congo (+242)</option>
+              <option value="+243" data-iso="cd" data-name="Congo, The Democratic Republic of the">Congo, The Democratic Republic of the (+243)</option>
+              <option value="+682" data-iso="ck" data-name="Cook Islands">Cook Islands (+682)</option>
+              <option value="+506" data-iso="cr" data-name="Costa Rica">Costa Rica (+506)</option>
+              <option value="+385" data-iso="hr" data-name="Croatia">Croatia (+385)</option>
+              <option value="+53" data-iso="cu" data-name="Cuba">Cuba (+53)</option>
+              <option value="+599" data-iso="cw" data-name="Curaçao">Curaçao (+599)</option>
+              <option value="+357" data-iso="cy" data-name="Cyprus">Cyprus (+357)</option>
+              <option value="+420" data-iso="cz" data-name="Czech Republic">Czech Republic (+420)</option>
+              <option value="+225" data-iso="ci" data-name="Côte d'Ivoire">Côte d'Ivoire (+225)</option>
+              <option value="+45" data-iso="dk" data-name="Denmark">Denmark (+45)</option>
+              <option value="+253" data-iso="dj" data-name="Djibouti">Djibouti (+253)</option>
+              <option value="+1" data-iso="dm" data-name="Dominica">Dominica (+1)</option>
+              <option value="+1" data-iso="do" data-name="Dominican Republic">Dominican Republic (+1)</option>
+              <option value="+593" data-iso="ec" data-name="Ecuador">Ecuador (+593)</option>
+              <option value="+20" data-iso="eg" data-name="Egypt">Egypt (+20)</option>
+              <option value="+503" data-iso="sv" data-name="El Salvador">El Salvador (+503)</option>
+              <option value="+240" data-iso="gq" data-name="Equatorial Guinea">Equatorial Guinea (+240)</option>
+              <option value="+291" data-iso="er" data-name="Eritrea">Eritrea (+291)</option>
+              <option value="+372" data-iso="ee" data-name="Estonia">Estonia (+372)</option>
+              <option value="+268" data-iso="sz" data-name="Eswatini">Eswatini (+268)</option>
+              <option value="+251" data-iso="et" data-name="Ethiopia">Ethiopia (+251)</option>
+              <option value="+500" data-iso="fk" data-name="Falkland Islands (Malvinas)">Falkland Islands (Malvinas) (+500)</option>
+              <option value="+298" data-iso="fo" data-name="Faroe Islands">Faroe Islands (+298)</option>
+              <option value="+679" data-iso="fj" data-name="Fiji">Fiji (+679)</option>
+              <option value="+358" data-iso="fi" data-name="Finland">Finland (+358)</option>
+              <option value="+33" data-iso="fr" data-name="France">France (+33)</option>
+              <option value="+594" data-iso="gf" data-name="French Guiana">French Guiana (+594)</option>
+              <option value="+689" data-iso="pf" data-name="French Polynesia">French Polynesia (+689)</option>
+              <option value="+241" data-iso="ga" data-name="Gabon">Gabon (+241)</option>
+              <option value="+220" data-iso="gm" data-name="Gambia">Gambia (+220)</option>
+              <option value="+995" data-iso="ge" data-name="Georgia">Georgia (+995)</option>
+              <option value="+49" data-iso="de" data-name="Germany">Germany (+49)</option>
+              <option value="+233" data-iso="gh" data-name="Ghana">Ghana (+233)</option>
+              <option value="+350" data-iso="gi" data-name="Gibraltar">Gibraltar (+350)</option>
+              <option value="+30" data-iso="gr" data-name="Greece">Greece (+30)</option>
+              <option value="+299" data-iso="gl" data-name="Greenland">Greenland (+299)</option>
+              <option value="+1" data-iso="gd" data-name="Grenada">Grenada (+1)</option>
+              <option value="+590" data-iso="gp" data-name="Guadeloupe">Guadeloupe (+590)</option>
+              <option value="+1" data-iso="gu" data-name="Guam">Guam (+1)</option>
+              <option value="+502" data-iso="gt" data-name="Guatemala">Guatemala (+502)</option>
+              <option value="+44" data-iso="gg" data-name="Guernsey">Guernsey (+44)</option>
+              <option value="+224" data-iso="gn" data-name="Guinea">Guinea (+224)</option>
+              <option value="+245" data-iso="gw" data-name="Guinea-Bissau">Guinea-Bissau (+245)</option>
+              <option value="+592" data-iso="gy" data-name="Guyana">Guyana (+592)</option>
+              <option value="+509" data-iso="ht" data-name="Haiti">Haiti (+509)</option>
+              <option value="+504" data-iso="hn" data-name="Honduras">Honduras (+504)</option>
+              <option value="+852" data-iso="hk" data-name="Hong Kong">Hong Kong (+852)</option>
+              <option value="+36" data-iso="hu" data-name="Hungary">Hungary (+36)</option>
+              <option value="+354" data-iso="is" data-name="Iceland">Iceland (+354)</option>
+              <option value="+91" data-iso="in" data-name="India">India (+91)</option>
+              <option value="+62" data-iso="id" data-name="Indonesia">Indonesia (+62)</option>
+              <option value="+98" data-iso="ir" data-name="Iran">Iran (+98)</option>
+              <option value="+964" data-iso="iq" data-name="Iraq">Iraq (+964)</option>
+              <option value="+353" data-iso="ie" data-name="Ireland">Ireland (+353)</option>
+              <option value="+44" data-iso="im" data-name="Isle of Man">Isle of Man (+44)</option>
+              <option value="+972" data-iso="il" data-name="Israel">Israel (+972)</option>
+              <option value="+1" data-iso="jm" data-name="Jamaica">Jamaica (+1)</option>
+              <option value="+81" data-iso="jp" data-name="Japan">Japan (+81)</option>
+              <option value="+44" data-iso="je" data-name="Jersey">Jersey (+44)</option>
+              <option value="+962" data-iso="jo" data-name="Jordan">Jordan (+962)</option>
+              <option value="+7" data-iso="kz" data-name="Kazakhstan">Kazakhstan (+7)</option>
+              <option value="+254" data-iso="ke" data-name="Kenya">Kenya (+254)</option>
+              <option value="+686" data-iso="ki" data-name="Kiribati">Kiribati (+686)</option>
+              <option value="+965" data-iso="kw" data-name="Kuwait">Kuwait (+965)</option>
+              <option value="+996" data-iso="kg" data-name="Kyrgyzstan">Kyrgyzstan (+996)</option>
+              <option value="+856" data-iso="la" data-name="Laos">Laos (+856)</option>
+              <option value="+371" data-iso="lv" data-name="Latvia">Latvia (+371)</option>
+              <option value="+961" data-iso="lb" data-name="Lebanon">Lebanon (+961)</option>
+              <option value="+266" data-iso="ls" data-name="Lesotho">Lesotho (+266)</option>
+              <option value="+231" data-iso="lr" data-name="Liberia">Liberia (+231)</option>
+              <option value="+218" data-iso="ly" data-name="Libya">Libya (+218)</option>
+              <option value="+423" data-iso="li" data-name="Liechtenstein">Liechtenstein (+423)</option>
+              <option value="+370" data-iso="lt" data-name="Lithuania">Lithuania (+370)</option>
+              <option value="+352" data-iso="lu" data-name="Luxembourg">Luxembourg (+352)</option>
+              <option value="+853" data-iso="mo" data-name="Macao">Macao (+853)</option>
+              <option value="+261" data-iso="mg" data-name="Madagascar">Madagascar (+261)</option>
+              <option value="+265" data-iso="mw" data-name="Malawi">Malawi (+265)</option>
+              <option value="+60" data-iso="my" data-name="Malaysia">Malaysia (+60)</option>
+              <option value="+960" data-iso="mv" data-name="Maldives">Maldives (+960)</option>
+              <option value="+223" data-iso="ml" data-name="Mali">Mali (+223)</option>
+              <option value="+356" data-iso="mt" data-name="Malta">Malta (+356)</option>
+              <option value="+692" data-iso="mh" data-name="Marshall Islands">Marshall Islands (+692)</option>
+              <option value="+596" data-iso="mq" data-name="Martinique">Martinique (+596)</option>
+              <option value="+222" data-iso="mr" data-name="Mauritania">Mauritania (+222)</option>
+              <option value="+230" data-iso="mu" data-name="Mauritius">Mauritius (+230)</option>
+              <option value="+262" data-iso="yt" data-name="Mayotte">Mayotte (+262)</option>
+              <option value="+52" data-iso="mx" data-name="Mexico">Mexico (+52)</option>
+              <option value="+691" data-iso="fm" data-name="Micronesia">Micronesia (+691)</option>
+              <option value="+373" data-iso="md" data-name="Moldova">Moldova (+373)</option>
+              <option value="+377" data-iso="mc" data-name="Monaco">Monaco (+377)</option>
+              <option value="+976" data-iso="mn" data-name="Mongolia">Mongolia (+976)</option>
+              <option value="+382" data-iso="me" data-name="Montenegro">Montenegro (+382)</option>
+              <option value="+1" data-iso="ms" data-name="Montserrat">Montserrat (+1)</option>
+              <option value="+212" data-iso="ma" data-name="Morocco">Morocco (+212)</option>
+              <option value="+258" data-iso="mz" data-name="Mozambique">Mozambique (+258)</option>
+              <option value="+95" data-iso="mm" data-name="Myanmar">Myanmar (+95)</option>
+              <option value="+264" data-iso="na" data-name="Namibia">Namibia (+264)</option>
+              <option value="+674" data-iso="nr" data-name="Nauru">Nauru (+674)</option>
+              <option value="+977" data-iso="np" data-name="Nepal">Nepal (+977)</option>
+              <option value="+31" data-iso="nl" data-name="Netherlands">Netherlands (+31)</option>
+              <option value="+687" data-iso="nc" data-name="New Caledonia">New Caledonia (+687)</option>
+              <option value="+64" data-iso="nz" data-name="New Zealand">New Zealand (+64)</option>
+              <option value="+505" data-iso="ni" data-name="Nicaragua">Nicaragua (+505)</option>
+              <option value="+227" data-iso="ne" data-name="Niger">Niger (+227)</option>
+              <option value="+234" data-iso="ng" data-name="Nigeria">Nigeria (+234)</option>
+              <option value="+683" data-iso="nu" data-name="Niue">Niue (+683)</option>
+              <option value="+672" data-iso="nf" data-name="Norfolk Island">Norfolk Island (+672)</option>
+              <option value="+850" data-iso="kp" data-name="North Korea">North Korea (+850)</option>
+              <option value="+389" data-iso="mk" data-name="North Macedonia">North Macedonia (+389)</option>
+              <option value="+1" data-iso="mp" data-name="Northern Mariana Islands">Northern Mariana Islands (+1)</option>
+              <option value="+47" data-iso="no" data-name="Norway">Norway (+47)</option>
+              <option value="+968" data-iso="om" data-name="Oman">Oman (+968)</option>
+              <option value="+92" data-iso="pk" data-name="Pakistan">Pakistan (+92)</option>
+              <option value="+680" data-iso="pw" data-name="Palau">Palau (+680)</option>
+              <option value="+970" data-iso="ps" data-name="Palestine">Palestine (+970)</option>
+              <option value="+507" data-iso="pa" data-name="Panama">Panama (+507)</option>
+              <option value="+675" data-iso="pg" data-name="Papua New Guinea">Papua New Guinea (+675)</option>
+              <option value="+595" data-iso="py" data-name="Paraguay">Paraguay (+595)</option>
+              <option value="+51" data-iso="pe" data-name="Peru">Peru (+51)</option>
+              <option value="+63" data-iso="ph" data-name="Philippines">Philippines (+63)</option>
+              <option value="+48" data-iso="pl" data-name="Poland">Poland (+48)</option>
+              <option value="+351" data-iso="pt" data-name="Portugal">Portugal (+351)</option>
+              <option value="+1" data-iso="pr" data-name="Puerto Rico">Puerto Rico (+1)</option>
+              <option value="+974" data-iso="qa" data-name="Qatar">Qatar (+974)</option>
+              <option value="+40" data-iso="ro" data-name="Romania">Romania (+40)</option>
+              <option value="+7" data-iso="ru" data-name="Russia">Russia (+7)</option>
+              <option value="+250" data-iso="rw" data-name="Rwanda">Rwanda (+250)</option>
+              <option value="+262" data-iso="re" data-name="Réunion">Réunion (+262)</option>
+              <option value="+590" data-iso="bl" data-name="Saint Barthélemy">Saint Barthélemy (+590)</option>
+              <option value="+290" data-iso="sh" data-name="Saint Helena, Ascension and Tristan da Cunha">Saint Helena, Ascension and Tristan da Cunha (+290)</option>
+              <option value="+1" data-iso="kn" data-name="Saint Kitts and Nevis">Saint Kitts and Nevis (+1)</option>
+              <option value="+1" data-iso="lc" data-name="Saint Lucia">Saint Lucia (+1)</option>
+              <option value="+590" data-iso="mf" data-name="Saint Martin (French part)">Saint Martin (French part) (+590)</option>
+              <option value="+508" data-iso="pm" data-name="Saint Pierre and Miquelon">Saint Pierre and Miquelon (+508)</option>
+              <option value="+1" data-iso="vc" data-name="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines (+1)</option>
+              <option value="+685" data-iso="ws" data-name="Samoa">Samoa (+685)</option>
+              <option value="+378" data-iso="sm" data-name="San Marino">San Marino (+378)</option>
+              <option value="+239" data-iso="st" data-name="Sao Tome and Principe">Sao Tome and Principe (+239)</option>
+              <option value="+966" data-iso="sa" data-name="Saudi Arabia">Saudi Arabia (+966)</option>
+              <option value="+221" data-iso="sn" data-name="Senegal">Senegal (+221)</option>
+              <option value="+381" data-iso="rs" data-name="Serbia">Serbia (+381)</option>
+              <option value="+248" data-iso="sc" data-name="Seychelles">Seychelles (+248)</option>
+              <option value="+232" data-iso="sl" data-name="Sierra Leone">Sierra Leone (+232)</option>
+              <option value="+65" data-iso="sg" data-name="Singapore">Singapore (+65)</option>
+              <option value="+1" data-iso="sx" data-name="Sint Maarten (Dutch part)">Sint Maarten (Dutch part) (+1)</option>
+              <option value="+421" data-iso="sk" data-name="Slovakia">Slovakia (+421)</option>
+              <option value="+386" data-iso="si" data-name="Slovenia">Slovenia (+386)</option>
+              <option value="+677" data-iso="sb" data-name="Solomon Islands">Solomon Islands (+677)</option>
+              <option value="+252" data-iso="so" data-name="Somalia">Somalia (+252)</option>
+              <option value="+27" data-iso="za" data-name="South Africa">South Africa (+27)</option>
+              <option value="+82" data-iso="kr" data-name="South Korea">South Korea (+82)</option>
+              <option value="+211" data-iso="ss" data-name="South Sudan">South Sudan (+211)</option>
+              <option value="+34" data-iso="es" data-name="Spain">Spain (+34)</option>
+              <option value="+94" data-iso="lk" data-name="Sri Lanka">Sri Lanka (+94)</option>
+              <option value="+249" data-iso="sd" data-name="Sudan">Sudan (+249)</option>
+              <option value="+597" data-iso="sr" data-name="Suriname">Suriname (+597)</option>
+              <option value="+47" data-iso="sj" data-name="Svalbard and Jan Mayen">Svalbard and Jan Mayen (+47)</option>
+              <option value="+46" data-iso="se" data-name="Sweden">Sweden (+46)</option>
+              <option value="+41" data-iso="ch" data-name="Switzerland">Switzerland (+41)</option>
+              <option value="+963" data-iso="sy" data-name="Syria">Syria (+963)</option>
+              <option value="+886" data-iso="tw" data-name="Taiwan">Taiwan (+886)</option>
+              <option value="+992" data-iso="tj" data-name="Tajikistan">Tajikistan (+992)</option>
+              <option value="+255" data-iso="tz" data-name="Tanzania">Tanzania (+255)</option>
+              <option value="+66" data-iso="th" data-name="Thailand">Thailand (+66)</option>
+              <option value="+670" data-iso="tl" data-name="Timor-Leste">Timor-Leste (+670)</option>
+              <option value="+228" data-iso="tg" data-name="Togo">Togo (+228)</option>
+              <option value="+690" data-iso="tk" data-name="Tokelau">Tokelau (+690)</option>
+              <option value="+676" data-iso="to" data-name="Tonga">Tonga (+676)</option>
+              <option value="+1" data-iso="tt" data-name="Trinidad and Tobago">Trinidad and Tobago (+1)</option>
+              <option value="+216" data-iso="tn" data-name="Tunisia">Tunisia (+216)</option>
+              <option value="+90" data-iso="tr" data-name="Turkey">Turkey (+90)</option>
+              <option value="+993" data-iso="tm" data-name="Turkmenistan">Turkmenistan (+993)</option>
+              <option value="+1" data-iso="tc" data-name="Turks and Caicos Islands">Turks and Caicos Islands (+1)</option>
+              <option value="+688" data-iso="tv" data-name="Tuvalu">Tuvalu (+688)</option>
+              <option value="+256" data-iso="ug" data-name="Uganda">Uganda (+256)</option>
+              <option value="+380" data-iso="ua" data-name="Ukraine">Ukraine (+380)</option>
+              <option value="+971" data-iso="ae" data-name="United Arab Emirates">United Arab Emirates (+971)</option>
+              <option value="+44" data-iso="gb" data-name="United Kingdom">United Kingdom (+44)</option>
+              <option value="+1" data-iso="us" data-name="United States">United States (+1)</option>
+              <option value="+598" data-iso="uy" data-name="Uruguay">Uruguay (+598)</option>
+              <option value="+998" data-iso="uz" data-name="Uzbekistan">Uzbekistan (+998)</option>
+              <option value="+678" data-iso="vu" data-name="Vanuatu">Vanuatu (+678)</option>
+              <option value="+39" data-iso="va" data-name="Vatican City">Vatican City (+39)</option>
+              <option value="+58" data-iso="ve" data-name="Venezuela">Venezuela (+58)</option>
+              <option value="+84" data-iso="vn" data-name="Vietnam">Vietnam (+84)</option>
+              <option value="+1" data-iso="vg" data-name="Virgin Islands, British">Virgin Islands, British (+1)</option>
+              <option value="+1" data-iso="vi" data-name="Virgin Islands, U.S.">Virgin Islands, U.S. (+1)</option>
+              <option value="+681" data-iso="wf" data-name="Wallis and Futuna">Wallis and Futuna (+681)</option>
+              <option value="+212" data-iso="eh" data-name="Western Sahara">Western Sahara (+212)</option>
+              <option value="+967" data-iso="ye" data-name="Yemen">Yemen (+967)</option>
+              <option value="+260" data-iso="zm" data-name="Zambia">Zambia (+260)</option>
+              <option value="+263" data-iso="zw" data-name="Zimbabwe">Zimbabwe (+263)</option>
+              <option value="+358" data-iso="ax" data-name="Åland Islands">Åland Islands (+358)</option>
+            </select>
+          </div>
+          <div>
+            <label for="phone">Phone Number <span class="required">*</span></label>
+            <input type="number" id="phone" placeholder="Enter your phone number" pattern="[0-9]{10,15}" required>
+            <div class="field-error" id="phone-error">Phone number is required</div>
+          </div>
+        </div>
+        <div class="form-group form-group-new">
+          <label for="vendor-type">What do you plan to offer? <span class="required">*</span></label>
+          <select id="vendor-type" onchange="toggleFields()" required>
+            <option value="">Select what you offer</option>
+            <option value="Service">Services</option>
+            <option value="Venue">Venues</option>
+          </select>
+          <div class="field-error" id="vendor-type-error">Please select what you plan to offer</div>
+        </div>
+
+        <div class="form-group form-group-new" id="service-category-group" style="display: none;">
+          <label for="service-category">Which service do you offer?</label>
+          <select id="service-category">
+            <option value="">Select Service Type</option>
+            <option>Gastronomy & Bar</option>
+            <option>Design & Artistry</option>
+            <option>Photo & Film</option>
+            <option>Entertainment</option>
+            <option>Enhancements</option>
+            <option>Beauty & Fashion</option>
+          </select>
+        </div>
+
+        <div class="form-group form-group-new" id="product-category-group" style="display: none;" hidden>
+          <label for="product-category">Which products do you wish to onboard?</label>
+          <select id="product-category">
+            <option value="">Select Product Category</option>
+            <option>Bridal Boutique</option>
+            <option>Wedding Party</option>
+
+            <option>Accessories</option>
+            <option>Jewellery</option>
+            <option>Party Décor & Supplies</option>
+            <option>Gifts & Flavours</option>
+
+            <option>Intimate</option>
+            <option>Beauty &amp; Wellness</option>
+            <option>Food &amp; Drinks</option>
+
+            <option>Furniture</option>
+            <option>Kitchen</option>
+            <option>Tabletop</option>
+
+            <option>Bed &amp; Bath</option>
+            <option>Home</option>
+            <option>Gift Cards &amp; Contributions</option>
+
+            <option>Experiences</option>
+            <option>Hobbies</option>
+            <option>Collections</option>
+
+            <option>Pets</option>
+            <option>Luggage &amp; Travel</option>
+          </select>
+        </div>
+
+        <div class="form-group form-group-new" id="venue-services-group" style="display: none;">
+          <label for="venue-services">Tell us about your services (optional)</label>
+          <input type="text" id="venue-services" placeholder="List all the services you can offer">
+        </div>
+
+        <div class="form-group form-group-new">
+          <label for="application-type">Application Type <span class="required">*</span></label>
+          <select id="application-type" onchange="toggleBusinessField()" required>
+            <option value="">Select Application Type</option>
+            <option value="individual">Individual</option>
+            <option value="business">Business</option>
+          </select>
+          <div class="field-error" id="application-type-error">Please select an application type</div>
+        </div>
+
+        <div class="form-group" style="display:none;">
+          <div>
+            <label for="business-name">Business name</label>
+            <input
+              type="text"
+              id="business-name"
+              placeholder="Enter your business name"
+            >
+          </div>
+        </div>
+        <div class="checkbox-container">
+          <label style="font-size:14px;text-transform:none">
+            <input type="checkbox" id="termcheck" class="input">
+            <span class="custom-checkbox"></span>
+            I agree to eJuno's
+            <a href="/pages/terms-of-service" target="_blank" class="policy-link">Terms & Conditions</a>
+          </label>
+          <div class="field-error" id="termcheck-error">You must agree to the Terms & Conditions</div>
+        </div>
+        <button type="submit" class="btn btn-submit" disabled aria-disabled="true">
+          <span class="spinner-border" role="status" aria-hidden="true"></span>
+          Register free
+        </button>
+        <div class="form-error" id="form-error"></div>
+      </form>
+    </div>
+  </div>
+</div>

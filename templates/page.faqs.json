@@ -1,0 +1,355 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "page-intro",
+      "settings": {
+        "eyebrow": "FAQs",
+        "heading": "Frequently Asked Questions",
+        "lead": "Find answers about accounts, bookings, payments, planning tools, and more."
+      }
+    },
+    "faqs": {
+      "type": "faq-list",
+      "settings": {
+        "cta_label": "Contact eJuno",
+        "cta_url": "/pages/contact"
+      },
+      "blocks": {
+        "tab1": {
+          "type": "tab",
+          "settings": {
+            "label": "Technical Queries",
+            "key": "Technicalfaqs"
+          }
+        },
+        "tab2": {
+          "type": "tab",
+          "settings": {
+            "label": "Account & Setup",
+            "key": "Account&Setup"
+          }
+        },
+        "tab3": {
+          "type": "tab",
+          "settings": {
+            "label": "Vendors & Booking",
+            "key": "Vendors&Booking"
+          }
+        },
+        "tab4": {
+          "type": "tab",
+          "settings": {
+            "label": "Pricing & Payments",
+            "key": "Pricing&Payments"
+          }
+        },
+        "tab5": {
+          "type": "tab",
+          "settings": {
+            "label": "Planning Tools",
+            "key": "PlanningTools"
+          }
+        },
+        "tab6": {
+          "type": "tab",
+          "settings": {
+            "label": "Security & Data",
+            "key": "Security&Data"
+          }
+        },
+        "f1": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "I didn’t receive my OTP. What should I do?",
+            "answer": "<p>First, check your spam or junk folder. If it’s not there, click Resend OTP on the verification screen. Make sure you entered the correct email.</p>"
+          }
+        },
+        "f2": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "How can I get onboarded on eJuno as a couple?",
+            "answer": "<p>To get onboarded on eJuno, go to the Couple Dashboard and complete the registration steps. Once your registration is complete, you can start enjoying all the services provided by eJuno.</p>"
+          }
+        },
+        "f3": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "Can I create a registry before logging in?",
+            "answer": "<p>You’ll need an account first. Go to the Couple Dashboard and complete your registration. Once you’re registered and logged in, you’ll see a Registry tab in your dashboard, where you can add venues and services to your registry.</p>"
+          }
+        },
+        "f4": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "How can I get onboarded on eJuno as a vendor?",
+            "answer": "<p>To get onboarded on eJuno, go to the Vendor Dashboard and complete the registration steps. Once your profile is approved, it appears in the Vendor Marketplace.</p>"
+          }
+        },
+        "f5": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "How can I share my registry with guests?",
+            "answer": "<p>Once your registry is set up, you can copy your wedding website link from the Couple Dashboard and share it with your guests via WhatsApp, email, or social media.</p>"
+          }
+        },
+        "f6": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "Can guests purchase gifts directly from the registry?",
+            "answer": "<p>Yes. Guests can choose a venue or service on your registry and gift towards it directly through the shared link.</p>"
+          }
+        },
+        "f7": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "Will guests see which gifts are already purchased?",
+            "answer": "<p>Yes. Purchased items are automatically marked, helping avoid duplicate gifts.</p>"
+          }
+        },
+        "f8": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "Can I add more venues and services to my registry later?",
+            "answer": "<p>Absolutely. You can continue adding venues and services to your registry even after sharing the link with your guests.</p>"
+          }
+        },
+        "f9": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "Can a vendor add product descriptions in any other language?",
+            "answer": "<p>No. Vendors are required to add product descriptions in English only.</p>"
+          }
+        },
+        "f10": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Technicalfaqs",
+            "question": "Can a vendor set a password of their choice?",
+            "answer": "<p>Yes. Vendors can choose their own password, as long as it meets the system’s security requirements. The password must include at least one capital letter, one special character, and be a minimum of 8 characters long.</p>"
+          }
+        },
+        "f11": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Account&Setup",
+            "question": "Can my partner access the same account?",
+            "answer": "<p>Yes. You can invite your partner to collaborate on the same wedding plan and manage everything together in one shared account.</p>"
+          }
+        },
+        "f12": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Account&Setup",
+            "question": "Can I plan multiple events under one account (engagement, rehearsal, wedding)?",
+            "answer": "<p>Yes. You can organise and manage multiple events within your account, keeping all plans, vendors, and timelines in one place.</p>"
+          }
+        },
+        "f13": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Account&Setup",
+            "question": "Can I delete my account and data?",
+            "answer": "<p>Account deletion is handled by the eJuno team. Email us at <a href=\"mailto:support@ejuno.io\">support@ejuno.io</a> from the address on your account and an admin will delete your account. Your personal data and planning information are then permanently removed in line with our privacy policy.</p>"
+          },
+          "disabled": true
+        },
+        "f14": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Vendors&Booking",
+            "question": "How do I find and compare vendors?",
+            "answer": "<p>Browse vendors by category, location, style, and budget. Compare options, save favourites, and revisit them as you plan.</p>"
+          }
+        },
+        "f15": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Vendors&Booking",
+            "question": "How do I know vendors are verified?",
+            "answer": "<p>All vendors on eJuno go through a verification process before being listed. Profiles include key details, imagery, and reviews where available.</p>"
+          }
+        },
+        "f16": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Vendors&Booking",
+            "question": "What happens after I book a vendor on the platform?",
+            "answer": "<p>The vendor is notified with your reservation and a direct chat opens so you can finalise all the details of your booking and next steps.</p>"
+          }
+        },
+        "f17": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Vendors&Booking",
+            "question": "What happens if a vendor cancels on me?",
+            "answer": "<p>Cancellation policies vary by vendor and are shown at booking. If a cancellation occurs, we’ll help you understand your options and find alternatives where possible.</p>"
+          }
+        },
+        "f18": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Vendors&Booking",
+            "question": "Can I change the date or details after booking?",
+            "answer": "<p>Changes depend on the vendor’s individual terms. You can request updates through the platform and the vendor will confirm if adjustments are possible.</p>"
+          }
+        },
+        "f19": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Vendors&Booking",
+            "question": "Are deposits refundable?",
+            "answer": "<p>The first deposit is non-refundable. Cancellation terms are set by each vendor and clearly shown before booking. Always review the terms before confirming.</p>"
+          }
+        },
+        "f20": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Pricing&Payments",
+            "question": "How are prices calculated on eJuno?",
+            "answer": "<p>Prices are set by individual vendors and displayed clearly on their profiles.</p>"
+          }
+        },
+        "f21": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Pricing&Payments",
+            "question": "Are there any hidden fees?",
+            "answer": "<p>No. All costs, including deposits and fees, are clearly outlined before you complete a booking.</p>"
+          }
+        },
+        "f22": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Pricing&Payments",
+            "question": "What payment methods can I use?",
+            "answer": "<p>Payments can be made securely through the platform using supported debit and credit cards, along with other available digital payment options.</p>"
+          }
+        },
+        "f23": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Pricing&Payments",
+            "question": "How are refunds handled?",
+            "answer": "<p>Refunds follow each vendor’s individual cancellation and refund policy, which is shown before booking. Any eligible refunds are processed through the platform. For products bought through eJuno, see our <a href=\"/pages/return-and-refund-policy\">Return and Refund Policy</a>.</p>"
+          }
+        },
+        "f24": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "PlanningTools",
+            "question": "How does the budget tracker work?",
+            "answer": "<p>The budget tracker helps you set a total budget, allocate spending by category, and track costs as you plan.</p>"
+          }
+        },
+        "f25": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "PlanningTools",
+            "question": "How do I use the Checklist?",
+            "answer": "<p>The Checklist breaks your planning into clear milestones and tasks, helping you stay on track as your wedding date approaches.</p>"
+          }
+        },
+        "f26": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "PlanningTools",
+            "question": "Can I build my wedding website here?",
+            "answer": "<p>Yes. You can create and customise your own wedding website to share details, updates, and important information with your guests.</p>"
+          }
+        },
+        "f27": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "PlanningTools",
+            "question": "Can I manage my guest list or RSVPs?",
+            "answer": "<p>Yes. You can manage your guest list and track RSVPs directly within the platform to keep everything organised in one place.</p>"
+          }
+        },
+        "f28": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Security&Data",
+            "question": "Is my payment information secure?",
+            "answer": "<p>Yes. All payments are processed through secure, encrypted payment systems. eJuno does not store your full card details.</p>"
+          }
+        },
+        "f29": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Security&Data",
+            "question": "How does eJuno protect my personal data?",
+            "answer": "<p>We take data protection seriously and follow strict security and privacy standards to keep your information safe. Personal data is used only to support your planning experience.</p>"
+          }
+        },
+        "f30": {
+          "type": "faq",
+          "settings": {
+            "tab_key": "Security&Data",
+            "question": "Where is my data stored?",
+            "answer": "<p>Your data is stored securely in compliance with GDPR and applicable data protection laws. We work with trusted infrastructure providers to ensure data is handled responsibly.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "tab1",
+        "tab2",
+        "tab3",
+        "tab4",
+        "tab5",
+        "tab6",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "f11",
+        "f12",
+        "f13",
+        "f14",
+        "f15",
+        "f16",
+        "f17",
+        "f18",
+        "f19",
+        "f20",
+        "f21",
+        "f22",
+        "f23",
+        "f24",
+        "f25",
+        "f26",
+        "f27",
+        "f28",
+        "f29",
+        "f30"
+      ]
+    }
+  },
+  "order": [
+    "intro",
+    "faqs"
+  ]
+}

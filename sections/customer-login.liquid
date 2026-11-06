@@ -1,0 +1,15 @@
+
+<section class="utility-head"><div class="container"><div class="eyebrow">Account</div><h1 class="h1">Log in</h1>
+{% form 'customer_login' %}{{ form.errors | default_errors }}
+<div class="utility-panel" style="max-width:480px;margin:24px auto 0">
+  <div class="field" style="margin-bottom:12px"><input type="email" name="customer[email]" placeholder="Email" required></div>
+  <div class="field" style="margin-bottom:12px"><input type="password" name="customer[password]" placeholder="Password" required></div>
+  <button class="btn primary" type="submit">Log in</button>
+</div>{% endform %}</div></section>
+
+{% schema %}
+{
+  "name": "Customer login",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,82 @@
+<div class="container market-search-wrap"><div class="market-search"><input placeholder="Search vendors or specialties"><a class="btn primary" data-action="Use the current eJuno vendor marketplace search/filter behaviour.">Search</a></div><div class="filters"><span class="chip">Planner</span><span class="chip">Florist</span><span class="chip">Photographer</span><span class="chip">Styling</span><span class="chip">Music</span><span class="chip">Stationery</span></div><div class="result-grid"><a href="{{ routes.collections_url }}/venues" class="result-card featured-result"><img src="{% if section.settings.image_1 != blank %}{{ section.settings.image_1 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_1 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" alt="Luce Florals"><div class="result-body"><h3>Luce Florals</h3><div class="result-meta">Floristry · Tuscany</div><div class="tagline"><span class="tag">Florist</span><span class="tag">Editorial</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{% if section.settings.image_2 != blank %}{{ section.settings.image_2 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_2 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" alt="Atelier Tavola"><div class="result-body"><h3>Atelier Tavola</h3><div class="result-meta">Styling · Italy</div><div class="tagline"><span class="tag">Styling</span><span class="tag">Reception</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{% if section.settings.image_3 != blank %}{{ section.settings.image_3 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_3 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" alt="Studio Azzurro"><div class="result-body"><h3>Studio Azzurro</h3><div class="result-meta">Photography · Italy</div><div class="tagline"><span class="tag">Photography</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{% if section.settings.image_4 != blank %}{{ section.settings.image_4 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_4 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" alt="Carta Bianca"><div class="result-body"><h3>Carta Bianca</h3><div class="result-meta">Stationery · Italy</div><div class="tagline"><span class="tag">Stationery</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{% if section.settings.image_5 != blank %}{{ section.settings.image_5 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_5 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" alt="Marea Weddings"><div class="result-body"><h3>Marea Weddings</h3><div class="result-meta">Planning · Italy</div><div class="tagline"><span class="tag">Planner</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{% if section.settings.image_6 != blank %}{{ section.settings.image_6 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_6 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" alt="Aria Musica"><div class="result-body"><h3>Aria Musica</h3><div class="result-meta">Entertainment · Italy</div><div class="tagline"><span class="tag">Music</span></div></div></a></div></div>
+
+{% schema %}
+{
+  "name": "vendors 2",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (VMP-IMG-002.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "VMP-IMG-002.webp"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2 (VMP-IMG-003.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_2",
+      "label": "Fallback asset 2",
+      "default": "VMP-IMG-003.webp"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image 3 (VMP-IMG-004.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_3",
+      "label": "Fallback asset 3",
+      "default": "VMP-IMG-004.webp"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image 4 (VMP-IMG-005.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_4",
+      "label": "Fallback asset 4",
+      "default": "VMP-IMG-005.webp"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_5",
+      "label": "Image 5 (SVC-IMG-004.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_5",
+      "label": "Fallback asset 5",
+      "default": "SVC-IMG-004.webp"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_6",
+      "label": "Image 6 (VEN-IMG-004.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_6",
+      "label": "Fallback asset 6",
+      "default": "VEN-IMG-004.webp"
+    }
+  ],
+  "presets": [
+    {
+      "name": "vendors 2"
+    }
+  ]
+}
+{% endschema %}

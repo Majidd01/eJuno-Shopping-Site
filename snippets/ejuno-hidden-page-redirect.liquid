@@ -1,0 +1,20 @@
+{% comment %}
+  Snippet: redirect away from a hidden page.
+  Usage: {% render 'ejuno-hidden-page-redirect', redirect_url: '/pages/plan-your-wedding' %}
+{% endcomment %}
+{% liquid
+  assign dest = redirect_url | default: '/pages/plan-your-wedding'
+  if dest == blank
+    assign dest = routes.root_url
+  endif
+%}
+<script>
+  window.location.replace({{ dest | json }});
+</script>
+<meta http-equiv="refresh" content="0;url={{ dest }}">
+<section class="section tight">
+  <div class="container" style="padding:48px 0;text-align:center">
+    <p style="color:var(--muted);margin:0 0 16px">This page is no longer available.</p>
+    <a class="btn primary" href="{{ dest }}">Continue</a>
+  </div>
+</section>

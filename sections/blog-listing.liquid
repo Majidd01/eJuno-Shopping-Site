@@ -1,0 +1,145 @@
+{%- comment -%} Inspiration fix (29 Oct 2026): on the inspiration blog, or any blog with no articles, list the newest articles from this blog + destinations + every blog in more_blogs. {%- endcomment -%}
+{%- liquid
+  assign ej_list = blog.articles
+  assign ej_merge = false
+  if blog.handle == 'inspiration'
+    assign ej_merge = true
+  endif
+  if ej_merge
+    assign ej_handles = blog.handle | append: ',destinations,' | append: section.settings.more_blogs | split: ','
+    assign ej_seen = ','
+    assign ej_list = '' | split: ','
+    for h in ej_handles
+      assign hs = h | strip
+      if hs == blank
+        continue
+      endif
+      assign hk = ',' | append: hs | append: ','
+      if ej_seen contains hk
+        continue
+      endif
+      assign ej_seen = ej_seen | append: hs | append: ','
+      assign hb = blogs[hs]
+      if hb == blank or hb.articles_count == 0
+        continue
+      endif
+      assign ej_list = ej_list | concat: hb.articles
+    endfor
+    assign ej_list = ej_list | sort: 'published_at' | reverse
+  endif
+  assign ej_count = ej_list | size
+-%}
+{% if ej_count > 0 %}
+{%- comment -%} Blog banners (2 Nov 2026): featured story + side stories hidden on every blog, all stories listed under Latest stories (setting below); restore by unticking. {%- endcomment -%}
+{%- assign ej_hide_feat = false -%}{%- if section.settings.hide_featured_inspiration -%}{%- assign ej_hide_feat = true -%}{%- endif -%}
+{%- assign ej_img_map = section.settings.image_overrides | default: '' | split: ',' -%}
+{%- unless ej_hide_feat -%}<section class="editorial-hero"><div class="container editorial-layout">
+{%- assign feature = ej_list.first -%}
+{%- comment -%} Trello 720 fix4: the pinned featured story only applies on the Inspiration hub; each series page leads with its own first story so it matches its preview row. {%- endcomment -%}
+{%- if ej_merge and section.settings.feature_handle != blank -%}{%- for a in ej_list -%}{%- assign a_h = a.handle | split: '/' | last -%}{%- if a_h == section.settings.feature_handle or a.handle == section.settings.feature_handle -%}{%- assign feature = a -%}{%- break -%}{%- endif -%}{%- endfor -%}{%- endif -%}
+{%- assign ej_img_map = section.settings.image_overrides | default: '' | split: ',' -%}
+<a href="{{ feature.url }}" class="feature-story">
+{%- render 'ejuno-article-img', article: feature, map: ej_img_map, width: 1600, loading: 'eager', fallback: 'JNL-IMG-001.webp' -%}
+<div class="feature-copy"><div class="eyebrow">Featured story</div><h1>{{ feature.title }}</h1><p>{{ feature.excerpt_or_content | strip_html | remove_first: 'Introduction:' | strip | truncatewords: 20 }}</p></div></a>
+<div class="side-stories">
+{%- assign ej_side = 0 -%}{% for article in ej_list limit: 3 %}{%- if article.id == feature.id or ej_side >= 2 -%}{%- continue -%}{%- endif -%}{%- assign ej_side = ej_side | plus: 1 -%}
+<a href="{{ article.url }}" class="story">{%- render 'ejuno-article-img', article: article, map: ej_img_map, width: 900, loading: 'lazy' -%}<div class="body"><div class="eyebrow">{% if article.tags.size > 0 %}{{ article.tags.first }}{% else %}Story{% endif %}</div><h3>{{ article.title }}</h3>{%- assign side_line = article.excerpt | default: article.content | strip_html | strip | truncate: 90 -%}{% if side_line != blank %}<p>{{ side_line }}</p>{% endif %}</div></a>
+{% endfor %}
+</div></div></section>{%- endunless -%}
+{%- assign ej_latest_off = 3 -%}{%- assign ej_latest_lim = 10 -%}{%- if ej_hide_feat -%}{%- assign ej_latest_off = 0 -%}{%- assign ej_latest_lim = 50 -%}{%- endif -%}{%- if blog.handle == 'inspiration' -%}{%- assign ej_latest_lim = section.settings.latest_limit_inspiration | default: 5 -%}{%- endif -%}
+{% if ej_count > 3 or ej_hide_feat %}<section class="section"><div class="container"><div class="section-head"><div class="copy"><div class="eyebrow">Latest stories</div><h2 class="h2">{{ section.settings.latest_heading }}</h2></div></div><div class="journal-row">{% for article in ej_list offset: ej_latest_off limit: ej_latest_lim %}{%- if ej_hide_feat == false and article.id == feature.id -%}{%- continue -%}{%- endif -%}<a href="{{ article.url }}" class="journal-card">{%- render 'ejuno-article-img', article: article, map: ej_img_map, width: 900, loading: 'lazy' -%}<div class="body"><div class="eyebrow">{% if article.tags.size > 0 %}{{ article.tags.first }}{% else %}Story{% endif %}</div><h3>{{ article.title }}</h3><p>{{ article.excerpt_or_content | strip_html | remove_first: 'Introduction:' | strip | truncatewords: 15 }}</p></div></a>{% endfor %}</div></div></section>{% endif %}
+{% else %}
+{%- comment -%} Review p6/p10: no placeholder "articles" with repeated text; an honest empty state until stories are published. {%- endcomment -%}
+<section class="section"><div class="container"><div class="ejuno-blog-empty"><h2 class="h2">{{ section.settings.empty_heading }}</h2><p>{{ section.settings.empty_text }}</p><a class="btn primary" href="{{ section.settings.empty_url | default: '/collections/venues' }}">{{ section.settings.empty_button }}</a></div></div></section>
+<style>.ejuno-blog-empty{max-width:640px;margin:0 auto;text-align:center;padding:24px 0 40px}.ejuno-blog-empty p{color:#5a524b;margin:12px 0 22px}</style>
+{% endif %}
+
+
+{%- comment -%} Trello 677: every published story is reachable from Inspiration, grouped by series. {%- endcomment -%}
+{%- comment -%} Trello 720: series preview rows only on the Inspiration hub; other blogs show only their own stories. {%- endcomment -%}
+{%- assign ej_more = '' | split: ',' -%}{%- if blog.handle == 'inspiration' -%}{%- assign ej_more = section.settings.more_blogs | split: ',' -%}{%- endif -%}
+{%- comment -%} Trello 720 fix4: rows use the same image source (overrides, then article image) as the series pages. {%- endcomment -%}
+{%- assign ej_rows_img_map = section.settings.image_overrides | default: '' | split: ',' -%}
+{%- for bh in ej_more -%}
+  {%- assign bh = bh | strip -%}
+  {%- if bh == blank or bh == blog.handle -%}{%- continue -%}{%- endif -%}
+  {%- assign mb = blogs[bh] -%}
+  {%- if mb == blank or mb.articles_count == 0 -%}{%- continue -%}{%- endif -%}
+  <section class="section tight ej-more-stories"><div class="container">
+    <div class="section-head"><div class="copy"><div class="eyebrow">More stories</div><h2 class="h2">{{ mb.title }}</h2></div><a class="ej-more-stories__all" href="{{ mb.url }}">See all &rarr;</a></div>
+    <div class="journal-row">
+      {%- assign ej_row_lim = section.settings.row_limit | default: 3 -%}{%- for article in mb.articles limit: ej_row_lim -%}
+        <a href="{{ article.url }}" class="journal-card">{%- if forloop.first -%}{%- assign ej_row_fb = 'JNL-IMG-001.webp' -%}{%- else -%}{%- assign ej_row_fb = '' -%}{%- endif -%}{%- render 'ejuno-article-img', article: article, map: ej_rows_img_map, width: 900, loading: 'lazy', fallback: ej_row_fb -%}<div class="body"><div class="eyebrow">{{ mb.title }}</div><h3>{{ article.title }}</h3><p>{{ article.excerpt_or_content | strip_html | remove_first: 'Introduction:' | strip | truncatewords: 15 }}</p></div></a>
+      {%- endfor -%}
+    </div>
+  </div></section>
+{%- endfor -%}
+
+{% schema %}
+{
+  "name": "Blog listing",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "checkbox", "id": "hide_featured_inspiration", "label": "Hide featured story block on blog pages (list every story)", "default": true },
+    { "type": "text", "id": "feature_handle", "label": "Featured story (article handle; empty = newest)", "default": "the-best-months-to-get-married-in-italyand-where-to-go-each-season" },
+    { "type": "textarea", "id": "image_overrides", "label": "Story image overrides (article-handle:theme-asset, comma separated)", "default": "the-best-months-to-get-married-in-italyand-where-to-go-each-season:ejuno-photo-09.jpg,should-you-get-married-in-a-city-coastline-or-countryside:ejuno-photo-10.jpg,will-your-family-and-friends-thank-youor-resent-youfor-choosing-a-wedding-in-italy:ejuno-photo-11.jpg" },
+    { "type": "text", "id": "more_blogs", "label": "Other story series to list below (blog handles, comma separated)", "default": "inspiration,the-trend-edit,expert-voices,the-look,planning-tips" },
+    { "type": "range", "id": "latest_limit_inspiration", "label": "Latest stories limit on Inspiration", "min": 1, "max": 50, "step": 1, "default": 5 },
+    { "type": "range", "id": "row_limit", "label": "Cards per blog row (Inspiration)", "min": 1, "max": 12, "step": 1, "default": 3 },
+    {
+      "type": "text",
+      "id": "latest_heading",
+      "label": "Latest heading",
+      "default": "More ideas for planning in Italy"
+    },
+    { "type": "text", "id": "empty_eyebrow", "label": "No-stories eyebrow", "default": "Inspiration" },
+    { "type": "text", "id": "empty_heading", "label": "No-stories heading", "default": "New stories are on the way" },
+    { "type": "textarea", "id": "empty_text", "label": "No-stories text", "default": "We're writing practical guides and local tips for planning a wedding in Italy. In the meantime, start with the venues." },
+    { "type": "text", "id": "empty_button", "label": "No-stories button", "default": "Explore venues" },
+    { "type": "url", "id": "empty_url", "label": "No-stories button link" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Blog listing"
+    }
+  ]
+}
+{% endschema %}

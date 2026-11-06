@@ -1,0 +1,64 @@
+<section class="section tight partner-journey">
+  <div class="container">
+    <div class="partner-plan-map partner-plan-map--line">
+      <div class="partner-journey-head">
+        <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+        {%- if section.settings.lead != blank -%}
+          <p class="lead partner-journey-lead">{{ section.settings.lead }}</p>
+        {%- endif -%}
+      </div>
+      <ol class="ej-journey"><li class="ej-journey__item"><span class="ej-journey__dot" aria-hidden="true"></span><h3 class="ej-journey__title">Apply</h3><p class="ej-journey__text">Share your business and portfolio.</p></li><li class="ej-journey__item"><span class="ej-journey__dot" aria-hidden="true"></span><h3 class="ej-journey__title">Review</h3><p class="ej-journey__text">eJuno checks fit and positioning.</p></li><li class="ej-journey__item"><span class="ej-journey__dot" aria-hidden="true"></span><h3 class="ej-journey__title">Showcase</h3><p class="ej-journey__text">Publish a stronger marketplace presence.</p></li></ol>
+      {%- if section.settings.register_url != blank -%}
+      <div class="partner-register-cta" style="text-align:center;margin-top:40px">
+        <a href="{{ section.settings.register_url }}" class="btn primary vendor-register-btn" target="_self">{{ section.settings.register_label | default: 'Register Now' }}</a>
+      </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "partner 3",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Partner journey"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "From application to showcase"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "A clear process, so you know what happens after you apply."
+    },
+    {
+      "type": "text",
+      "id": "register_label",
+      "label": "Register button label",
+      "default": "Register Now"
+    },
+    {
+      "type": "text",
+      "id": "register_url",
+      "label": "Register button URL",
+      "default": "https://vendor-staging-ejuno.web.app/register"
+    }
+  ],
+  "presets": [
+    {
+      "name": "partner 3"
+    }
+  ]
+}
+{% endschema %}

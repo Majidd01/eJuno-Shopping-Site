@@ -1,0 +1,32 @@
+{%- comment -%}
+  Trello 657 (reopen 3 Nov): listing / filter prices.
+  Trello 657 v2 (3 Nov): euro style, DOT thousands + COMMA decimals,
+  e.g. 6000000 cents -> €60.000, 1336304 -> €13.363,04. No ",00" for whole amounts.
+  Usage: {% render 'ejuno-money-listing', cents: product.price_min %}
+{%- endcomment -%}
+{%- liquid
+  assign ejm_c = cents | default: 0 | round
+  if ejm_c > 0
+    assign ejm_units = ejm_c | divided_by: 100
+    assign ejm_rem = ejm_c | modulo: 100
+    assign ejm_s = ejm_units | append: ''
+    assign ejm_len = ejm_s.size
+    assign ejm_out = ''
+    for ejm_i in (1..ejm_len)
+      assign ejm_idx = ejm_i | minus: 1
+      assign ejm_ch = ejm_s | slice: ejm_idx
+      assign ejm_out = ejm_out | append: ejm_ch
+      assign ejm_left = ejm_len | minus: ejm_i
+      assign ejm_m = ejm_left | modulo: 3
+      if ejm_left > 0 and ejm_m == 0
+        assign ejm_out = ejm_out | append: '.'
+      endif
+    endfor
+    if ejm_rem > 0
+      assign ejm_r = ejm_rem | prepend: '0' | slice: -2, 2
+      assign ejm_out = ejm_out | append: ',' | append: ejm_r
+    endif
+    assign ejm_sym = cart.currency.symbol | default: '€'
+    echo ejm_sym | append: ejm_out
+  endif
+-%}

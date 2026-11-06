@@ -1,0 +1,23 @@
+<div id="ejuno-cookie-consent" class="ejuno-cookie" hidden role="dialog" aria-live="polite" aria-label="Cookie preferences">
+  <div class="ejuno-cookie__inner">
+    <p class="ejuno-cookie__text">
+      We use cookies to improve your experience and understand how our site is used.
+      <a href="/pages/privacy-policy?view=privacy-policy" class="ejuno-cookie__link">Privacy policy</a>
+    </p>
+    <div class="ejuno-cookie__actions">
+      <button type="button" class="ejuno-cookie__btn ejuno-cookie__btn--ghost" data-ejuno-cookie-decline>Essential only</button>
+      <button type="button" class="ejuno-cookie__btn ejuno-cookie__btn--primary" data-ejuno-cookie-accept>Accept</button>
+    </div>
+  </div>
+</div>
+
+{%- comment -%} Trello 816: phone landscape (short viewport) layout. {%- endcomment -%}
+<style>
+@media (orientation: landscape) and (max-height: 500px) {
+  .ejuno-cookie { left: 12px !important; right: 12px !important; bottom: 8px !important; }
+  .ejuno-cookie__inner { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 8px 12px !important; }
+  .ejuno-cookie__text { font-size: 11.5px !important; line-height: 1.35 !important; margin: 0 !important; flex: 1 1 auto; }
+  .ejuno-cookie__actions { flex: none; gap: 8px !important; margin: 0 !important; }
+  .ejuno-cookie__btn { min-height: 32px !important; padding: 6px 14px !important; font-size: 12px !important; }
+}
+</style>

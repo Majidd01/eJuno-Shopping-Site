@@ -1,0 +1,224 @@
+{% liquid
+  assign hero_heading = section.settings.heading
+  assign hero_eyebrow = section.settings.eyebrow
+  assign hero_image = section.settings.image
+
+  if collection != blank and section.settings.use_collection_context
+    if hero_heading == blank
+      assign hero_heading = collection.title
+      # Trello 744: titles saved all lower case (e.g. "entertainment") or all caps show in title case.
+      assign ht_lo = hero_heading | downcase
+      assign ht_up = hero_heading | upcase
+      if hero_heading == ht_lo or hero_heading == ht_up
+        assign ht_words = ht_lo | split: ' '
+        assign hero_heading = ''
+        for w in ht_words
+          assign wc = w | capitalize
+          assign hero_heading = hero_heading | append: ' ' | append: wc
+        endfor
+        assign hero_heading = hero_heading | strip
+      endif
+    endif
+    if hero_image == blank and collection.featured_image
+      assign hero_image = collection.featured_image
+    endif
+    if hero_eyebrow == blank or hero_eyebrow == 'Explore collection'
+      if collection.handle contains 'venue'
+        assign hero_eyebrow = 'Wedding venues'
+      elsif collection.handle == 'accommodation' or collection.handle == 'villa'
+        assign hero_eyebrow = 'Accommodation'
+      else
+        assign hero_eyebrow = 'Wedding services'
+      endif
+    endif
+  endif
+
+  # Trello 567: a tiny collection image (e.g. 300x300) upscaled to a 1440px-wide hero looks blurry.
+  # Fall back to the theme's high-res hero when the uploaded image is too small.
+  if hero_image != blank and hero_image.width < 1200
+    assign hero_image = blank
+    assign hero_small_fallback = true
+  endif
+  assign is_venue_collection = false
+  if collection != blank and collection.handle contains 'venue'
+    assign is_venue_collection = true
+  endif
+  # Photo swap 28 Oct: venue banner uses the approved theme photo, overriding the collection image.
+  if is_venue_collection and section.settings.venue_asset != blank
+    assign hero_image = blank
+  endif
+
+  # Trello 722: category banners use fitting client photos (theme assets), overriding the collection image.
+  assign cat_asset = ''
+  if collection != blank and is_venue_collection == false
+    assign cat_pairs = section.settings.category_assets | default: 'photo-film:ejuno-cat-photo-film.jpg,design-artistry:ejuno-cat-design-artistry.jpg,entertainment:ejuno-client-entertainment.jpg,entertainment-1:ejuno-client-entertainment.jpg,enhancements:ejuno-cat-enhancements.jpg,beauty-fashion:ejuno-cat-beauty-fashion.jpg,accommodation:ejuno-cat-accommodation.jpg' | split: ','
+    for cp in cat_pairs
+      assign cp_k = cp | split: ':' | first | strip
+      assign cp_v = cp | split: ':' | last | strip
+      if cp_k == collection.handle and cp_v != blank
+        assign cat_asset = cp_v
+      endif
+    endfor
+  endif
+  # Trello 717: Transport banner until a collection photo is uploaded.
+  if cat_asset == blank and collection != blank and collection.handle == 'transport' and hero_image == blank
+    assign cat_asset = 'ejuno-photo-07.jpg'
+  endif
+  if cat_asset != blank
+    assign hero_image = blank
+  endif
+
+  # Trello 794: approved high-res banners. Desktop = approved crop (no re-crop), mobile = full photo framed for narrow screens.
+  assign ej794 = ''
+  assign ej794_alt = ''
+  if collection != blank
+    assign ej794_pairs = 'beauty-fashion:1-1,venue:1-2,venues:1-2,transport:1-3,accommodation:1-4,enhancements:1-5,design-artistry:1-7' | split: ','
+    for cp in ej794_pairs
+      assign cp_k = cp | split: ':' | first
+      if cp_k == collection.handle
+        assign ej794 = cp | split: ':' | last
+      endif
+    endfor
+    if ej794 == blank and is_venue_collection
+      assign ej794 = '1-2'
+    endif
+    case ej794
+      when '1-1'
+        assign ej794_alt = 'Sunlit villa room with open windows onto cypress trees'
+      when '1-2'
+        assign ej794_alt = 'Floral wedding arch on a lakeside terrace at sunset'
+      when '1-3'
+        assign ej794_alt = 'Classic wooden motorboat on an Italian lake'
+      when '1-4'
+        assign ej794_alt = 'Villa bedroom with open windows overlooking a lake'
+      when '1-5'
+        assign ej794_alt = 'Candlelit wedding table under string lights in a cypress garden'
+      when '1-7'
+        assign ej794_alt = 'White floral centrepiece on a table by a tall villa window'
+    endcase
+  endif
+
+  # QA 19 Oct: sharp hero. Serve up to 3840px (Retina / 4K) and size the request for the
+  # object-fit: cover crop. The hero is 430px tall on desktop, 380px <=1100px, 320px <=760px,
+  # so on narrow screens the image renders wider than the viewport (height x aspect ratio).
+  assign hero_ratio = 3.0
+  if hero_image != blank
+    assign hero_ratio = hero_image.aspect_ratio | default: 1.78
+  endif
+  assign hero_w_m = hero_ratio | times: 320 | ceil
+  assign hero_w_t = hero_ratio | times: 380 | ceil
+  assign hero_w_d = hero_ratio | times: 430 | ceil
+  capture hero_sizes
+    echo '(max-width: 760px) max(100vw, ' | append: hero_w_m | append: 'px), '
+    echo '(max-width: 1100px) max(100vw, ' | append: hero_w_t | append: 'px), '
+    echo 'max(100vw, ' | append: hero_w_d | append: 'px)'
+  endcapture
+
+  if hero_image != blank
+    assign src = hero_image | image_url: width: 1920
+    # Widths never exceed the uploaded original; the original width is added when it is < 3840.
+    assign srcset = ''
+    assign hero_widths = '800,1100,1440,1920,2400,2880,3360,3840' | split: ','
+    for hw in hero_widths
+      assign hwn = hw | times: 1
+      if hwn <= hero_image.width
+        assign hurl = hero_image | image_url: width: hwn
+        assign srcset = srcset | append: ', ' | append: hurl | append: ' ' | append: hwn | append: 'w'
+      endif
+    endfor
+    if hero_image.width < 3840
+      assign hurl = hero_image | image_url: width: hero_image.width
+      assign srcset = srcset | append: ', ' | append: hurl | append: ' ' | append: hero_image.width | append: 'w'
+    endif
+    assign srcset = srcset | remove_first: ', '
+    assign alt = hero_image.alt | default: hero_heading
+    assign w = hero_image.width | default: 1672
+    assign h = hero_image.height | default: 941
+  elsif cat_asset != blank
+    assign src = cat_asset | asset_url
+    assign srcset = ''
+    assign alt = hero_heading
+    assign w = 1672
+    assign h = 940
+  elsif is_venue_collection and section.settings.venue_asset != blank
+    assign src = section.settings.venue_asset | asset_url
+    assign srcset = ''
+    assign alt = hero_heading
+    assign w = 2000
+    assign h = 667
+  elsif is_venue_collection
+    # Theme-asset fallback (design master is 2172x724). Larger Retina/4K renditions as on the home hero.
+    assign src = 'VEN-IMG-001.webp' | asset_url
+    capture srcset
+      echo 'VEN-IMG-001.webp' | asset_url | append: ' 2172w, '
+      echo 'VEN-IMG-001-w2880.jpg' | asset_url | append: ' 2880w, '
+      echo 'VEN-IMG-001-w3840.jpg' | asset_url | append: ' 3840w'
+    endcapture
+    assign alt = hero_heading
+    assign w = 3840
+    assign h = 1280
+  else
+    assign src = 'SVC-IMG-001.webp' | asset_url
+    assign alt = hero_heading
+    assign w = 1672
+    assign h = 941
+  endif
+%}
+<section class="market-hero{% if is_venue_collection %} market-hero--venue{% endif %}">
+  {%- if ej794 != blank -%}
+  {%- assign ej794_d = 'ejuno-hero-' | append: ej794 | append: '-d' -%}{%- assign ej794_m = 'ejuno-hero-' | append: ej794 | append: '-m' -%}
+  <picture>
+    <source media="(max-width: 760px)" srcset="{{ ej794_m | append: '800.jpg' | asset_url }} 800w, {{ ej794_m | append: '1200.jpg' | asset_url }} 1200w" sizes="100vw">
+    <img src="{{ ej794_d | append: '1440.jpg' | asset_url }}" srcset="{{ ej794_d | append: '1440.jpg' | asset_url }} 1440w, {{ ej794_d | append: '2160.jpg' | asset_url }} 2160w, {{ ej794_d | append: '2880.jpg' | asset_url }} 2880w" sizes="100vw" alt="{{ ej794_alt | escape }}" width="2880" height="870" loading="eager" fetchpriority="high" decoding="async">
+  </picture>
+  {%- else -%}
+  <img src="{{ src }}"{% if srcset != blank %} srcset="{{ srcset }}" sizes="{{ hero_sizes | strip }}"{% endif %} alt="{{ alt | escape }}" width="{{ w }}" height="{{ h }}" loading="eager" fetchpriority="high" decoding="async">
+  {%- endif -%}
+  <div class="market-hero-copy">
+    {%- comment -%} Trello 713: never print the title twice (eyebrow identical to the heading). {%- endcomment -%}
+    {%- assign ej_eb_cmp = hero_eyebrow | downcase | strip -%}{%- assign ej_h_cmp = hero_heading | downcase | strip -%}
+    {%- if hero_eyebrow != blank and ej_eb_cmp != ej_h_cmp -%}<div class="eyebrow">{{ hero_eyebrow }}</div>{%- endif -%}
+    <h1 class="h1" style="font-size:64px">{{ hero_heading }}</h1>
+  </div>
+</section>
+
+{%- comment -%} Trello 816: phone landscape (short viewport) layout. {%- endcomment -%}
+<style>
+@media (orientation: landscape) and (max-height: 500px) {
+  .market-hero { height: clamp(250px, calc(100svh - 150px), 360px); }
+  .market-hero img { height: 100%; width: 100%; object-fit: cover; object-position: 50% 40%; }
+  .market-hero-copy { bottom: 54px; }
+  .market-hero-copy .eyebrow { margin-bottom: 4px; }
+  .market-hero-copy .h1 { font-size: clamp(32px, 5vw, 44px) !important; line-height: 1.1; margin: 0; }
+}
+@media (orientation: landscape) and (min-height: 501px) and (max-width: 1100px) {
+  .market-hero-copy { bottom: 54px; }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Market hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Hero image" },
+    { "type": "textarea", "id": "category_assets", "label": "Category banner assets", "info": "handle:asset pairs, comma separated", "default": "photo-film:ejuno-cat-photo-film.jpg,design-artistry:ejuno-cat-design-artistry.jpg,entertainment:ejuno-client-entertainment.jpg,entertainment-1:ejuno-client-entertainment.jpg,enhancements:ejuno-cat-enhancements.jpg,beauty-fashion:ejuno-cat-beauty-fashion.jpg,accommodation:ejuno-cat-accommodation.jpg" },
+    { "type": "text", "id": "venue_asset", "label": "Venue banner theme asset (overrides collection image)", "default": "ejuno-photo-02.jpg" },
+    {
+      "type": "checkbox",
+      "id": "use_collection_context",
+      "label": "Use collection title and image on collection pages",
+      "default": true
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Explore collection" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave blank on collection pages to use the collection title."
+    }
+  ],
+  "presets": [{ "name": "Market hero" }]
+}
+{% endschema %}

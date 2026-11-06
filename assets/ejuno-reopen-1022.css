@@ -1,0 +1,78 @@
+/* eJuno reopen fixes, 22 Oct 2026 (Trello 680, 682, 683, 684, 670, 567, 656, 657) */
+
+/* 680: tools as alternating photo rows */
+.ej-tool-rows{display:flex;flex-direction:column;gap:56px;margin-top:40px}
+.ej-tool-row{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:56px;align-items:center}
+.ej-tool-row--flip .ej-tool-row__media{order:2}
+.ej-tool-row__media{display:block;border-radius:var(--ej-radius,16px);overflow:hidden;aspect-ratio:4/3;background:#eee5db}
+.ej-tool-row__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
+.ej-tool-row__media:hover img{transform:scale(1.03)}
+.ej-tool-row__copy{max-width:440px}
+.ej-tool-row--flip .ej-tool-row__copy{justify-self:end}
+.ej-tool-row__eyebrow{margin:0 0 10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--berry,#9b5068)}
+.ej-tool-row__name{font-family:var(--serif);font-weight:400;font-size:clamp(26px,2.6vw,34px);line-height:1.15;margin:0 0 10px}
+.ej-tool-row__name a{color:inherit;text-decoration:none}
+.ej-tool-row__text{margin:0 0 18px;color:var(--muted,#6f655d);font-size:16px;line-height:1.6}
+.ej-tool-row__link{color:var(--berry,#9b5068);text-decoration:none;font-weight:500;border-bottom:1px solid rgba(155,80,104,.35);padding-bottom:2px}
+@media (max-width:899px){
+  .ej-tool-rows{gap:40px;margin-top:28px}
+  .ej-tool-row{grid-template-columns:1fr;gap:18px}
+  .ej-tool-row--flip .ej-tool-row__media{order:0}
+  .ej-tool-row--flip .ej-tool-row__copy{justify-self:start}
+}
+/* 680: "Exceptional Weddings." reads as the second heading line, not a link */
+.plan-cta__heading-accent{display:block!important;color:inherit!important;background:none!important;background-image:none!important;padding-bottom:0!important;text-decoration:none!important}
+.plan-cta--plum .plan-cta__heading-accent{color:#fff!important}
+/* 680: mobile headline spacing */
+@media (max-width:749px){
+  .plan-intro .h1,.plan-intro h1{line-height:1.16!important;margin-top:12px!important;margin-bottom:16px!important}
+  .plan-map__title{line-height:1.2!important;margin-top:10px!important}
+  .plan-cta__heading{line-height:1.22!important}
+  .plan-cta__heading-line,.plan-cta__heading-accent{margin-bottom:4px}
+}
+
+/* 684: Find a Wedding header button active state + photo band overlay */
+.header-cta--wedding.is-active,.header .header-cta--wedding.is-active,.homepage .header .header-cta--wedding.is-active{background:var(--berry,#9b5068)!important;border-color:var(--berry,#9b5068)!important;color:#fff!important}
+.header-cta--wedding.is-active .header-cta__label{color:#fff!important}
+.mobile-nav__wedding-cta.is-active{background:var(--berry,#9b5068)!important;border-color:var(--berry,#9b5068)!important;color:#fff!important}
+.ejuno-couple-search .utility-head.has-photo{position:relative;isolation:isolate;overflow:hidden}
+.ejuno-couple-search .utility-head.has-photo .cs-band::after{display:none!important}
+.ejuno-couple-search .cs-band__overlay{position:absolute;inset:0;background:linear-gradient(180deg,#f6f1eb 0%,#f6f1eb 70%,#f6f1eb 100%);pointer-events:none}
+
+/* 682: one centred content width on Become a Partner, Contact and Find a Wedding */
+.partner-benefits .container,.partner-journey .container,.contact-layout,.ejuno-couple-search ~ * .utility-panel,.template-page .utility-panel--open{max-width:1120px!important;margin-left:auto!important;margin-right:auto!important}
+.partner-benefits .partner-section-head,.partner-journey .section-head,.partner-journey header,.partner-plan-map__header{text-align:center!important;margin-left:auto!important;margin-right:auto!important;justify-content:center!important}
+.partner-benefits .partner-section-head .copy,.partner-journey .copy{margin-left:auto;margin-right:auto;max-width:720px}
+.partner-plan-map,.partner-plan-map--line{padding-left:0!important;padding-right:0!important;margin-left:auto!important;margin-right:auto!important}
+.utility-panel--open .section-head{justify-content:center!important;text-align:center!important}
+.utility-panel--open .section-head .copy{margin:0 auto}
+.utility-panel--open{margin-left:auto!important;margin-right:auto!important}
+.wedding_form_wrapper.containernew{margin-left:auto!important;margin-right:auto!important}
+
+/* 683: couple names on mobile result cards + registry button */
+@media (max-width:749px){
+  .ejuno-couple-search__name{font-size:19px!important;line-height:1.25!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+}
+.registry-fund{display:grid!important;grid-template-columns:auto 1fr;align-items:baseline;gap:10px 18px}
+.registry-fund .btn{grid-column:1/-1;justify-self:start;margin-left:0!important;margin-top:8px}
+
+/* 670: mobile marketplace filters in one scrollable row; account menu never off-screen */
+@media (max-width:749px){
+  .ejuno-vendor-filters{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center;gap:8px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;scrollbar-width:none;justify-content:flex-start!important;padding-bottom:4px}
+  .ejuno-vendor-filters::-webkit-scrollbar{display:none}
+  .ejuno-vendor-filters .ejuno-vendor-type-tabs{display:flex!important;flex-wrap:nowrap!important;gap:8px;flex:0 0 auto;width:auto!important}
+  .ejuno-vendor-filters>.ejuno-facet-pill{flex:0 0 auto;width:auto!important;margin:0!important}
+  .ejuno-vendor-filters .chip{white-space:nowrap}
+  .ejuno-vendor-filters .ejuno-facet-pill[open] .ejuno-facet-pill__panel{position:fixed!important;left:16px!important;right:16px!important;top:var(--ej-pill-top,200px)!important;width:auto!important;max-height:60vh;overflow:auto;z-index:60;transform:none!important}
+  .header-account__menu{position:fixed!important;left:12px!important;right:12px!important;width:auto!important;max-width:none!important;top:var(--ej-acct-top,68px)!important;transform:none!important}
+}
+
+/* 567: page / story cards in search */
+.result-card--content .result-card__read{display:inline-block;margin-top:10px;color:var(--berry,#9b5068);font-size:14px;font-weight:500}
+
+/* 656/657: the matched filter chip stands out */
+.result-card .tag.is-match{background:rgba(155,80,104,.12);color:var(--berry,#9b5068)}
+.ej-date-note{margin:0 0 18px;color:var(--muted,#6f655d);font-size:14px}
+.partner-journey-head{text-align:center!important;margin-left:auto!important;margin-right:auto!important;max-width:720px}
+.partner-journey-head .lead,.partner-journey-lead{margin-left:auto!important;margin-right:auto!important}
+.contact-layout{padding-left:0;padding-right:0}

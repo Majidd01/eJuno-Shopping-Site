@@ -1,0 +1,128 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "social_instagram": "https://www.instagram.com/ejuno_events/",
+        "social_facebook": "https://www.facebook.com/profile.php?id=61578777266068",
+        "social_pinterest": "https://www.pinterest.com/ejuno_events/",
+        "social_tiktok": "https://www.tiktok.com/@ejuno_events",
+        "social_youtube": "https://www.youtube.com/@ejuno_events"
+      },
+      "blocks": {
+        "p1": {
+          "type": "plan_link",
+          "settings": {
+            "label": "Wedding Website",
+            "url": "/pages/wedding-website"
+          }
+        },
+        "p2": {
+          "type": "plan_link",
+          "settings": {
+            "label": "Registry",
+            "url": "/pages/registry"
+          }
+        },
+        "p3": {
+          "type": "plan_link",
+          "settings": {
+            "label": "Guest List",
+            "url": "/pages/guest-list"
+          }
+        },
+        "p4": {
+          "type": "plan_link",
+          "settings": {
+            "label": "Budget",
+            "url": "/pages/budget"
+          }
+        },
+        "p6": {
+          "type": "plan_link",
+          "settings": {
+            "label": "Checklist",
+            "url": "/pages/wedding-check-list"
+          }
+        },
+        "e1": {
+          "type": "explore_link",
+          "settings": {
+            "label": "Venues",
+            "url": "/collections/venues"
+          }
+        },
+        "e2": {
+          "type": "explore_link",
+          "settings": {
+            "label": "Vendor Marketplace",
+            "url": "/pages/vendor-marketplace"
+          }
+        },
+        "e4": {
+          "type": "company_link",
+          "settings": {
+            "label": "Reviews",
+            "url": "/pages/platform-reviews"
+          }
+        },
+        "e5": {
+          "type": "company_link",
+          "settings": {
+            "label": "FAQs",
+            "url": "/pages/faqs"
+          }
+        },
+        "e6": {
+          "type": "company_link",
+          "settings": {
+            "label": "Contact Us",
+            "url": "/pages/contact"
+          }
+        },
+        "e8": {
+          "type": "explore_link",
+          "settings": {
+            "label": "Inspiration",
+            "url": "/blogs/inspiration"
+          }
+        },
+        "e7": {
+          "type": "explore_link",
+          "settings": {
+            "label": "Submit Your Work",
+            "url": "/pages/showcase-your-work"
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p6",
+        "e1",
+        "e2",
+        "e8",
+        "e4",
+        "e5",
+        "e6",
+        "e7"
+      ]
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

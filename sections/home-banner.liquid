@@ -1,0 +1,119 @@
+{% liquid
+  if section.settings.image != blank
+    assign src = section.settings.image | image_url: width: 2000
+    assign alt = section.settings.image.alt | default: section.settings.heading
+    assign w = section.settings.image.width
+    assign h = section.settings.image.height
+  else
+    assign src = section.settings.fallback_asset | asset_url
+    assign alt = section.settings.heading
+    assign w = 1672
+    assign h = 941
+  endif
+%}
+<section class="section{% if section.settings.tight %} tight{% endif %}">
+  <div class="container">
+    <div class="full-banner{% if section.settings.image == blank and section.settings.fallback_asset == 'HOME-BNR-001.webp' %} full-banner--bnr1{% endif %}"{% if section.settings.min_height != blank %} style="min-height:{{ section.settings.min_height }}px"{% endif %}>
+      {%- comment -%} Trello 689 BUG-09: retina/large-screen srcset up to 3840px when the uploaded image allows it (Shopify never upscales). {%- endcomment -%}
+      {%- if section.settings.image != blank -%}
+        {%- capture ej_bnr_style -%}{% if section.settings.min_height != blank %}height:{{ section.settings.min_height }}px{% endif %}{%- endcapture -%}
+        {{ section.settings.image | image_url: width: 3840 | image_tag: widths: '750, 1100, 1500, 2000, 2500, 3000, 3840', sizes: '100vw', loading: 'lazy', alt: alt, width: w, height: h, style: ej_bnr_style }}
+      {%- else -%}
+        {%- if section.settings.fallback_asset == 'HOME-BNR-001.webp' -%}
+        {%- comment -%} Trello 794 item 3.2: HOME-BNR-001 re-export 2560x1040 desktop + 1062x1560 mobile crop {%- endcomment -%}
+        <picture>
+          <source media="(max-width: 749px)" srcset="{{ 'ejuno-794d-3-2-m.jpg' | asset_url }}" width="1062" height="1560">
+          <img src="{{ 'ejuno-794d-3-2-d.jpg' | asset_url }}" alt="{{ alt | escape }}" width="2560" height="1040" loading="lazy"{% if section.settings.min_height != blank %} style="height:{{ section.settings.min_height }}px"{% endif %}>
+        </picture>
+        {%- else -%}
+        <img src="{{ src }}" srcset="{{ src }} {{ w }}w" sizes="100vw" alt="{{ alt | escape }}" width="{{ w }}" height="{{ h }}" loading="lazy"{% if section.settings.min_height != blank %} style="height:{{ section.settings.min_height }}px"{% endif %}>{%- endif -%}
+      {%- endif -%}
+      <div class="banner-copy">
+        <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.text }}</p>
+        {% if section.settings.button_label != blank %}
+          <a href="{{ section.settings.button_url }}" class="btn primary">{{ section.settings.button_label }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+/* Trello 656 mobile pass: stronger scrim so white banner copy stays readable over bright photos */
+@media (max-width: 760px) {
+  .ejuno-section .full-banner::after {
+    background: linear-gradient(0deg, rgba(24,20,18,.78) 0%, rgba(24,20,18,.55) 55%, rgba(24,20,18,.18) 100%);
+  }
+  .ejuno-section .banner-copy { text-shadow: 0 1px 8px rgba(0,0,0,.3); }
+}
+{% endstylesheet %}
+
+<style>.full-banner--bnr1 picture{display:contents}.full-banner--bnr1::after{background:linear-gradient(90deg,rgba(24,20,18,.42) 0%,rgba(24,20,18,.12) 45%,rgba(24,20,18,0) 70%)!important}@media(max-width:749px){.full-banner--bnr1::after{background:linear-gradient(0deg,rgba(24,20,18,.5) 0%,rgba(24,20,18,.1) 55%,rgba(24,20,18,0) 80%)!important}}</style>
+{% schema %}
+{
+  "name": "Home banner",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "fallback_asset",
+      "label": "Fallback asset filename",
+      "default": "HOME-BNR-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Trusted professionals"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Meet Italy’s Finest Wedding Vendors"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "From planners and photographers to florists and chefs, discover people whose work belongs in the same world as the venues you love."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore Vendors"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "tight",
+      "label": "Tight spacing",
+      "default": false
+    },
+    {
+      "type": "number",
+      "id": "min_height",
+      "label": "Min height (px)",
+      "default": 520
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home banner"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1065 @@
+/* Global responsive — all V5 pages */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: clip;
+}
+
+/* Trello 670 #5: iOS 16 — stop anything wider than the screen from widening the layout
+   viewport (that pushed the header icons and hero copy off the right edge). clip keeps
+   position: sticky working; the hidden fallback is only for Safari < 16. */
+@supports (overflow: clip) {
+  html {
+    overflow-x: clip;
+  }
+}
+@supports not (overflow: clip) {
+  html {
+    overflow-x: hidden;
+  }
+}
+
+body {
+  max-width: 100%;
+}
+
+main,
+.ejuno-section,
+.container {
+  min-width: 0;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* —— Mobile header & drawer —— */
+.header-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header-menu-toggle__close {
+  display: none;
+}
+
+.header-menu-toggle[aria-expanded='true'] .header-menu-toggle__open {
+  display: none;
+}
+
+.header-menu-toggle[aria-expanded='true'] .header-menu-toggle__close {
+  display: block;
+}
+
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10240;
+  background: rgba(22, 18, 15, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.mobile-nav-backdrop[hidden] {
+  display: none !important;
+}
+
+.mobile-nav {
+  position: fixed;
+  z-index: 10250;
+  top: 0;
+  right: 0;
+  width: min(360px, 100vw);
+  height: 100dvh;
+  max-height: 100vh;
+  background: var(--paper);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mobile-nav[hidden] {
+  display: none !important;
+}
+
+.mobile-nav [data-ejuno-header-search-toggle] {
+  display: none !important;
+}
+
+.mobile-nav:not([hidden]) {
+  display: flex;
+}
+
+@media (min-width: 1101px) {
+  .mobile-nav,
+  .mobile-nav-backdrop {
+    display: none !important;
+  }
+
+  .header-menu-toggle {
+    display: none !important;
+  }
+
+  body.ejuno-mobile-nav-open {
+    overflow: auto;
+  }
+}
+
+.mobile-nav__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.mobile-nav__title {
+  font-family: var(--serif);
+  font-size: 22px;
+}
+
+.mobile-nav__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.mobile-nav__links {
+  overflow: auto;
+  padding: 12px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-nav__link {
+  display: block;
+  padding: 14px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #554c45;
+  font-weight: 600;
+}
+
+.mobile-nav__link:hover,
+.mobile-nav__link:focus-visible {
+  background: #f0eae2;
+  color: var(--berry);
+}
+
+.mobile-nav__details {
+  border-radius: 12px;
+}
+
+.mobile-nav__summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-nav__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mobile-nav__summary::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #6d645d;
+  border-bottom: 1.5px solid #6d645d;
+  transform: rotate(45deg) translateY(-2px);
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: transform 0.2s ease;
+}
+
+.mobile-nav__details[open] .mobile-nav__summary::after {
+  transform: rotate(-135deg) translateY(2px);
+}
+
+.mobile-nav__sub {
+  padding: 4px 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-nav__sublink {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #5c534c;
+  text-decoration: none;
+}
+
+.mobile-nav__sublink:hover,
+.mobile-nav__sublink:focus-visible {
+  background: #f0eae2;
+  color: var(--berry);
+}
+
+.mobile-nav__foot {
+  flex-shrink: 0;
+  padding: 16px 18px 22px;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.mobile-nav__wedding-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+  padding: 14px 22px;
+  border-radius: 999px;
+  border: 1px solid #2a2622;
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  text-align: center;
+  color: #2a2622;
+  background: transparent;
+  transition: background 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+
+.mobile-nav__wedding-cta:hover,
+.mobile-nav__wedding-cta:focus-visible {
+  background: transparent;
+  border-color: #1f1b18;
+  color: #1f1b18;
+  transform: translateY(-1px);
+}
+
+body.ejuno-mobile-nav-open {
+  overflow: hidden;
+}
+
+/* Keep floating PDP / consent UI under the mobile drawer */
+body.ejuno-mobile-nav-open .ejuno-pdp-guide,
+body.ejuno-mobile-nav-open .ejuno-pdp-sticky-cta,
+body.ejuno-mobile-nav-open #ejuno-cookie-consent {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 1100px) {
+  .header-megamenu,
+  .shop-megamenu {
+    display: none !important;
+  }
+
+  .header-menu-toggle {
+    display: inline-flex;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .header-inner {
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 26px;
+  }
+
+  .logo-tagline {
+    display: none;
+  }
+}
+
+.homepage .header.header--home-overlay:not(.is-scrolled) .header-menu-toggle {
+  border-color: rgba(32, 28, 25, 0.35);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+}
+
+.homepage .header.header--home-overlay.is-scrolled .header-menu-toggle {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .header-actions .header-icon:not(.header-icon--cart):not(.header-icon--account):not(.header-icon--search) {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .header-inner {
+    gap: 8px;
+  }
+
+  .logo {
+    font-size: 24px;
+  }
+}
+
+/* —— Layout & typography —— */
+@media (max-width: 1100px) {
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .market-hero {
+    height: min(380px, 52vh);
+  }
+
+  .market-hero-copy {
+    width: auto;
+    right: var(--gutter);
+    bottom: 32px;
+  }
+
+  .market-search-wrap:not(.ejuno-collection-toolbar) {
+    margin-top: -24px;
+  }
+
+  .market-search:not(.ejuno-collection-search) {
+    flex-wrap: wrap;
+  }
+
+  .metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer {
+    margin-top: 64px;
+    padding: 48px 0 32px;
+  }
+
+  .partner-plan-map {
+    padding: 28px 24px 32px;
+  }
+
+  .plan-map:not(:has(.plan-map__block)) {
+    padding: 28px 24px;
+  }
+
+  .pdp-facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pdp-titlebar .h1 {
+    font-size: clamp(32px, 5vw, 52px) !important;
+  }
+
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-side {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .dashboard .dash-main {
+    overflow: visible;
+    min-width: 0;
+  }
+
+  .dashboard {
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --section-pad: 56px;
+  }
+
+  .section {
+    padding: var(--section-pad) 0;
+  }
+
+  .section.tight {
+    padding: 40px 0;
+  }
+
+  .h3 {
+    font-size: clamp(24px, 5vw, 28px);
+  }
+
+  .lead {
+    font-size: 16px;
+  }
+
+  .home-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-actions .btn {
+    width: 100%;
+  }
+
+  .market-hero {
+    height: min(320px, 48vh);
+  }
+
+  .market-hero-copy {
+    left: 18px;
+    right: 18px;
+    bottom: 32px;
+    width: auto;
+  }
+
+  .market-search-wrap:not(.ejuno-collection-toolbar) {
+    margin-top: -16px;
+  }
+
+  .market-search:not(.ejuno-collection-search) {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .market-search:not(.ejuno-collection-search) .btn {
+    width: 100%;
+  }
+
+  .ejuno-collection-toolbar .market-search.ejuno-collection-search {
+    flex-wrap: nowrap !important;
+    border-radius: 999px;
+    min-height: 50px;
+    padding: 4px 16px;
+  }
+
+
+  .filters {
+    margin: 20px 0 24px;
+    gap: 8px;
+  }
+
+  .chip {
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+
+  .utility-head {
+    padding: 52px 0 24px;
+  }
+
+  .utility-panel,
+  .contact-form,
+  .contact-info {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .search-box {
+    flex-direction: column;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .search-box .btn {
+    width: 100%;
+  }
+
+  .banner-copy {
+    top: auto;
+    bottom: 28px;
+    transform: none;
+    left: 18px;
+    right: 18px;
+  }
+
+  .full-banner,
+  .full-banner img {
+    min-height: 420px;
+    height: 420px;
+  }
+
+  .review-hero {
+    padding-top: 32px;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .metric strong {
+    font-size: 34px;
+  }
+
+  .quote-card {
+    padding: 20px;
+  }
+
+  .partner-benefits {
+    padding: 48px 0 36px;
+  }
+
+  .partner-journey {
+    padding: 36px 0 48px;
+  }
+
+  .benefit {
+    padding: 22px 20px;
+  }
+
+  .b2b-hero {
+    min-height: 440px;
+  }
+
+  .b2b-copy {
+    top: auto;
+    bottom: 28px;
+    transform: none;
+    left: 18px;
+    right: 18px;
+    width: auto;
+  }
+
+  .pdp-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .ejuno-pdp:not(.ejuno-pdp--catalog) .pdp-info {
+    padding-bottom: 24px;
+  }
+
+  .product-demo {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .browser-canvas {
+    padding: 16px;
+  }
+
+  .pullquote {
+    font-size: clamp(22px, 5vw, 28px);
+    padding-left: 14px;
+  }
+
+  .gift-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard {
+    max-width: 100%;
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
+  .dash-grid {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .dash-main {
+    overflow: visible;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .dash-main .kpis {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .dash-main .kpi {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Guest list / dashboard tables — stacked cards (no horizontal scroll) */
+  .dashboard .table-scroll,
+  .table-scroll {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dashboard .table-scroll .table,
+  .table-scroll .table {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .dashboard .table-scroll .table thead,
+  .dashboard .table-scroll .table tbody,
+  .table-scroll .table thead,
+  .table-scroll .table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .dashboard .table-scroll .table thead,
+  .table-scroll .table thead {
+    display: none;
+  }
+
+  /* Liquid markup uses <tr><th>…</th></tr> (browser wraps rows in tbody) */
+  .dashboard .table-scroll .table tbody tr:first-child,
+  .table-scroll .table tbody tr:first-child {
+    display: none;
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child),
+  .table-scroll .table tbody tr:not(:first-child) {
+    display: block;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #faf7f2;
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child):last-child,
+  .table-scroll .table tbody tr:not(:first-child):last-child {
+    margin-bottom: 0;
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td,
+  .table-scroll .table tbody tr:not(:first-child) td {
+    display: flex !important;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(222, 213, 202, 0.65);
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: normal;
+    text-align: right;
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td:last-child,
+  .table-scroll .table tbody tr:not(:first-child) td:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td:first-child,
+  .table-scroll .table tbody tr:not(:first-child) td:first-child {
+    display: block !important;
+    padding: 0 0 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td:nth-child(2)::before,
+  .table-scroll .table tbody tr:not(:first-child) td:nth-child(2)::before {
+    content: 'Guests';
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td:nth-child(3)::before,
+  .table-scroll .table tbody tr:not(:first-child) td:nth-child(3)::before {
+    content: 'RSVP';
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td:nth-child(4)::before,
+  .table-scroll .table tbody tr:not(:first-child) td:nth-child(4)::before {
+    content: 'Notes';
+  }
+
+  .dashboard .table-scroll .table tbody tr:not(:first-child) td:nth-child(n + 2)::before,
+  .table-scroll .table tbody tr:not(:first-child) td:nth-child(n + 2)::before {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  .checklist > div:first-child {
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  .checklist .btn.primary,
+  .dash-head .btn.primary {
+    white-space: normal;
+    line-height: 1.3;
+    text-align: center;
+    flex-shrink: 0;
+    max-width: 100%;
+  }
+
+  .dash-head {
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  /* Guest list, checklist, wedding website — mobile layout pass */
+  .product-head {
+    padding: 44px 0 24px;
+  }
+
+  .product-head .h1 {
+    font-size: clamp(30px, 8.2vw, 42px);
+  }
+
+  .product-demo {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .website-photo {
+    height: min(220px, 52vw);
+    min-height: 160px;
+  }
+
+  .website-mock {
+    padding: 18px 14px;
+  }
+
+  .website-mock h3 {
+    font-size: clamp(24px, 6.5vw, 32px);
+  }
+
+  .website-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 10px;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .website-mock .btn.primary {
+    width: 100%;
+    max-width: none;
+    margin-top: 4px;
+  }
+
+  .dashboard .btn,
+  .check-shell .btn,
+  .product-demo .btn,
+  .plan-editorial .btn {
+    min-height: 38px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  @media (hover: none) {
+    .dashboard .btn:hover,
+    .check-shell .btn:hover,
+    .product-demo .btn:hover {
+      transform: none;
+    }
+  }
+
+  .dash-head {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .dash-head strong {
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .dash-head .btn.primary {
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
+  }
+
+  .dash-main {
+    padding: 14px 12px;
+  }
+
+  .kpi {
+    padding: 10px 12px;
+  }
+
+  .kpi strong {
+    font-size: 24px;
+  }
+
+  .kpi span {
+    font-size: 12px;
+  }
+
+  .check-shell {
+    gap: 10px;
+  }
+
+  .check-shell > .timeline {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    gap: 8px;
+    padding: 10px 12px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 4px;
+  }
+
+  .check-shell .timeline div {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    margin-bottom: 0;
+    scroll-snap-align: start;
+    padding: 10px 14px;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #faf7f2;
+    color: var(--ink);
+  }
+
+  .check-shell .timeline div.active {
+    background: rgba(155, 80, 104, 0.12);
+    border-color: rgba(155, 80, 104, 0.45);
+    color: var(--berry-dark);
+    font-weight: 600;
+  }
+
+  .checklist {
+    padding: 16px 14px;
+  }
+
+  .checklist > div:first-child {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  .checklist > div:first-child .btn.primary {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .task {
+    padding: 11px 0;
+    gap: 10px;
+  }
+
+  .task strong {
+    font-size: 14px;
+  }
+
+  .plan-editorial {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .plan-editorial img {
+    height: auto !important;
+    max-height: 260px;
+    min-height: 180px;
+  }
+
+  .utility-head .h1 {
+    font-size: clamp(28px, 7.5vw, 40px);
+  }
+
+  .ejuno-toast-host {
+    top: 72px;
+    left: 12px;
+    right: 12px;
+  }
+
+  .modal {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal-box {
+    width: 100%;
+    max-height: 90dvh;
+    overflow: auto;
+    border-radius: 20px 20px 12px 12px;
+  }
+
+  .prototype {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .value-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .region-row {
+    grid-template-columns: 1fr;
+  }
+
+  .kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ejuno-vendor-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+
+  .ejuno-vendor-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ejuno-vendor-type-tabs {
+    width: 100%;
+  }
+}
+
+/* Contact — enquiry type select chevron */
+.contact-form .field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%236d645d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1.5 6 6.5 11 1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px 8px;
+}
+
+.contact-form .field select:focus {
+  outline: none;
+  border-color: var(--berry);
+  box-shadow: 0 0 0 2px rgba(155, 80, 104, 0.14);
+}
+
+.contact-form .form-grid {
+  gap: 18px;
+}
+
+@media (max-width: 760px) {
+  .check-shell > .timeline {
+    gap: 10px;
+    padding: 12px 4px 14px 16px;
+    margin: 0 0 12px;
+    scroll-padding-left: 16px;
+  }
+
+  .check-shell .timeline div {
+    padding: 11px 16px;
+  }
+
+  .check-shell {
+    gap: 14px;
+  }
+}
+
+/* Trello 670 #5: small-phone safety net (375-430px, incl. iOS 16 Safari). */
+@media (max-width: 760px) {
+  .ejuno-header .header-inner {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .ejuno-header .header-inner > .logo {
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .ejuno-header .header-actions {
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  .b2b-copy {
+    box-sizing: border-box;
+    max-width: calc(100% - 36px);
+    min-width: 0;
+  }
+
+  .b2b-copy .h1,
+  .b2b-copy p,
+  .home-hero-copy .h1,
+  .h1,
+  .h2 {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+
+  main select,
+  main input:not([type='checkbox']):not([type='radio']),
+  main textarea {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  main table {
+    max-width: 100%;
+  }
+
+  main iframe,
+  main embed,
+  main object {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .ejuno-header .header-actions {
+    gap: 4px;
+  }
+
+  .ejuno-header .header-actions .header-icon {
+    min-width: 40px;
+  }
+}

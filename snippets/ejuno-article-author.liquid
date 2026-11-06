@@ -1,0 +1,9 @@
+{%- comment -%} Trello vrRyw8mq: real author, or "eJuno Team" for admin / store-account authors. {%- endcomment -%}
+{%- assign ej_author = article.author | strip -%}
+{%- assign ej_a = ej_author | downcase -%}
+{%- assign ej_shop = shop.name | strip | downcase -%}
+{%- if ej_a == blank or ej_a contains 'admin' or ej_a == ej_shop or ej_a == 'ejuno' -%}
+  {%- assign ej_author = fallback | default: 'eJuno Team' -%}
+  {%- if ej_author == 'eJuno Editorial' -%}{%- assign ej_author = 'eJuno Team' -%}{%- endif -%}
+{%- endif -%}
+<span>By {{ ej_author }}</span>

@@ -1,0 +1,179 @@
+{%- comment -%} Trello 791 (staging): payment review step shown before the request is sent to vendor-confirmation. Wraps window.ejunoSendVendorConfirmation, so venues, villas, services and standalone add-ons all pass through it. {%- endcomment -%}
+<script>
+(function(){
+  function num(x){ if (x == null || x === '') return NaN; if (typeof x === 'number') return x; var t = String(x).replace(/[^\d.,-]/g, ''); if (/,\d{1,2}$/.test(t)) t = t.replace(/\./g, '').replace(',', '.'); else t = t.replace(/,/g, ''); return parseFloat(t); }
+  function sym(){ try { if (typeof getCurrencySymbol === 'function') return getCurrencySymbol() || '€'; } catch (e) {} return '€'; }
+  function money(n){ n = Math.round((Number(n) || 0) * 100) / 100; var whole = Math.abs(n % 1) < 0.005; return sym() + n.toLocaleString('de-DE', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 }); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+  function fmtDate(d){ if (!d) return ''; var x = new Date(String(d).slice(0,10) + 'T00:00:00'); return isNaN(x) ? String(d) : x.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); }
+  function plural(n, one, many){ return n + ' ' + (n === 1 ? one : many); }
+  function isService(){ if (window.ejunoVendorType) return String(window.ejunoVendorType).toLowerCase() === 'service'; var pd = window.productDetails || {}; return String(pd.vendorType || pd.type || '').toLowerCase() === 'service'; }
+  function rangeOn(){ try { return typeof window.usesCheckInCheckOutDates === 'function' && !!window.usesCheckInCheckOutDates(); } catch (e) { return false; } }
+  function confirmedDates(){ var s = window.selectedDates; if (Array.isArray(s) && s.length) return s.map(function(d){ return String(d).slice(0,10); }); return Array.isArray(window.ejunoStayDates) ? window.ejunoStayDates.map(function(d){ return String(d).slice(0,10); }) : []; }
+  function findAddon(id){
+    var a = null; try { if (typeof window.getAddonById === 'function') a = window.getAddonById(id); } catch (e) {}
+    if (a) return a; var pd = window.productDetails || {};
+    (pd.variants || []).some(function(v){ a = (v.addOns || []).find(function(x){ return String(x._id) === String(id); }) || null; return !!a; });
+    return a;
+  }
+  function isBundle(a){ return String((a && a.priceType) || '').toLowerCase() === 'bundle'; }
+
+  /* Builds the breakdown from what the guest picked; uses only prices the product data already carries (no invented fees). */
+  function breakdown(rd){
+    var pd = window.productDetails || {};
+    var standalone = !!(rd._standaloneAddon || rd.kind === 'standalone_addon');
+    var out = { standalone: standalone, lines: [], rows: [], total: 0, deposit: 0, depPct: null, venue: null, venueLabel: '', addons: [], venueSubtotal: 0, addonsSubtotal: 0 };
+    var dates = confirmedDates();
+    var range = !standalone && rangeOn();
+    var ci = String(rd.checkInDate || rd.date || dates[0] || '').slice(0,10);
+    var co = String(rd.checkOutDate || rd.checkoutDate || (range && dates.length > 1 ? dates[dates.length - 1] : '') || '').slice(0,10);
+    out.venueLabel = isService() ? 'Service price' : (range ? 'Villa price' : 'Venue price');
+    var nights = range && ci && co ? Math.round((new Date(co) - new Date(ci)) / 86400000) : 0;
+    var name = pd.title || (document.querySelector('h1') && document.querySelector('h1').textContent.trim()) || '';
+    var locEl = document.getElementById('venueLocationValue');
+    if (!standalone) {
+      out.rows.push([isService() ? 'Service' : 'Venue', name]);
+      if (locEl && locEl.textContent.trim()) out.rows.push([isService() ? 'Areas served' : 'Location', locEl.textContent.trim()]);
+      out.rows.push(['Dates', nights > 0 ? fmtDate(ci) + ' to ' + fmtDate(co) + ' (' + plural(nights, 'night', 'nights') + ')' : fmtDate(ci)]);
+      var vid = String(rd.variantId || '');
+      var v = (pd.variants || []).find(function(x){ return String(x.variantId) === vid || String(x.id) === vid; }) || (pd.variants || [])[0] || null;
+      var pkg = v ? (v.title || v.name || '') : ''; if (/^default title$/i.test(pkg)) pkg = '';
+      var guests = Number(rd.capacity || rd.noOfGuests || rd.numberOfGuests || 0);
+      if (guests > 0) out.rows.push(['Guests', String(guests)]);
+      var price = v ? num(v.price) : NaN;
+      if (price > 0) {
+        var label = (pkg ? 'Package: ' + pkg : 'Price') + ' ' + money(price);
+        var amt = price;
+        if (nights > 0) { amt = price * nights; label += ' × ' + plural(nights, 'night', 'nights'); }
+        else if (guests > 0 && isBundle(v)) { amt = price * guests; label += ' × ' + plural(guests, 'guest', 'guests'); }
+        out.lines.push([label, amt]); out.total += amt;
+        var sub = nights > 0 ? money(price) + ' per night × ' + plural(nights, 'night', 'nights') : (guests > 0 && isBundle(v) ? money(price) + ' per guest × ' + plural(guests, 'guest', 'guests') : money(price) + (isService() ? ' per booking' : ' per event'));
+        out.venue = { title: name + (pkg ? ' · ' + pkg + ' package' : ''), sub: sub, amount: amt }; out.venueSubtotal = amt;
+      } else if (pkg) out.rows.push(['Package', pkg]);
+    }
+    var items = rd.selectedAddOns || rd.selectedAddons || [];
+    var depSum = 0, pcts = [];
+    var policyPct = pd.paymentPolicy && pd.paymentPolicy.depositPercentage;
+    items.forEach(function(it){
+      var a = findAddon(it.addonId || it._id); if (!a) return;
+      var p = num(a.price) || 0;
+      var days = Number(it.numberOfDays) || (Array.isArray(it.datesOfBooking) ? it.datesOfBooking.length : 0) || 1;
+      var persons = isBundle(a) ? (Number(it.noOfPersons) || 1) : 1;
+      var amt = p * days * persons;
+      var label = (a.title || 'Add-on') + ' ' + money(p) + (isBundle(a) ? ' × ' + plural(persons, 'guest', 'guests') : '') + ' × ' + plural(days, 'day', 'days');
+      out.lines.push([label, amt]); out.total += amt;
+      var aid = String(it.addonId || it._id || ''); var ts = (it.timeSlot && it.timeSlot.startTime) ? it.timeSlot : (window.selectedAddOnTimeSlots || {})[aid];
+      var det = [money(p) + (isBundle(a) ? ' per person / day' : ' per day')];
+      if (isBundle(a)) det.push(plural(persons, 'guest', 'guests'));
+      det.push(plural(days, 'day', 'days'));
+      if (ts && ts.startTime) det.push(ts.startTime + (ts.endTime ? ' – ' + ts.endTime : ''));
+      out.addons.push({ name: a.title || 'Add-on', detail: det.join(' · '), amount: amt }); out.addonsSubtotal += amt;
+      if (standalone) { var ap = a.depositPercentage != null ? Number(a.depositPercentage) : (policyPct != null ? Number(policyPct) : 40); depSum += amt * ap / 100; pcts.push(ap); }
+    });
+    if (standalone) {
+      var titles = items.map(function(it){ var a = findAddon(it.addonId); return a && a.title; }).filter(Boolean);
+      out.rows.push(['Add-on', titles.join(', ') || rd._standaloneAddonTitle || 'Add-on']);
+      out.rows.push(['Booked with', name]);
+      out.venueLabel = 'Venue price'; out.venue = { title: 'Add-on only booking' + (name ? ' · ' + name : ''), sub: 'No venue price is included', amount: null };
+      var ad = []; items.forEach(function(it){ (it.datesOfBooking || []).forEach(function(d){ if (ad.indexOf(d) < 0) ad.push(d); }); });
+      if (ad.length) out.rows.splice(1, 0, ['Dates', ad.sort().map(fmtDate).join(', ')]);
+      out.deposit = Math.round(depSum * 100) / 100;
+      out.depPct = pcts.length && pcts.every(function(x){ return x === pcts[0]; }) ? pcts[0] : null;
+      if (!(out.total > 0)) { out.total = num(rd.addOnsTotal) || 0; }
+    } else {
+      var dp = policyPct;
+      if (dp == null || dp === '') { var dpe = document.getElementById('depositPackage'); dp = dpe ? num(dpe.textContent) : NaN; }
+      dp = Number(dp);
+      if (isFinite(dp) && dp > 0) { out.depPct = dp; out.deposit = Math.round(out.total * dp) / 100; }
+      if (!(out.total > 0)) { var ct = num(rd.calculatedPrice); if (ct > 0) { out.total = ct; out.deposit = out.depPct ? Math.round(ct * out.depPct) / 100 : 0; } }
+    }
+    out.balance = out.total > 0 && out.deposit > 0 ? Math.round((out.total - out.deposit) * 100) / 100 : 0;
+    return out;
+  }
+  window.ejunoPaymentBreakdown = breakdown;
+  /* Trello 791 reopen: grouped, labelled breakdown shared by the review step and the Request sent summary */
+  function groupsHTML(b){
+    var r = function(k, v, cls, sub){ return '<div class="ejuno-rs-row' + (cls ? ' ' + cls : '') + '"><span>' + k + (sub ? '<small class="ejuno-pr-detail">' + esc(sub) + '</small>' : '') + '</span><strong>' + esc(v) + '</strong></div>'; };
+    var h = '<div class="ejuno-pr-group-h">' + esc(b.venueLabel || 'Venue price') + '</div>';
+    if (b.venue) h += r('<b>' + esc(b.venue.title) + '</b>', b.venue.amount != null ? money(b.venue.amount) : '—', 'ejuno-pr-item', b.venue.sub);
+    if (!b.standalone) h += r(esc(b.venueLabel === 'Service price' ? 'Service subtotal' : (b.venueLabel === 'Villa price' ? 'Villa subtotal' : 'Venue subtotal')), money(b.venueSubtotal), 'ejuno-pr-subtotal');
+    var hasAdd = !!(b.addons && b.addons.length);
+    /* Trello 791 (5 Nov): services show no Add-ons group unless add-ons were actually selected */
+    if (hasAdd || b.venueLabel !== 'Service price') h += '<div class="ejuno-pr-group-h">Add-ons</div>';
+    if (hasAdd) {
+      h += b.addons.map(function(a){ return r('<b>' + esc(a.name) + '</b>', money(a.amount), 'ejuno-pr-item', a.detail); }).join('');
+      h += r('Add-ons subtotal', money(b.addonsSubtotal), 'ejuno-pr-subtotal');
+    } else if (b.venueLabel !== 'Service price') h += '<div class="ejuno-rs-row ejuno-pr-none"><span>No add-ons selected</span></div>';
+    if (b.total > 0) h += r('Total payable', money(b.total), 'ejuno-pr-total');
+    if (b.deposit > 0) h += r('Initial deposit' + (b.depPct != null ? ' (' + esc(b.depPct) + '%)' : ''), money(b.deposit));
+    if (b.balance > 0) h += r('Balance (final payment)', money(b.balance));
+    return h;
+  }
+  window.ejunoPaymentGroupsHTML = groupsHTML;
+
+  var prevOverflow = '', keyFn = null;
+  function close(){ var m = document.getElementById('ejuno-pr-modal'); if (m) m.remove(); document.documentElement.style.overflow = ''; document.body.style.overflow = prevOverflow; if (keyFn) document.removeEventListener('keydown', keyFn); keyFn = null; }
+  function show(rd, onSend, onBack){
+    close();
+    var b = breakdown(rd); rd._ejunoBreakdown = b;
+    var row = function(k, v, cls){ return '<div class="ejuno-rs-row' + (cls ? ' ' + cls : '') + '"><span>' + esc(k) + '</span><strong>' + esc(v) + '</strong></div>'; };
+    var html = '<div class="ejuno-reservation-summary"><div class="ejuno-rs-h">Your request</div>' + b.rows.filter(function(r){ return r[1]; }).map(function(r){ return row(r[0], r[1]); }).join('')
+      + '<div class="ejuno-rs-h ejuno-rs-sub">Payment breakdown</div>'
+      + groupsHTML(b)
+      + '</div><p class="ejuno-pr-note">Nothing is charged now. The vendor confirms availability first, then you pay the initial deposit.</p>';
+    var m = document.createElement('div'); m.id = 'ejuno-pr-modal'; m.className = 'ejuno-rs-modal ejuno-pr-modal';
+    m.innerHTML = '<div class="ejuno-rs-dialog" role="dialog" aria-modal="true" aria-labelledby="ejuno-pr-title"><button type="button" class="ejuno-rs-x" aria-label="Close">&times;</button><h2 id="ejuno-pr-title" class="ejuno-rs-title">Review &amp; send request</h2>' + html
+      + '<div class="ejuno-pr-actions"><button type="button" class="ejuno-pr-back">&#8592; Back to edit</button><button type="button" class="ejuno-rs-done ejuno-pr-send">Send Request</button></div></div>';
+    var done = false;
+    var back = function(){ if (done) return; done = true; close(); onBack(); };
+    m.addEventListener('click', function(e){
+      if (e.target.closest('.ejuno-pr-send')) { if (done) return; done = true; close(); onSend(); return; }
+      if (e.target === m || e.target.closest('.ejuno-rs-x, .ejuno-pr-back')) back();
+    });
+    document.body.appendChild(m);
+    prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; document.documentElement.style.overflow = 'hidden';
+    keyFn = function(e){ if (e.key === 'Escape') back(); }; document.addEventListener('keydown', keyFn);
+    var s = m.querySelector('.ejuno-pr-send'); if (s) s.focus();
+  }
+  window.ejunoShowPaymentReview = show;
+
+  function install(){
+    var inner = window.ejunoSendVendorConfirmation;
+    if (typeof inner !== 'function' || inner._ejunoReview) return;
+    var w = function(rd, opts){
+      opts = opts || {};
+      if (opts.skipReview) return inner.call(this, rd, opts);
+      var self = this;
+      try { if (typeof hideLoaderFull === 'function') hideLoaderFull(); } catch (e) {}
+      return new Promise(function(resolve){
+        try {
+          show(rd || {}, function(){ resolve(inner.call(self, rd, opts)); }, function(){ if (typeof opts.onDone === 'function') { try { opts.onDone(); } catch (e) {} } resolve(null); });
+        } catch (e) { console.warn('[eJuno payment review] failed, sending directly', e); resolve(inner.call(self, rd, opts)); }
+      });
+    };
+    w._ejunoReview = true;
+    window.ejunoSendVendorConfirmation = w;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+})();
+</script>
+<style>
+.ejuno-pr-line span{max-width:72%;}
+.ejuno-pr-total{border-top:2px solid #b9aa9b;font-size:15px;margin-top:6px;padding-top:12px;}
+.ejuno-pr-total strong{font-weight:700;}
+.ejuno-pr-group-h{margin:14px 0 2px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#201c19;}
+.ejuno-pr-item span{display:flex;flex-direction:column;gap:2px;min-width:0;max-width:72%;text-align:left;}
+.ejuno-pr-item b{font-weight:600;color:#201c19;overflow-wrap:anywhere;}
+.ejuno-pr-detail{font-size:12.5px;line-height:1.4;color:#7a7068;}
+.ejuno-pr-item strong{align-self:flex-start;white-space:nowrap;}
+.ejuno-pr-subtotal span{color:#5a524b;font-style:italic;}
+.ejuno-pr-subtotal strong{font-weight:600;}
+.ejuno-pr-none span{color:#7a7068;font-style:italic;}
+.ejuno-pr-total span{color:#201c19;font-weight:600;}
+.ejuno-pr-note{margin:12px 2px 0;font-size:13px;color:#5a524b;}
+.ejuno-pr-actions{display:flex;gap:10px;margin-top:18px;align-items:center;}
+.ejuno-pr-actions .ejuno-rs-done{margin:0;flex:1 1 auto;}
+.ejuno-pr-back{flex:0 0 auto;padding:13px 16px;border:1px solid #7a3f52;border-radius:999px;background:#fff;color:#7a3f52;font-size:15px;font-weight:600;cursor:pointer;}
+.ejuno-pr-back:hover{background:#f6eef1;}
+@media (max-width:600px){.ejuno-pr-actions{flex-direction:column-reverse;align-items:stretch;}.ejuno-pr-back{width:100%;}}
+</style>

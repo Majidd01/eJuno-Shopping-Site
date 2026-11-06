@@ -1,0 +1,378 @@
+{%- comment -%} Trello 793: rendered as /collections/all?section_id=main-search, this lists the catalog so search can find products Shopify's search index misses. {%- endcomment -%}
+{%- if template.name == 'collection' -%}
+<div data-ej-catalog>{%- paginate collection.products by 50 -%}<i data-ej-catalog-pages="{{ paginate.pages }}" hidden></i>{%- for item in collection.products -%}{% render 'collection-result-card', product: item, featured: false, eager: false %}{%- endfor -%}{%- endpaginate -%}</div>
+{%- else -%}
+{% liquid
+  assign per_page = section.settings.per_page | default: 24
+  if per_page < 12
+    assign per_page = 12
+  elsif per_page > 48
+    assign per_page = 48
+  endif
+  assign ej_terms = search.terms | strip
+  assign ej_sort = request.query_parameters.sort_by | default: 'relevance'
+  assign ej_pmin = request.query_parameters['filter.v.price.gte']
+  assign ej_pmax = request.query_parameters['filter.v.price.lte']
+%}
+<script>
+  /* Trello 793: tidy price params before anything reads them. 1e3 -> 1000, negative or empty values are dropped, Min > Max is swapped. */
+  (function () {
+    try {
+      var u = new URL(window.location.href), p = u.searchParams, ch = false;
+      var pn = function (v) { v = String(v == null ? '' : v).trim(); if (/^\+?(\d+\.?\d*|\.\d+)e[+-]?\d+$/i.test(v)) return Number(v); v = v.replace(/[^0-9.,-]/g, ''); if (/^-?\d{1,3}([.,]\d{3})+$/.test(v)) v = v.replace(/[.,]/g, ''); else v = v.replace(/\.(?=.*[.,])/g, '').replace(',', '.'); return parseFloat(v); };
+      ['filter.v.price.gte', 'filter.v.price.lte'].forEach(function (k) {
+        if (!p.has(k)) return;
+        var raw = String(p.get(k)).trim(), n = pn(raw);
+        /* Trello 793 reopen (5 Nov): anything that isn't a plain price (30+5, 5-, abc) is dropped and flagged, not read as a number */
+        if (raw !== '' && !/^\+?(\d+\.?\d*|\.\d+)e[+-]?\d+$/i.test(raw) && !(/^(\d+([.,]\d{1,2})?|\d{1,3}(\.\d{3})+(,\d{1,2})?|\d{1,3}(,\d{3})+(\.\d{1,2})?)$/).test(raw)) { p.delete(k); ch = true; try { sessionStorage.setItem('ejPriceUrlInvalid', '1'); } catch (e) {} return; }
+        if (raw === '' || !isFinite(n) || n < 0 || /^-/.test(raw)) { p.delete(k); ch = true; return; }
+        if (/e/i.test(raw)) { p.set(k, String(n)); ch = true; }
+      });
+      var g = pn(p.get('filter.v.price.gte')), l = pn(p.get('filter.v.price.lte'));
+      if (p.has('filter.v.price.gte') && p.has('filter.v.price.lte') && isFinite(g) && isFinite(l) && g > l) {
+        var a = p.get('filter.v.price.gte'); p.set('filter.v.price.gte', p.get('filter.v.price.lte')); p.set('filter.v.price.lte', a); ch = true;
+      }
+      if (p.get('q') !== null && p.get('type') !== 'product') { p.set('type', 'product'); ch = true; }
+      if (p.get('sort_by') === 'relevance') { p.delete('sort_by'); ch = true; }
+      if (ch) { p.delete('page'); window.location.replace(u.pathname + (p.toString() ? '?' + p.toString() : '') + u.hash); }
+    } catch (e) {}
+  })();
+</script>
+
+<section class="utility-head">
+  <div class="container">
+    <div class="eyebrow">Search</div>
+    <h1 class="h1">Search</h1>
+    {%- comment -%} Trello 790/793: the search page lists venues and services only, with price and sort controls. {%- endcomment -%}
+    <form action="{{ routes.search_url }}" method="get" class="search-box ejuno-search-form" role="search" data-ej-search-form novalidate>
+      <input type="hidden" name="type" value="product">
+      <input
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ section.settings.search_placeholder }}"
+        aria-label="{{ section.settings.search_placeholder }}"
+      >
+      <button class="btn secondary" type="submit">{{ section.settings.search_button_label }}</button>
+      <div class="ejuno-search-form__controls">
+        <label class="ejuno-search-form__field">Min price (€)
+          <input type="text" inputmode="decimal" autocomplete="off" name="filter.v.price.gte" value="{{ ej_pmin | escape }}" data-ej-search-min placeholder="0">
+        </label>
+        <label class="ejuno-search-form__field">Max price (€)
+          <input type="text" inputmode="decimal" autocomplete="off" name="filter.v.price.lte" value="{{ ej_pmax | escape }}" data-ej-search-max placeholder="Any">
+        </label>
+        <label class="ejuno-search-form__field">Sort by
+          <select name="sort_by" data-ej-search-sort>
+            <option value="relevance"{% if ej_sort == 'relevance' %} selected{% endif %}>Most relevant</option>
+            <option value="title-ascending"{% if ej_sort == 'title-ascending' %} selected{% endif %}>Name, A–Z</option>
+            <option value="title-descending"{% if ej_sort == 'title-descending' %} selected{% endif %}>Name, Z–A</option>
+            <option value="price-ascending"{% if ej_sort == 'price-ascending' %} selected{% endif %}>Price, low to high</option>
+            <option value="price-descending"{% if ej_sort == 'price-descending' %} selected{% endif %}>Price, high to low</option>
+          </select>
+        </label>
+      </div>
+      <p class="ejuno-search-form__hint" data-ej-search-hint role="alert" hidden></p>
+    </form>
+  </div>
+</section>
+
+{% if search.performed and ej_terms != blank %}
+  <section class="section tight ejuno-search-results">
+    <div class="container">
+      {% paginate search.results by per_page %}
+        <div class="ejuno-search-results__meta" role="status" aria-live="polite">
+          <p class="ejuno-search-results__count" data-ej-search-count>Searching for “{{ search.terms | escape }}”…</p>
+        </div>
+        <div class="ejuno-collection-empty ejuno-empty-friendly ejuno-search-empty" data-ej-search-empty hidden>
+          <h3>Nothing matches &ldquo;{{ search.terms | escape }}&rdquo; yet</h3>
+          <p data-ej-search-empty-text>Try a different word, or tell us what you have in mind and we&rsquo;ll help you find it.</p>
+          <div class="ejuno-empty-friendly__actions">
+            <a class="btn primary" href="/pages/contact">Ask us</a>
+            <a class="btn ghost" href="/pages/all-services">See all services</a>
+          </div>
+        </div>
+        <div
+          class="result-grid ejuno-search-grid ej-pending"
+          data-search-results-grid
+          data-section-id="{{ section.id }}"
+          data-per-page="{{ per_page }}"
+          data-total-pages="{{ paginate.pages }}"
+          data-terms="{{ search.terms | escape }}"
+        >
+          {% for item in search.results %}
+            {% if item.object_type == 'product' %}
+              {% render 'collection-result-card', product: item, featured: false, eager: false %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        {%- comment -%} Search flash fix (5 Nov): Shopify's raw results stay hidden behind a loader until the script below has matched, filtered and sorted them; noscript and a 10s timeout reveal them anyway. {%- endcomment -%}
+        <noscript><style>.ejuno-search-grid.ej-pending>.result-card{display:revert!important}.ejuno-search-grid.ej-pending::before{display:none!important}.ejuno-search-grid.ej-pending{min-height:0}</style></noscript>
+        <div class="ejuno-load-more" data-ej-search-more hidden>
+          <button type="button" class="btn secondary ejuno-load-more__btn">{{ section.settings.load_more_label }}</button>
+        </div>
+      {% endpaginate %}
+    </div>
+  </section>
+{% else %}
+  <section class="section tight ejuno-search-results">
+    <div class="container">
+      <div class="ejuno-collection-empty ejuno-empty-friendly ejuno-search-empty ejuno-search-guide">
+        <h3>What are you looking for?</h3>
+        <p>Type a venue, a service or a location in the search box above, for example &ldquo;Tuscany&rdquo;, &ldquo;villa&rdquo; or &ldquo;photographer&rdquo;.</p>
+        <div class="ejuno-empty-friendly__actions">
+          <a class="btn primary" href="/collections/venues">Browse venues</a>
+          <a class="btn ghost" href="/pages/all-services">See all services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<script>
+  (function () {
+    var form = document.querySelector('[data-ej-search-form]');
+    if (form) {
+      var hint = form.querySelector('[data-ej-search-hint]');
+      var mn = form.querySelector('[data-ej-search-min]'), mx = form.querySelector('[data-ej-search-max]');
+      /* Liquid can't read the price/sort params, so fill the controls from the URL */
+      var up = new URLSearchParams(window.location.search);
+      if (up.has('filter.v.price.gte')) mn.value = up.get('filter.v.price.gte');
+      if (up.has('filter.v.price.lte')) mx.value = up.get('filter.v.price.lte');
+      var ss = form.querySelector('[data-ej-search-sort]'); if (ss && up.get('sort_by') && ss.querySelector('option[value="' + up.get('sort_by') + '"]')) ss.value = up.get('sort_by');
+      var pp = function (v) { v = String(v == null ? '' : v).trim(); if (!/^(\d+([.,]\d{1,2})?|\d{1,3}(\.\d{3})+(,\d{1,2})?|\d{1,3}(,\d{3})+(\.\d{1,2})?)$/.test(v)) return NaN; if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(v)) v = v.replace(/\./g, '').replace(',', '.'); else if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(v)) v = v.replace(/,/g, ''); else v = v.replace(',', '.'); return parseFloat(v); };
+      var num = function (el) { var v = String(el.value || '').trim(); return v === '' ? NaN : pp(v); };
+      var badFmt = function (el) { var v = String(el.value || '').trim(); return v !== '' && !/^-/.test(v) && !isFinite(pp(v)); };
+      var check = function () {
+        var a = num(mn), b = num(mx), m = '';
+        if (/^\s*-/.test(mn.value) || /^\s*-/.test(mx.value)) m = 'Price can\u2019t be negative.';
+        else if (badFmt(mn) || badFmt(mx)) m = 'Please enter a valid price (numbers only).';
+        else if (isFinite(a) && isFinite(b) && a > b) m = 'Minimum price can\u2019t be higher than maximum price.';
+        hint.textContent = m; hint.hidden = !m;
+        [mn, mx].forEach(function (i) { if (m) i.setAttribute('aria-invalid', 'true'); else i.removeAttribute('aria-invalid'); });
+        return !m;
+      };
+      [mn, mx].forEach(function (i) { i.addEventListener('input', check); });
+      try { if (sessionStorage.getItem('ejPriceUrlInvalid')) { sessionStorage.removeItem('ejPriceUrlInvalid'); hint.textContent = 'That price wasn\u2019t valid (numbers only), so the price filter wasn\u2019t applied.'; hint.hidden = false; } } catch (e) {}
+      form.addEventListener('submit', function (e) {
+        if (!check()) { e.preventDefault(); return; }
+        var q = form.querySelector('[name="q"]');
+        if (!String(q.value || '').trim()) { e.preventDefault(); hint.textContent = 'Type something to search for, e.g. \u201cTuscany\u201d or \u201cvilla\u201d.'; hint.hidden = false; q.focus(); return; }
+        [mn, mx].forEach(function (i) { if (String(i.value).trim() === '') i.disabled = true; else i.value = String(pp(i.value)); });
+        var s = form.querySelector('[data-ej-search-sort]'); if (s && s.value === 'relevance') s.disabled = true;
+      });
+    }
+
+    var grid = document.querySelector('[data-search-results-grid]');
+    if (!grid) return;
+    var countEl = document.querySelector('[data-ej-search-count]');
+    var emptyEl = document.querySelector('[data-ej-search-empty]');
+    var moreEl = document.querySelector('[data-ej-search-more]');
+    var per = parseInt(grid.getAttribute('data-per-page'), 10) || 24;
+    var total = parseInt(grid.getAttribute('data-total-pages'), 10) || 1;
+    var terms = grid.getAttribute('data-terms') || '';
+    var norm = function (v) { return String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim(); };
+    var tokens = norm(terms).replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(function (t) { return t.length > 0; });
+    var params = new URLSearchParams(window.location.search);
+    var gte = params.has('filter.v.price.gte') ? Number(params.get('filter.v.price.gte')) : NaN;
+    var lte = params.has('filter.v.price.lte') ? Number(params.get('filter.v.price.lte')) : NaN;
+    var sort = params.get('sort_by') || 'relevance';
+    var shown = per;
+    var keyOf = function (c) { return String(c.getAttribute('href') || '').split('?')[0]; };
+    var reveal = function () { grid.classList.remove('ej-pending'); };
+    setTimeout(reveal, 10000);
+
+    function fetchPage(n, retry) {
+      var u = new URL(window.location.href);
+      u.searchParams.set('page', String(n));
+      u.searchParams.set('section_id', grid.getAttribute('data-section-id'));
+      return fetch(u.pathname + u.search, { credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }).then(function (html) {
+        return new DOMParser().parseFromString(html, 'text/html').querySelectorAll('[data-search-results-grid] .result-card');
+      }).then(function (list) {
+        if (!list.length && !retry) return fetchPage(n, true);
+        return list;
+      }).catch(function () { return retry ? [] : fetchPage(n, true); });
+    }
+    /* Shopify's search index can miss products or shuffle them between pages, so also read the whole catalog and match it here. */
+    function fetchCatalog(n, retry) {
+      return fetch('/collections/all?section_id=main-search&sort_by=created-descending&page=' + n, { credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }).then(function (html) {
+        var d = new DOMParser().parseFromString(html, 'text/html');
+        var pg = d.querySelector('[data-ej-catalog-pages]');
+        return { pages: pg ? parseInt(pg.getAttribute('data-ej-catalog-pages'), 10) || 1 : 1, cards: d.querySelectorAll('[data-ej-catalog] .result-card') };
+      }).catch(function () { return retry ? { pages: 1, cards: [] } : fetchCatalog(n, true); });
+    }
+    var jobs = fetchCatalog(1).then(function (first) {
+      var more = [];
+      for (var n = 2; n <= first.pages && n <= 20; n++) more.push(fetchCatalog(n));
+      return Promise.all(more).then(function (rest) { return [first.cards].concat(rest.map(function (x) { return x.cards; })); });
+    });
+    Promise.all([jobs]).then(function (wrap) { var lists = wrap[0];
+      var seen = {};
+      grid.querySelectorAll('.result-card').forEach(function (c) { seen[keyOf(c)] = true; });
+      lists.forEach(function (list) { Array.prototype.forEach.call(list, function (c) { if (seen[keyOf(c)]) return; seen[keyOf(c)] = true; grid.appendChild(c); }); });
+      var all = Array.prototype.slice.call(grid.querySelectorAll('.result-card'));
+      /* Trello 793 #8: Shopify search is fuzzy; keep only results whose name, type, vendor, tags or location contain every word. */
+      var keep = all.filter(function (c) {
+        var handle = keyOf(c).split('/').pop().replace(/-/g, ' ');
+        var hay = ' ' + norm((c.getAttribute('data-search-keys') || '') + ' ' + handle + ' ' + (c.getAttribute('data-locations') || '').replace(/\|/g, ' ')).replace(/[^a-z0-9]+/g, ' ') + ' ';
+        /* every word must start a word in the name, handle, type, vendor, tags or location ("deposit" finds "deposite") */
+        if (!tokens.every(function (t) { return hay.indexOf(' ' + t) !== -1; })) return false;
+        /* Trello 793 #6: the price filter uses the same "from" price the card shows */
+        var cents = parseInt(c.getAttribute('data-price-cents'), 10);
+        if (isFinite(gte) || isFinite(lte)) {
+          if (!isFinite(cents)) return false;
+          var a = cents / 100;
+          if (isFinite(gte) && a < gte - 0.0001) return false;
+          if (isFinite(lte) && a > lte + 0.0001) return false;
+        }
+        return true;
+      });
+      /* Trello 793 #5: Shopify search can't sort by name, so sort here */
+      var title = function (c) { var h = c.querySelector('h3'); return norm(h ? h.textContent : c.textContent); };
+      var price = function (c) { var v = parseInt(c.getAttribute('data-price-cents'), 10); return isFinite(v) ? v : Infinity; };
+      var cmp = {
+        'title-ascending': function (a, b) { return title(a).localeCompare(title(b)); },
+        'title-descending': function (a, b) { return title(b).localeCompare(title(a)); },
+        'price-ascending': function (a, b) { return price(a) - price(b); },
+        'price-descending': function (a, b) { return (price(b) === Infinity ? -1 : price(b)) - (price(a) === Infinity ? -1 : price(a)); }
+      }[sort];
+      if (cmp) keep.sort(cmp);
+      all.forEach(function (c) { c.remove(); });
+      keep.forEach(function (c) { grid.appendChild(c); });
+      function paint() {
+        keep.forEach(function (c, i) { c.style.display = i < shown ? '' : 'none'; });
+        moreEl.hidden = keep.length <= shown;
+      }
+      moreEl.querySelector('button').addEventListener('click', function () { shown += per; paint(); });
+      paint();
+      var q = '\u201c' + terms + '\u201d';
+      if (!keep.length) {
+        countEl.textContent = 'No results for ' + q + '.';
+        emptyEl.hidden = false;
+        if (isFinite(gte) || isFinite(lte)) emptyEl.querySelector('[data-ej-search-empty-text]').textContent = 'Nothing matches ' + q + ' in that price range. Try a wider range or clear the price filter.';
+      } else {
+        countEl.textContent = keep.length + (keep.length === 1 ? ' result' : ' results') + ' for ' + q;
+      }
+    }).then(reveal, reveal);
+  })();
+</script>
+
+{%- endif -%}
+{% stylesheet %}
+.ejuno-search-results__meta {
+  margin: 0 0 22px;
+}
+.ejuno-search-results__count {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+.ejuno-search-results__page {
+  color: var(--ink);
+}
+.ejuno-search-form {
+  flex-wrap: wrap;
+}
+.ejuno-search-form__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+.ejuno-search-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  flex: 1 1 140px;
+}
+.ejuno-search-form__field input,
+.ejuno-search-form__field select {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  font-size: 14px;
+  background: #fff;
+  min-width: 0;
+}
+.ejuno-search-form__field input[aria-invalid='true'] {
+  border-color: #b42318;
+}
+@media (max-width: 760px) {
+  .ejuno-search-form__field { flex: 1 1 calc(50% - 6px); }
+  .ejuno-search-form__field:last-child { flex-basis: 100%; }
+}
+.ejuno-search-form__hint {
+  width: 100%;
+  color: #b42318;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+.ejuno-search-form__hint[hidden],
+.ejuno-search-empty[hidden] {
+  display: none !important;
+}
+.ejuno-empty-friendly{grid-column:1/-1;opacity:1;color:#201c19;text-align:center;padding:48px 20px;max-width:560px;margin:0 auto}
+.ejuno-empty-friendly h3{font-family:var(--serif);font-weight:400;font-size:28px;margin:0 0 10px;color:#201c19;opacity:1}
+.ejuno-empty-friendly p{color:#5a524b;margin:0 0 20px;line-height:1.6}
+.ejuno-empty-friendly__actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.ejuno-search-grid.ej-pending > .result-card { display: none !important; }
+.ejuno-search-grid.ej-pending { min-height: 420px; position: relative; }
+.ejuno-search-grid.ej-pending::before {
+  content: ''; position: absolute; left: 50%; top: 120px; width: 36px; height: 36px; margin-left: -18px;
+  border: 3px solid var(--line, #e6dfd8); border-top-color: var(--berry, #9b5068); border-radius: 50%;
+  animation: ejSearchSpin .8s linear infinite;
+}
+@keyframes ejSearchSpin { to { transform: rotate(360deg); } }
+.ejuno-load-more {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 32px;
+}
+.ejuno-load-more[hidden] {
+  display: none !important;
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Search",
+  "settings": [
+    {
+      "type": "range",
+      "id": "per_page",
+      "min": 12,
+      "max": 48,
+      "step": 6,
+      "label": "Results per page",
+      "default": 24,
+      "info": "Batch size for Load more"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search venues, services, stories"
+    },
+    {
+      "type": "text",
+      "id": "search_button_label",
+      "label": "Search button label",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Load more label",
+      "default": "Show more"
+    },
+    {
+      "type": "text",
+      "id": "load_more_loading",
+      "label": "Load more loading label",
+      "default": "Loading…"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,55 @@
+<section class="review-hero">
+  <div class="container review-hero__inner">
+    <div class="review-copy">
+      <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+      <h1 class="h1">{{ section.settings.heading }}</h1>
+      <p class="lead">{{ section.settings.text }}</p>
+      <a href="/pages/contact" class="btn primary">Talk to eJuno</a>
+    </div>
+    <figure class="review-hero__media">
+      {% if section.settings.image != blank %}
+        <img src="{{ section.settings.image | image_url: width: 2400 }}" width="1672" height="941" loading="lazy" alt="">
+      {% else %}
+        <img src="{{ 'ejuno-photo-11.jpg' | asset_url }}" width="1200" height="801" loading="lazy" alt="Wedding guests celebrating at a long banquet table in an Italian castle courtyard">
+      {% endif %}
+    </figure>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Reviews hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Real experiences"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Confidence Comes From People Who’ve Done It"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Real words from couples and professionals who have planned with eJuno."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews hero"
+    }
+  ]
+}
+{% endschema %}

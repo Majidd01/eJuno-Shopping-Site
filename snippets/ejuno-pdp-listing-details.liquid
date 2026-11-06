@@ -1,0 +1,176 @@
+{%- comment -%}
+  Trello 711: vendor listing fields on the store listing page.
+  Data comes from the eJuno backend (/products/shopify-product/:id), already fetched by the PDP
+  scripts into window.productDetails (event: productDetailsLoaded). Every block hides when empty.
+{%- endcomment -%}
+<div id="ejuno-listing-details" class="ejuno-ld" hidden></div>
+<style>
+.ejuno-ld{display:grid;gap:44px;margin:44px 0 8px}
+.ejuno-ld[hidden]{display:none!important}
+.ejuno-ld__block{min-width:0}
+.ejuno-ld__block h3.ejuno-highlights__title{margin:0 0 16px}
+.ejuno-ld__lead{font-size:18px;line-height:1.6;color:var(--ink,#2a2420);margin:0 0 14px}
+.ejuno-ld__text{color:#5a524b;line-height:1.7;white-space:pre-line;overflow-wrap:anywhere}
+.ejuno-ld__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ejuno-ld__stat{background:linear-gradient(180deg,#fffdf9,#f8f1e8);border:1px solid rgba(155,80,104,.12);border-radius:16px;padding:16px 18px;box-shadow:0 8px 24px rgba(60,40,30,.05)}
+.ejuno-ld__stat small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a7f76;margin-bottom:6px}
+.ejuno-ld__stat strong{font-family:var(--serif,Georgia,serif);font-weight:400;font-size:22px;color:var(--ink,#2a2420)}
+.ejuno-ld__rows{display:grid;gap:0;border-top:1px solid rgba(42,36,32,.1)}
+.ejuno-ld__row{display:grid;grid-template-columns:180px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid rgba(42,36,32,.1)}
+.ejuno-ld__row dt{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a7f76;padding-top:3px}
+.ejuno-ld__row dd{margin:0;color:var(--ink,#2a2420);line-height:1.6;overflow-wrap:anywhere;white-space:pre-line}
+.ejuno-ld__chips{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.ejuno-ld__chips li{padding:8px 14px;border-radius:999px;background:#f6ece9;border:1px solid rgba(155,80,104,.22);color:#7d3f53;font-size:14px;line-height:1.2}
+.ejuno-ld__cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.ejuno-ld__card{background:#fffdf9;border:1px solid rgba(42,36,32,.1);border-radius:16px;padding:18px}
+.ejuno-ld__card small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9b5068;margin-bottom:8px}
+.ejuno-ld__card{height:auto;min-width:0}
+.ejuno-ld__cards{align-items:start}
+.ejuno-ld__card p{margin:0;color:#4a423c;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere;word-break:break-word;overflow:visible;text-overflow:clip;display:block;-webkit-line-clamp:unset;max-height:none}
+/* Trello 711 reopen #4: Venue details is the single source for capacity/style/stay facts */
+body.ejuno-ld-has-details .ejuno-pdp-facts{display:none!important}
+.ejuno-ld__link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:#9b5068;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.ejuno-ld__sub{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a7f76;margin:18px 0 10px}
+@media (max-width:760px){
+  .ejuno-ld{gap:34px;margin-top:32px}
+  .ejuno-ld__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ejuno-ld__cards{grid-template-columns:1fr}
+  .ejuno-ld__row{grid-template-columns:1fr;gap:4px}
+  .ejuno-ld__stat strong{font-size:20px}
+}
+/* Trello 711: clamp long rule/terms text to 3 lines with a See more / See less toggle */
+.ejuno-ld .ejuno-ld-clamp{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:3!important;line-clamp:3;overflow:hidden!important;text-overflow:ellipsis}
+.ejuno-ld .ejuno-ld-clamp.is-open{display:block!important;-webkit-line-clamp:unset!important;line-clamp:none;overflow:visible!important}
+.ejuno-ld__more{display:inline-block;margin:8px 0 0;padding:0;background:none;border:0;font:inherit;font-size:13px;font-weight:500;letter-spacing:.02em;color:#9b5068;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ejuno-ld__more[hidden]{display:none!important}
+.ejuno-ld__more:hover{color:#7d3f53}
+.ejuno-ld__more:focus-visible{outline:2px solid #9b5068;outline-offset:2px;border-radius:2px}
+/* Trello 711: never show an empty heading inside the vendor description */
+.ejuno-pdp-description .ejuno-ld-empty-heading{display:none!important}
+</style>
+<script>
+(function(){
+  if (window.__ejunoListingDetails) return; window.__ejunoListingDetails = true;
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function clean(v){if(v==null)return '';var s=String(v).replace(/\s+,/g,',').replace(/[ \t]+/g,' ').trim();if(/^(null|undefined|n\/a|none|-|0)$/i.test(s))return '';return s;}
+  function pretty(s){s=clean(s).replace(/LGBTQ\s*plus/gi,'LGBTQ+').replace(/_/g,' ').replace(/([a-z])-([a-z])/gi,'$1 $2');return s.charAt(0).toUpperCase()+s.slice(1);}
+  function list(v){if(v==null||v==='')return[];if(!Array.isArray(v))v=String(v).split(/[,|]/);var out=[],seen={};v.forEach(function(i){var t=typeof i==='object'&&i?(i.name||i.label||i.value||i.title||''):i;t=pretty(t);var k=t.toLowerCase();if(t&&!seen[k]){seen[k]=1;out.push(t);}});return out;}
+  function dedupeText(s){s=clean(s);if(!s)return '';var parts=s.split(/\s*,\s*/);var u=[];parts.forEach(function(p){if(p&&u.indexOf(p)<0)u.push(p);});s=u.join(', ');var m=s.match(/^(.{8,}?)\1+$/);return m?m[1]:s;}
+  function rawText(v){if(v==null)return '';var s=String(v).replace(/\r\n?/g,'\n').replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').trim();if(/^(null|undefined|n\/a|none|-)$/i.test(s))return '';return s;}
+  function firstStr(pd,keys){for(var i=0;i<keys.length;i++){var v=pd[keys[i]];if(Array.isArray(v))v=v.filter(Boolean).join(', ');v=clean(v);if(v)return v;}return '';}
+  // Trello 711 reopen #1: "Other" -> the vendor's own text when they typed one, else keep "Other"
+  function otherVenueText(pd){
+    var t=firstStr(pd,['otherVenueCategory','venueCategoryOther','customVenueCategory','otherVenueType','venueTypeOther','specifyVenueCategory']);
+    if(t)return pretty(t);
+    var pt=clean(pd.product_type),cats=[].concat(pd.venueCategory||[]).map(function(x){return clean(x).toLowerCase();});
+    if(pt&&!/^(venue|venues|service|services|product|other|regular)$/i.test(pt)&&cats.indexOf(pt.toLowerCase())<0)return pretty(pt);
+    return '';
+  }
+  function otherEventText(pd){var t=firstStr(pd,['otherEventType','eventTypeOther','customEventType','otherEventTypes','specifyEventType','eventTypesOther']);return t?pretty(t):'';}
+  function swapOther(arr,custom){if(!custom)return arr;var out=[];arr.forEach(function(x){var v=/^others?$/i.test(x)?custom:x;if(out.map(function(y){return y.toLowerCase();}).indexOf(v.toLowerCase())<0)out.push(v);});return out;}
+  window.ejunoOtherVenueText=otherVenueText;
+  function fixHeroBadges(pd){var c=otherVenueText(pd);if(!c)return;document.querySelectorAll('.ejuno-pdp-category-badge').forEach(function(b){if(/^others?$/i.test(b.textContent.trim()))b.textContent=c;});}
+  // Trello 711 reopen #3: one clean location line in "Plan around this venue"
+  function fullAddress(vl){var parts=[];String(clean(vl.address)).split(',').concat([clean(vl.city),clean(vl.province),list(vl.regions&&vl.regions.length?vl.regions:vl.region).join(', '),clean(vl.zip),clean(vl.country)]).forEach(function(p){p=clean(p);if(/^it$/i.test(p))p='Italy';if(p)parts.push(p);});
+    var seen={},out=[];for(var i=parts.length-1;i>=0;i--){var k=parts[i].toLowerCase();if(!seen[k]){seen[k]=1;out.unshift(parts[i]);}}return out.join(', ');}
+  function fixPlanLocation(pd){var el=document.getElementById('venueLocationValue');if(!el||!pd||!pd.venueLocation)return;var a=fullAddress(pd.venueLocation);if(a&&el.textContent!==a)el.textContent=a;}
+  function num(v){var n=parseInt(v,10);return isFinite(n)&&n>0?n:null;}
+  function chips(a){return '<ul class="ejuno-ld__chips">'+a.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';}
+  function block(id,title,inner){return inner?'<section class="ejuno-ld__block" id="'+id+'"><h3 class="ejuno-highlights__title">'+esc(title)+'</h3>'+inner+'</section>':'';}
+  function rows(r){r=r.filter(function(x){return x[1];});return r.length?'<dl class="ejuno-ld__rows">'+r.map(function(x){return '<div class="ejuno-ld__row"><dt>'+esc(x[0])+'</dt><dd>'+esc(x[1])+'</dd></div>';}).join('')+'</dl>':'';}
+  function hideEmptyHeadings(){
+    document.querySelectorAll('.ejuno-pdp-description h1,.ejuno-pdp-description h2,.ejuno-pdp-description h3,.ejuno-pdp-description h4,.ejuno-pdp-description h5,.ejuno-pdp-description h6').forEach(function(h){
+      if(!h.textContent.trim()){h.classList.add('ejuno-ld-empty-heading');return;}
+      var n=h.nextElementSibling;while(n&&n.id==='ejuno-variant-description-mount')n=n.nextElementSibling;
+      var hasBody=false;for(var e=n;e&&!/^H[1-6]$/.test(e.tagName);e=e.nextElementSibling){if(e.textContent.trim()||e.querySelector('img,iframe,video')){hasBody=true;break;}}
+      if(!hasBody)h.classList.add('ejuno-ld-empty-heading');
+    });
+  }
+  var clampN=0;
+  function clampHtml(tag,txt,raw){var id='ejuno-ld-clamp-'+(++clampN);return '<'+tag+' class="ejuno-ld-clamp" id="'+id+'">'+(raw?txt:esc(txt))+'</'+tag+'><button type="button" class="ejuno-ld__more" aria-expanded="false" aria-controls="'+id+'" hidden>See more</button>';}
+  function measureClamps(root){(root||document).querySelectorAll('.ejuno-ld-clamp').forEach(function(el){var b=el.nextElementSibling;if(!b||!b.classList.contains('ejuno-ld__more'))return;var open=el.classList.contains('is-open');if(open)el.classList.remove('is-open');var over=el.scrollHeight>el.clientHeight+2;if(open)el.classList.add('is-open');b.hidden=!over;if(!over&&open){el.classList.remove('is-open');b.setAttribute('aria-expanded','false');b.textContent='See more';}});}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.ejuno-ld__more');if(!b)return;var el=document.getElementById(b.getAttribute('aria-controls'));if(!el)return;var open=!el.classList.contains('is-open');el.classList.toggle('is-open',open);b.setAttribute('aria-expanded',open?'true':'false');b.textContent=open?'See less':'See more';});
+  var rzT;window.addEventListener('resize',function(){clearTimeout(rzT);rzT=setTimeout(function(){measureClamps();},150);});
+  function render(pd){
+    var root=document.getElementById('ejuno-listing-details');
+    if(!root||!pd)return;
+    var html='';
+    var isVenue=/venue|villa|accommodation/i.test(String(pd.type||''));
+    // Description: short summary (the full description already renders from Shopify above the facts)
+    var desc='';
+    var shortD=clean(pd.shortDescription);
+    var pageDesc=(document.querySelector('.ejuno-pdp-description')||{}).textContent||'';
+    if(shortD&&pageDesc.indexOf(shortD)<0)desc+='<p class="ejuno-ld__lead">'+esc(shortD)+'</p>';
+    if(!pageDesc.replace(/\s+/g,'').length&&pd.body_html){var tmp=document.createElement('div');tmp.innerHTML=pd.body_html;var t=clean(tmp.textContent);if(t)desc+='<div class="ejuno-ld__text">'+esc(t)+'</div>';}
+    html+=block('ejuno-ld-description','About this listing',desc);
+    // Capacity
+    var stats=[];
+    var noStay=isVenue&&/^no$/i.test(clean(pd.guestAccommodation));
+    [['Max guests',pd.maxGuests],['Guests seated',pd.guestsSeated],['Guests standing',pd.guestsStanding],['Sleeping guests',noStay?null:pd.sleepingGuests],['Bedrooms',noStay?null:(pd.bedrooms||pd.rooms)],['Bathrooms',noStay?null:pd.bathrooms]].forEach(function(s){var n=num(s[1]);if(n)stats.push([s[0],n]);});
+    var cap=list(pd.guestCapacity)[0];if(cap)stats.push(['Capacity',/guest/i.test(cap)?cap:cap+' guests']);
+    var statsHtml=stats.length?'<div class="ejuno-ld__grid">'+stats.map(function(s){return '<div class="ejuno-ld__stat"><small>'+esc(s[0])+'</small><strong>'+esc(s[1])+'</strong></div>';}).join('')+'</div>':'';
+    var notGuests=function(x){return !/\d+\s*-?\s*\d*\s*guests?$/i.test(x)&&!/^\d+(-\d+)?$/.test(x);};
+    var venueTypes=swapOther(list([].concat(pd.venueCategory||[],pd.venueTypes||[],pd.venueType&&!/^regular$/i.test(pd.venueType)?[pd.venueType]:[])),otherVenueText(pd));
+    var ceremony=list(pd.ceremonyTypes||[]);
+    var styles=list(pd.weddingStyle||[]).filter(notGuests);
+    if(!ceremony.length){ceremony=styles.filter(function(s){return /^(symbolic|legal|civil|religious|catholic|church)$/i.test(s);});}
+    styles=styles.filter(function(s){return ceremony.indexOf(s)<0;});
+    var views=list([].concat(pd.venueViewSetting||[],pd.viewSettings||[],pd.propertyStyles||[]));
+    // Dashboard "Wedding style" / "Venue view setting" are only stored as product preferences/tags for some listings
+    var vName=clean(pd.vendor&&pd.vendor.name).toLowerCase();
+    var prefs=list([].concat(pd.prefrences||pd.preferences||[],String(pd.tags||'').split(','))).filter(function(x){return x.toLowerCase()!==vName;});
+    var VIEW=/^(vineyard|lake|sea|sea view|seaside|beach|coast|coastal|garden|countryside|city|city view|mountain|mountains|hill|hills|hillside|panoramic|forest|river|park)$/i;
+    var STYLE=/^(romantic|rustic|classic|modern|boho|bohemian|glam|glamorous|luxe|luxury|elegant|historic|minimal|minimalist|vintage|chic|traditional|contemporary|intimate)$/i;
+    if(!views.length)views=prefs.filter(function(x){return VIEW.test(x);});
+    if(!styles.length)styles=prefs.filter(function(x){return STYLE.test(x);});
+    var detailRows=rows([
+      ['Venue type',(Array.isArray(pd.venueCategory)&&pd.venueCategory.filter(Boolean).length)?'':venueTypes.join(', ')],
+      ['Ceremony types',ceremony.join(', ')],
+      ['Space setting',pretty(pd.spaceSetting||'')],
+      // Trello 766: View setting and Wedding style stay as tags for filtering but are not shown on the PDP.
+      ['Overnight stay',isVenue&&clean(pd.overnightStay||pd.guestAccommodation)?pretty(pd.overnightStay||pd.guestAccommodation):''],
+      ['Languages',list(pd.languages).join(', ')]
+    ]);
+    var amen=list([].concat(pd.highlights||[],pd.amenities||[],pd.amenitiesAndServices||[]));
+    var details=statsHtml+(detailRows?(statsHtml?'<div style="height:18px"></div>':'')+detailRows:'')+(amen.length?'<div class="ejuno-ld__sub">Amenities</div>'+chips(amen):'');
+    html+=block('ejuno-ld-venue',isVenue?'Venue details':'Service details',details);
+    // Location
+    var vl=pd.venueLocation||{};
+    var addr=clean(vl.address);
+    var regions=list(vl.regions&&vl.regions.length?vl.regions:vl.region);
+    var country=clean(vl.country);if(/^it$/i.test(country))country='Italy';
+    // Trello 711 reopen #3: no separate Location section; the full address shows once in the Plan around card
+    fixPlanLocation(pd);
+    // Events
+    var ev=swapOther(list(pd.eventTypesHosted||pd.eventTypes),otherEventText(pd));
+    html+=block('ejuno-ld-events',isVenue?'Events we host':'Events we cover',ev.length?chips(ev):'');
+    // Rules
+    var rules=[['Alcohol',rawText(pd.alcoholRules)],['Noise & music',rawText(pd.noiseRules)],['Food & catering',rawText(pd.cateringRules)]].filter(function(r){return r[1];});
+    html+=block('ejuno-ld-rules',isVenue?'Venue rules & policies':'Rules & policies',rules.length?'<div class="ejuno-ld__cards">'+rules.map(function(r){return '<div class="ejuno-ld__card"><small>'+esc(r[0])+'</small>'+clampHtml('p',r[1])+'</div>';}).join('')+'</div>':'');
+    // Terms
+    var cancel=dedupeText(pd.cancellationPolicy), refund=dedupeText(pd.refundPolicy);
+    if(/^null( updated)?$/i.test(cancel))cancel='';
+    var turl=clean(pd.termsUrl||pd.termsAndConditionsUrl||pd.tcUrl);
+    if(turl&&!/^https?:\/\//i.test(turl))turl='https://'+turl;
+    if(turl&&!/^https?:\/\/[^\s/]+\.[^\s]+/i.test(turl))turl='';
+    var terms=rows([['Cancellation & refunds',cancel],['Refund policy',refund!==cancel?refund:'']]);
+    terms=terms.replace(/<dd>([\s\S]*?)<\/dd>/g,function(m,t){return '<dd>'+clampHtml('div',t,true)+'</dd>';});
+    if(turl)terms+='<a class="ejuno-ld__link" href="'+esc(turl)+'" target="_blank" rel="noopener noreferrer">Read the vendor\u2019s full terms &amp; conditions <span aria-hidden="true">\u2197</span></a>';
+    html+=block('ejuno-ld-terms','Terms & conditions',terms);
+    root.innerHTML=html;
+    root.hidden=!html;
+    measureClamps(root);requestAnimationFrame(function(){measureClamps(root);});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){measureClamps(root);});
+    document.body.classList.toggle('ejuno-ld-has-details',!!root.querySelector('#ejuno-ld-venue'));
+    fixHeroBadges(pd);
+    hideEmptyHeadings();
+  }
+  function go(e){var pd=(e&&e.detail)||window.productDetails;render(pd);
+    // Badges and the Plan-around location are written by the booking scripts; re-apply after they run
+    var n=0,t=setInterval(function(){n++;fixHeroBadges(pd);fixPlanLocation(pd);if(n>20)clearInterval(t);},300);}
+  window.addEventListener('productDetailsLoaded',go);
+  document.addEventListener('DOMContentLoaded',function(){hideEmptyHeadings();if(window.productDetails)go();});
+  if(window.productDetails)go();
+  // Backup: some flows set window.productDetails without the event.
+  var tries=0,iv=setInterval(function(){tries++;var r=document.getElementById('ejuno-listing-details');if(window.productDetails&&r&&!r.dataset.done){r.dataset.done='1';go();}if(tries>40||(r&&r.dataset.done))clearInterval(iv);},500);
+})();
+</script>

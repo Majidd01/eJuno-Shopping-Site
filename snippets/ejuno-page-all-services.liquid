@@ -1,0 +1,27 @@
+<section class="section ejuno-services-hub">
+  <div class="container">
+    <header class="ejuno-services-hub__head">
+      <div class="eyebrow">Services</div>
+      <h1 class="ejuno-services-hub__title">Wedding Services</h1>
+      <p class="ejuno-services-hub__subtitle">Planners, photographers, florists, chefs and musicians who know Italy.</p>
+    </header>
+    <div class="ejuno-services-hub__grid">
+      {% assign service_categories = "gastronomy-bar|Gastronomy & Bar|Catering, mixology, bar services, and gourmet experiences for your event.|ejuno-photo-03.jpg;design-artistry|Design & Artistry|Floral design, decor, staging, and creative wedding artistry.|ejuno-photo-04.jpg;photo-film|Photo & Film|Professional photography and videography to capture every moment.|ejuno-photo-05.jpg;entertainment-1|Entertainment|Live bands, DJs, performers, and interactive entertainment.|ejuno-client-entertainment.jpg;enhancements|Enhancements|Special effects, lighting, staging, and unique wedding enhancements.|ejuno-cat-enhancements.jpg;beauty-fashion|Beauty & Fashion|Makeup, hairstyling, bridal styling, and fashion services.|ejuno-photo-08.jpg;transport|Transport|Boat, helicopter and airport transfers, chauffeurs, coaches and car rental.|ejuno-photo-07.jpg" | split: ";" %}
+      {% for item in service_categories %}
+        {% assign parts = item | split: "|" %}
+        {%- assign svc_h = parts[0] -%}{%- if svc_h == 'entertainment-1' and collections['entertainment-1'].id == blank -%}{%- assign svc_h = 'entertainment' -%}{%- endif -%}
+        {%- comment -%} Trello 717: a category without its collection yet (Transport) links to a search, not a 404. {%- endcomment -%}
+        {%- capture svc_url -%}{%- if collections[svc_h].id != blank -%}{{ routes.collections_url }}/{{ svc_h }}{%- else -%}{{ routes.search_url }}?q={{ svc_h }}&type=product{%- endif -%}{%- endcapture -%}
+        <a href="{{ svc_url }}" class="ejuno-services-hub__card">
+          <div class="ejuno-services-hub__media">
+            <img src="{{ parts[3] | asset_url }}" alt="{{ parts[1] | escape }}" width="900" height="600" loading="lazy">
+          </div>
+          <div class="ejuno-services-hub__body">
+            <h2 class="ejuno-services-hub__card-title">{{ parts[1] }}</h2>
+            <p class="ejuno-services-hub__card-desc">{{ parts[2] }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

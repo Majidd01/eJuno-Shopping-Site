@@ -1,0 +1,56 @@
+{% comment %}
+  Couple website / registry search — live API (couples/public?q=).
+{% endcomment %}
+{% liquid
+  assign cs_eyebrow = eyebrow | default: 'Find a Wedding'
+  assign cs_heading = heading | default: "Find a Wedding"
+  assign cs_lead = lead | default: 'Type a name to find their wedding website and registry.'
+  assign cs_placeholder = search_placeholder | default: 'Enter couple name'
+  assign cs_search_btn = search_button_label | default: 'Search'
+  assign cs_api = api_base | default: 'https://ejuno-dev.skylinxtech.co/api/couples/public'
+  assign cs_website = website_base | default: 'https://ejuno-staging.web.app/wedding-planning/'
+%}
+{{ 'ejuno-couple-search.css' | asset_url | stylesheet_tag }}
+<style>/* Trello 794 item 3.5: show the hero photo solid (no cream wash), soft dark glow behind text only */.utility-head.cs-solid .cs-band::after{display:none!important}.utility-head.cs-solid .cs-band__overlay{opacity:1!important;background:radial-gradient(ellipse 62% 75% at 50% 45%,rgba(20,14,10,.5) 0%,rgba(20,14,10,.22) 60%,rgba(20,14,10,.05) 100%)!important}.utility-head.cs-solid .eyebrow,.utility-head.cs-solid .h1,.utility-head.cs-solid .lead{color:#fff!important;text-shadow:0 1px 14px rgba(0,0,0,.35)}</style>
+
+<div
+  class="ejuno-couple-search"
+  data-ejuno-couple-search
+  data-api-base="{{ cs_api | escape }}"
+  data-website-base="{{ cs_website | escape }}"
+  data-min-chars="2"
+>
+  <section class="utility-head{% if band_image != blank or band_fallback != blank %} has-photo{% endif %}{% if band_image == blank and band_fallback contains '794c-3-5' %} cs-solid{% endif %}">
+    {%- if band_image != blank or band_fallback != blank -%}<div class="cs-band" aria-hidden="true"><img src="{%- if band_image != blank -%}{{ band_image | image_url: width: 2400 }}{%- else -%}{{ band_fallback | asset_url }}{%- endif -%}" alt="" width="2400" height="900" loading="eager"><span class="cs-band__overlay" style="opacity:{{ band_overlay | default: 70 | divided_by: 100.0 }}"></span></div>{%- endif -%}
+    <div class="container">
+      <div class="eyebrow">{{ cs_eyebrow }}</div>
+      <h1 class="h1">{{ cs_heading }}</h1>
+      {% if cs_lead != blank %}
+        <p class="lead">{{ cs_lead }}</p>
+      {% endif %}
+      <div class="ejuno-couple-search__wrap">
+        <div class="search-box">
+          <input
+            type="search"
+            data-couple-search-input
+            placeholder="{{ cs_placeholder }}"
+            autocomplete="off"
+            aria-label="{{ cs_placeholder }}"
+          >
+          <button type="button" class="btn primary" data-couple-search-btn>
+            {{ cs_search_btn }}
+          </button>
+        </div>
+        <p class="ejuno-couple-search__status" data-couple-search-status hidden></p>
+      </div>
+      <div
+        class="ejuno-couple-search__results"
+        data-couple-search-results
+        hidden
+        aria-live="polite"
+      ></div>
+    </div>
+  </section>
+</div>
+
+<script src="{{ 'ejuno-couple-search.js' | asset_url }}" defer></script>

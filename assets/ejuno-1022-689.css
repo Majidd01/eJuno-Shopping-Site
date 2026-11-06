@@ -1,0 +1,297 @@
+/* Trello 689 (22-10-26) - Bojan new points. Loaded from sections/header.liquid. */
+
+/* BUG-03 / BUG-04 + BUG-02: "For Vendors" is a clear button in the tablet and phone header
+   (desktop keeps the text link next to "Find a Wedding"). The logo no longer gets squeezed. */
+@media (max-width: 1100px) {
+  body .ejuno-header .header-inner .logo { flex-shrink: 0; white-space: nowrap; }
+  body .ejuno-header .header-actions .header-beside-cta {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    padding: 9px 18px;
+    border: 1px solid #2a2622;
+    border-radius: 999px;
+    background: transparent;
+    color: #2a2622;
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+    text-transform: none;
+    text-decoration: none;
+    white-space: nowrap;
+    opacity: 1;
+    transition: background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  body .ejuno-header .header-actions .header-beside-cta:hover,
+  body .ejuno-header .header-actions .header-beside-cta:focus-visible,
+  body .ejuno-header .header-actions .header-beside-cta.active {
+    background: var(--berry, #9b5068);
+    border-color: var(--berry, #9b5068);
+    color: #fff;
+  }
+}
+@media (max-width: 480px) {
+  body .ejuno-header .header-inner { gap: 8px; }
+  body .ejuno-header .header-actions { gap: 0; }
+  body .ejuno-header .header-actions .header-icon { min-width: 36px; }
+  body .ejuno-header .header-actions .header-menu-toggle { min-width: 40px; margin-left: 4px; }
+  body .ejuno-header .header-actions .header-beside-cta { margin-left: 4px; padding: 7px 12px; font-size: 13px; }
+}
+@media (max-width: 359px) {
+  body .ejuno-header .header-actions .header-icon { min-width: 32px; }
+  body .ejuno-header .header-actions .header-beside-cta { padding: 6px 10px; font-size: 12px; }
+}
+
+/* BUG-10: venue card photos fill the frame without stretching. */
+.result-card > img { object-fit: cover; object-position: center; }
+
+/* Follow-up v3 (22-10-26): header "For Vendors" is a copy of the "Find a Wedding" outlined pill
+   (.header-cta--wedding) at every breakpoint: Georgia serif, 1px #2a2622 border, 999px radius, berry fill on hover. */
+body .ejuno-header .header-actions .header-beside-cta {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  margin-left: 12px;
+  padding: 11px 28px !important;
+  border: 1px solid #2a2622 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: #2a2622 !important;
+  font-family: var(--serif, Georgia, "Times New Roman", Times, serif) !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.5 !important;
+  text-transform: none !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+  white-space: nowrap;
+  opacity: 1 !important;
+  transition: background .25s ease, border-color .25s ease, color .25s ease;
+}
+body .ejuno-header .header-actions .header-beside-cta:hover,
+body .ejuno-header .header-actions .header-beside-cta:focus-visible,
+body .ejuno-header .header-actions .header-beside-cta.active {
+  background: var(--berry, #9b5068) !important;
+  border-color: var(--berry, #9b5068) !important;
+  color: #fff !important;
+}
+@media (min-width: 1101px) and (max-width: 1280px) {
+  body .ejuno-header .header-actions .header-beside-cta { padding: 10px 20px !important; font-size: 14px !important; margin-left: 10px; }
+}
+@media (max-width: 1100px) {
+  body .ejuno-header .header-actions .header-beside-cta { margin-left: 10px; }
+}
+@media (max-width: 480px) {
+  body .ejuno-header .header-actions .header-beside-cta { font-size: 14px !important; padding: 8px 14px !important; margin-left: 4px; }
+}
+@media (max-width: 359px) {
+  body .ejuno-header .header-actions .header-beside-cta { font-size: 13px !important; padding: 7px 10px !important; }
+}/* v3: same box height as Find a Wedding (41.25px); phone uses Find's own phone padding. */
+body .ejuno-header .header-actions .header-beside-cta { box-sizing: border-box; height: 41.25px; }
+@media (max-width: 480px) {
+  body .ejuno-header .header-actions .header-beside-cta { padding: 10px 22px !important; height: auto; }
+}@media (min-width: 1101px) and (max-width: 1280px) {
+  body .ejuno-header .header-actions .header-beside-cta { padding: 9px 16px !important; font-size: 13px !important; height: 34.9375px; }
+}
+/* v4 (22-10-26): For Vendors colours = Find a Wedding colours in every state.
+   No current-page fill; same hover (berry, white, lift 1px) and transition; on the scrolled
+   home header Find keeps its rest colours on hover, so For Vendors does too. */
+body .ejuno-header .header-actions .header-beside-cta,
+body .ejuno-header .header-actions .header-beside-cta.active {
+  color: #2a2622 !important;
+  background: transparent !important;
+  border-color: #2a2622 !important;
+  transform: none;
+  transition: background .25s, border-color .25s, color .25s, transform .25s !important;
+}
+body .ejuno-header .header-actions .header-beside-cta:hover,
+body .ejuno-header .header-actions .header-beside-cta.active:hover {
+  background: var(--berry, #9b5068) !important;
+  border-color: var(--berry, #9b5068) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+body .ejuno-header .header-actions .header-beside-cta:focus-visible { background: transparent !important; border-color: #2a2622 !important; color: #2a2622 !important; }
+.homepage .header.header--home-overlay.is-scrolled .header-actions .header-beside-cta,
+.homepage .header.header--home-overlay.is-scrolled .header-actions .header-beside-cta:hover {
+  color: #2a2622 !important;
+  border-color: #2a2622 !important;
+  background: transparent !important;
+}
+/* Trello 689 reopen (23-10-26)
+   BUG-03: drawer "For Vendors" is the same outlined pill as the drawer "Find a Wedding" button. */
+.mobile-nav__foot .mobile-nav__beside-cta {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 10px;
+  padding: 14px 22px !important;
+  border: 1px solid #2a2622 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: #2a2622 !important;
+  font-family: var(--serif, Georgia, "Times New Roman", Times, serif) !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.5 !important;
+  text-transform: none !important;
+  text-decoration: none !important;
+  text-align: center;
+  transition: background .25s, border-color .25s, color .25s;
+}
+.mobile-nav__foot .mobile-nav__beside-cta:hover,
+.mobile-nav__foot .mobile-nav__beside-cta:focus-visible,
+.mobile-nav__foot .mobile-nav__beside-cta:active,
+.mobile-nav__foot .mobile-nav__beside-cta.active,
+.mobile-nav__foot .mobile-nav__beside-cta[aria-current="page"] {
+  background: var(--berry, #9b5068) !important;
+  border-color: var(--berry, #9b5068) !important;
+  color: #fff !important;
+}
+
+/* Phone header: logo, icons, For Vendors pill and hamburger always fit (320-480px). */
+@media (max-width: 480px) {
+  body .ejuno-header .header-inner { width: calc(100% - 24px) !important; max-width: none !important; gap: 6px !important; margin-left: auto; margin-right: auto; }
+  body .ejuno-header .header-inner .logo { flex: 0 0 auto; min-width: 0; }
+  body .ejuno-header .header-actions { flex: 0 1 auto !important; min-width: 0; gap: 0 !important; margin-left: auto; }
+  body .ejuno-header .header-actions .header-icon { min-width: 32px !important; width: 32px; padding-left: 0; padding-right: 0; }
+  body .ejuno-header .header-actions .header-menu-toggle { flex: 0 0 40px; min-width: 40px !important; width: 40px; margin-left: 4px !important; margin-right: 0 !important; }
+  body .ejuno-header .header-actions .header-beside-cta { flex: 0 0 auto; font-size: 13px !important; padding: 8px 12px !important; height: auto !important; line-height: 1.3 !important; margin-left: 4px !important; }
+}
+@media (max-width: 343px) {
+  body .ejuno-header .header-actions .header-beside-cta { display: none !important; }
+}.mobile-nav__foot .mobile-nav__beside-cta { justify-content: center !important; text-align: center !important; }
+/* Trello 689 (23-10-26): For Vendors removed from the header bar at every size; it stays in the menu drawer
+   (.mobile-nav__beside-cta). Phone header re-balanced without the pill. */
+body .ejuno-header .header-actions .header-beside-cta { display: none !important; }
+@media (max-width: 480px) {
+  body .ejuno-header .header-actions .header-icon { min-width: 36px !important; width: 36px; }
+  body .ejuno-header .header-actions .header-menu-toggle { margin-left: 6px !important; }
+}
+@media (max-width: 343px) {
+  body .ejuno-header .header-actions .header-icon { min-width: 34px !important; width: 34px; }
+}
+/* Trello 689 QA (23-10-26): plum hover/focus on Find a Wedding (header, every state) and both drawer buttons.
+   Plum = #5e2a3d (theme's .plan-cta--plum colour). */
+body .ejuno-header .header-cta--wedding:hover,
+body .ejuno-header .header-cta--wedding:focus-visible,
+body.homepage .ejuno-header .header.header--home-overlay:not(.is-scrolled) .header-cta--wedding:hover,
+body.homepage .ejuno-header .header.header--home-overlay:not(.is-scrolled) .header-cta--wedding:focus-visible,
+body.homepage .ejuno-header .header.header--home-overlay.is-scrolled .header-cta--wedding:hover,
+body.homepage .ejuno-header .header.header--home-overlay.is-scrolled .header-cta--wedding:focus-visible,
+.homepage .header.header--home-overlay.is-scrolled .header-cta--wedding:hover,
+.homepage .header.header--home-overlay.is-scrolled .header-cta--wedding:focus-visible,
+.mobile-nav__foot .mobile-nav__wedding-cta:hover,
+.mobile-nav__foot .mobile-nav__wedding-cta:focus-visible,
+.mobile-nav__foot .mobile-nav__beside-cta:hover,
+.mobile-nav__foot .mobile-nav__beside-cta:focus-visible {
+  background: #5e2a3d !important;
+  border-color: #5e2a3d !important;
+  color: #fff !important;
+}
+body .ejuno-header .header-cta--wedding:hover .header-cta__label,
+body .ejuno-header .header-cta--wedding:focus-visible .header-cta__label { color: #fff !important; }
+.mobile-nav__foot .mobile-nav__wedding-cta { transition: background .25s, border-color .25s, color .25s; }
+/* Trello 689 (23-10-26 correction): For Vendors pill back in the DESKTOP header only (>=1101px, where there is no
+   hamburger); still hidden in the tablet/phone header. Looks like Find a Wedding: outlined at rest, plum #5e2a3d on hover. */
+@media (min-width: 1101px) {
+  html body .ejuno-header .header-actions .header-beside-cta { display: inline-flex !important; }
+  html body .ejuno-header .header-actions .header-beside-cta:hover,
+  html body .ejuno-header .header-actions .header-beside-cta:focus-visible,
+  html body.homepage .ejuno-header .header.header--home-overlay:not(.is-scrolled) .header-actions .header-beside-cta:hover,
+  html body.homepage .ejuno-header .header.header--home-overlay.is-scrolled .header-actions .header-beside-cta:hover,
+  html body.homepage .ejuno-header .header.header--home-overlay.is-scrolled .header-actions .header-beside-cta:focus-visible {
+    background: #5e2a3d !important;
+    border-color: #5e2a3d !important;
+    color: #fff !important;
+  }
+}
+/* Trello 689 QA round 3 (26-10-26)
+   1) Softer hover on Find a Wedding + For Vendors (header and drawer): light plum tint, plum border/text.
+   2) Current page (.is-active / aria-current): solid plum, white text - distinct from hover.
+   3) Drawer = full-screen fixed overlay above the header; background scroll locked (JS in header.liquid).
+   :not(#ej689r3) adds id-level specificity so these beat the earlier homepage/overlay rules. */
+html body .ejuno-header .header-cta--wedding:not(#ej689r3):hover,
+html body .ejuno-header .header-cta--wedding:not(#ej689r3):focus-visible,
+html body .ejuno-header .header-actions .header-beside-cta:not(#ej689r3):hover,
+html body .ejuno-header .header-actions .header-beside-cta:not(#ej689r3):focus-visible,
+html body .mobile-nav__foot .mobile-nav__wedding-cta:not(#ej689r3):hover,
+html body .mobile-nav__foot .mobile-nav__wedding-cta:not(#ej689r3):focus-visible,
+html body .mobile-nav__foot .mobile-nav__beside-cta:not(#ej689r3):hover,
+html body .mobile-nav__foot .mobile-nav__beside-cta:not(#ej689r3):focus-visible,
+html body .mobile-nav__foot .mobile-nav__beside-cta:not(#ej689r3):active {
+  background: #f3e8ec !important;
+  border-color: #5e2a3d !important;
+  color: #5e2a3d !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+html body .ejuno-header .header-cta--wedding:not(#ej689r3):hover .header-cta__label,
+html body .ejuno-header .header-cta--wedding:not(#ej689r3):focus-visible .header-cta__label { color: #5e2a3d !important; }
+html body .ejuno-header .header-cta--wedding.is-active:not(#ej689r3),
+html body .ejuno-header .header-cta--wedding[aria-current="page"]:not(#ej689r3),
+html body .ejuno-header .header-actions .header-beside-cta.is-active:not(#ej689r3),
+html body .ejuno-header .header-actions .header-beside-cta[aria-current="page"]:not(#ej689r3),
+html body .mobile-nav__foot .mobile-nav__wedding-cta.is-active:not(#ej689r3),
+html body .mobile-nav__foot .mobile-nav__wedding-cta[aria-current="page"]:not(#ej689r3),
+html body .mobile-nav__foot .mobile-nav__beside-cta.is-active:not(#ej689r3),
+html body .mobile-nav__foot .mobile-nav__beside-cta[aria-current="page"]:not(#ej689r3) {
+  background: #5e2a3d !important;
+  border-color: #5e2a3d !important;
+  color: #fff !important;
+  transform: none !important;
+}
+html body .ejuno-header .header-cta--wedding.is-active:not(#ej689r3) .header-cta__label,
+html body .ejuno-header .header-cta--wedding[aria-current="page"]:not(#ej689r3) .header-cta__label { color: #fff !important; }
+html body .ejuno-header .header-cta--wedding.is-active:not(#ej689r3):hover,
+html body .ejuno-header .header-actions .header-beside-cta.is-active:not(#ej689r3):hover,
+html body .mobile-nav__foot .mobile-nav__wedding-cta.is-active:not(#ej689r3):hover,
+html body .mobile-nav__foot .mobile-nav__beside-cta.is-active:not(#ej689r3):hover { background: #4d2232 !important; border-color: #4d2232 !important; }
+
+/* 3) The header's backdrop-filter made it the containing block of the fixed drawer, so once the page was
+   scrolled the drawer sat off-screen / looked like a small box. Drop it while the menu is open and lift
+   the header section above everything so the drawer covers the full viewport. */
+@media (max-width: 1100px) {
+  body.ejuno-mobile-nav-open .ejuno-header,
+  body.ejuno-mobile-nav-open .shopify-section-group-header-group { z-index: 2147483000 !important; }
+  body.ejuno-mobile-nav-open .ejuno-header .header {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  body .mobile-nav:not([hidden]) {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: none !important;
+    border-left: 0 !important;
+    z-index: 2147483001 !important;
+    overflow: hidden;
+  }
+  body .mobile-nav:not([hidden]) .mobile-nav__links {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  body .mobile-nav:not([hidden]) .mobile-nav__head,
+  body .mobile-nav:not([hidden]) .mobile-nav__foot { flex: 0 0 auto; }
+  html.ej-nav-locked, html.ej-nav-locked body { overflow: hidden !important; overscroll-behavior: none; }
+}
