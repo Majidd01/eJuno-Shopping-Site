@@ -1,0 +1,57 @@
+--- sections/checklist-2.liquid (Trello #827 - Range Order Fix)
+
+Source Guard:
+  File: sections/checklist-2.liquid
+  Size: 6344 bytes  
+  SHA256: a5cee2673f6d85ebfa4dfebf74aa170bfb23016ade91ae24b40b0126c7bff32f
+
+================================================================================
+TRANSFORM: Fix descending range labels to ascending (lines 47-50)
+================================================================================
+
+FIND (exact):
+```javascript
+      var from = Math.min(s.from, total);
+      var label = s.label || (fmt(from) + '\u2013' + fmt(s.to) + ' months');
+      if (!s.label && s.from === 24) label = (total >= 12 ? fmt(total) : fmt(from)) + '\u201312 months';
+```
+
+REPLACE WITH:
+```javascript
+      var from = Math.min(s.from, total);
+      var lo = Math.min(from, s.to), hi = Math.max(from, s.to);
+      var label = s.label || (fmt(lo) + '\u2013' + fmt(hi) + ' months');
+      if (!s.label && s.from === 24) label = (total >= 12 ? '12' : fmt(lo)) + '+ months';
+```
+
+================================================================================
+EXPLANATION
+================================================================================
+
+BEFORE (BUG):
+  - Stage {from: 24, to: 12} → label "24–12 months" (DESCENDING)
+  - Stage {from: 12, to: 9}  → label "12–9 months"  (DESCENDING)
+  
+AFTER (FIX):
+  - Stage {from: 24, to: 12} → label "12+ months"   (matches static HTML)
+  - Stage {from: 12, to: 9}  → label "9–12 months"  (ASCENDING)
+  - Stage {from: 9, to: 6}   → label "6–9 months"   (ASCENDING)
+  - etc.
+
+PRESERVED:
+  - Stage list order (farther-from-wedding first)
+  - Special labels: "Final month", "Wedding week"
+  - Date window meaning (stages still cover same time periods)
+  - Currency/locale formatting (not applicable here)
+
+================================================================================
+ALSO APPLIES TO: sections/checklist-content.liquid (if dynamic JS added)
+================================================================================
+
+Currently checklist-content.liquid has static HTML only (no JavaScript).
+The static HTML already shows ascending ranges:
+  <div>9–12 months</div>
+  <div>6–9 months</div>
+  etc.
+
+No change needed unless dynamic rebuild is added to that file.
