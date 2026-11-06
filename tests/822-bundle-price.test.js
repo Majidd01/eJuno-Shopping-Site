@@ -1,14 +1,13 @@
 /**
- * Trello #822 - Bundle Pricing Helper Tests
- * Tests the ejuno-822-bundle-price.js wrapper logic
+ * Trello #822 - Bundle Pricing Fix Tests
+ * Tests the ejuno-payment-review.liquid breakdown calculation
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Read the helper JS
-const helperPath = path.join(__dirname, '..', 'assets', 'ejuno-822-bundle-price.js');
-const helperJS = fs.readFileSync(helperPath, 'utf8');
+const reviewPath = path.join(__dirname, '..', 'snippets', 'ejuno-payment-review.liquid');
+const reviewLiquid = fs.readFileSync(reviewPath, 'utf8');
 
 function runTests() {
   console.log('\n========================================');
@@ -36,221 +35,127 @@ function runTests() {
     }
   }
   
-  // Mock environment
-  function createMockEnv() {
-    const env = {
-      productDetails: null,
-      origPayloadBuilder: null,
-      getSelectedAddOnsTotal: null,
-    };
-    
-    // Mock original payload builder (simulates theme behavior)
-    env.origPayloadBuilder = function(r) {
-      r = r || {};
-      const out = {
-        shopifyProductId: r.shopifyProductId,
-        variantId: r.variantId,
-        date: r.date
-      };
-      if (r.capacity != null) out.capacity = Number(r.capacity);
-      return out;
-    };
-    
-    return env;
+  function assertContains(str, substr, msg) {
+    if (!str.includes(substr)) {
+      throw new Error(`${msg}: missing "${substr}"`);
+    }
   }
   
-  // Simulate the helper logic
-  function simulateHelper(origBuilder, r, productDetails, getAddOnsTotal) {
-    const out = origBuilder(r);
-    if (r && r.capacity > 0 && out && !out.calculatedPrice) {
-      const pd = productDetails;
-      if (pd && pd.priceType === 'bundle') {
-        const v = pd.variants;
-        const vid = r.variantId || out.variantId;
-        let sv = null;
-        if (v && v.length) {
-          for (let i = 0; i < v.length; i++) {
-            if (v[i].variantId == vid || v[i].id == vid) { sv = v[i]; break; }
-          }
-          if (!sv) sv = v[0];
-        }
-        if (sv) {
-          const pp = sv.price || 0;
-          const gc = r.capacity;
-          const ao = (typeof getAddOnsTotal === 'function') ? getAddOnsTotal(pd) : 0;
-          out.calculatedPrice = pp * gc + ao;
-          out.basePrice = pp;
-        }
-      }
+  console.log('\n--- ejuno-payment-review.liquid Verification ---\n');
+  
+  test('1. bundlePricing variable exists', () => {
+    assertContains(reviewLiquid, 'var bundlePricing', 'Should define bundlePricing variable');
+  });
+  
+  test('2. bundlePricing checks variant priceType', () => {
+    assertContains(reviewLiquid, 'isBundle(v)', 'Should check isBundle(v) for variant');
+  });
+  
+  test('3. bundlePricing checks product priceType', () => {
+    assertContains(reviewLiquid, "pd.priceType === 'bundle'", 'Should check pd.priceType');
+  });
+  
+  test('4. bundlePricing uses OR logic', () => {
+    assertContains(reviewLiquid, "isBundle(v) || pd.priceType === 'bundle'", 'Should use OR logic');
+  });
+  
+  test('5. Guest multiplication uses bundlePricing', () => {
+    assertContains(reviewLiquid, 'guests > 0 && bundlePricing', 'Should check bundlePricing for guest multiplication');
+  });
+  
+  test('6. Subtitle uses bundlePricing', () => {
+    const match = reviewLiquid.match(/per guest.*bundlePricing/s);
+    if (!match) {
+      assertContains(reviewLiquid, "bundlePricing ? money(price) + ' per guest", 'Should use bundlePricing in subtitle');
     }
-    return out;
+  });
+  
+  console.log('\n--- Calculation Logic Tests ---\n');
+  
+  function simulateBreakdown(rd, pd) {
+    const isBundle = (a) => String((a && a.priceType) || '').toLowerCase() === 'bundle';
+    const guests = Number(rd.capacity || rd.noOfGuests || 0);
+    const vid = String(rd.variantId || '');
+    const v = (pd.variants || []).find(x => String(x.variantId) === vid || String(x.id) === vid) || (pd.variants || [])[0];
+    const price = v ? Number(v.price) : NaN;
+    
+    let amt = price;
+    const bundlePricing = isBundle(v) || pd.priceType === 'bundle';
+    if (guests > 0 && bundlePricing) {
+      amt = price * guests;
+    }
+    
+    return { total: amt, basePrice: price, guests, bundlePricing };
   }
   
-  // ===== TEST CASES =====
-  console.log('\n--- Calculation Tests ---\n');
-  
-  test('1. Bundle: 200 guests × €115 = €23000', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [{ id: 'v1', price: 115 }]
-    };
+  test('7. Bundle: 200 guests × €115 = €23000', () => {
+    const rd = { capacity: 200, variantId: 'v1' };
+    const pd = { priceType: 'bundle', variants: [{ id: 'v1', price: 115 }] };
+    const result = simulateBreakdown(rd, pd);
     
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15', capacity: 200 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
-    
-    assertEqual(out.calculatedPrice, 23000, 'calculatedPrice');
-    assertEqual(out.basePrice, 115, 'basePrice');
-    assertEqual(out.capacity, 200, 'capacity preserved');
+    assertEqual(result.total, 23000, 'total');
+    assertEqual(result.bundlePricing, true, 'bundlePricing flag');
   });
   
-  test('2. Bundle: 100 guests × €50 = €5000', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [{ id: 'v1', price: 50 }]
-    };
+  test('8. Bundle: 100 guests × €50 = €5000', () => {
+    const rd = { capacity: 100, variantId: 'v1' };
+    const pd = { priceType: 'bundle', variants: [{ id: 'v1', price: 50 }] };
+    const result = simulateBreakdown(rd, pd);
     
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15', capacity: 100 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
-    
-    assertEqual(out.calculatedPrice, 5000, 'calculatedPrice');
-    assertEqual(out.basePrice, 50, 'basePrice');
+    assertEqual(result.total, 5000, 'total');
   });
   
-  test('3. Bundle with add-ons: 200 × €115 + €500 addons = €23500', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [{ id: 'v1', price: 115 }]
-    };
+  test('9. Non-bundle: 200 guests should NOT multiply', () => {
+    const rd = { capacity: 200, variantId: 'v1' };
+    const pd = { priceType: 'fixed', variants: [{ id: 'v1', price: 115 }] };
+    const result = simulateBreakdown(rd, pd);
     
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15', capacity: 200 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 500);
-    
-    assertEqual(out.calculatedPrice, 23500, 'calculatedPrice includes add-ons');
-    assertEqual(out.basePrice, 115, 'basePrice unchanged');
+    assertEqual(result.total, 115, 'total should be unit price');
+    assertEqual(result.bundlePricing, false, 'bundlePricing flag');
   });
   
-  test('4. Non-bundle priceType: no calculatedPrice added', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'fixed',  // Not bundle
-      variants: [{ id: 'v1', price: 115 }]
-    };
+  test('10. Variant-level bundle flag works', () => {
+    const rd = { capacity: 50, variantId: 'v1' };
+    const pd = { variants: [{ id: 'v1', price: 20, priceType: 'bundle' }] };
+    const result = simulateBreakdown(rd, pd);
     
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15', capacity: 200 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
-    
-    assertEqual(out.calculatedPrice, undefined, 'calculatedPrice not set for non-bundle');
-    assertEqual(out.basePrice, undefined, 'basePrice not set for non-bundle');
+    assertEqual(result.total, 1000, 'total 50 × 20');
+    assertEqual(result.bundlePricing, true, 'bundlePricing from variant');
   });
   
-  test('5. Zero capacity: no calculatedPrice', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [{ id: 'v1', price: 115 }]
-    };
+  test('11. Product-level bundle flag (variant has no priceType)', () => {
+    const rd = { capacity: 10, variantId: 'v1' };
+    const pd = { priceType: 'bundle', variants: [{ id: 'v1', price: 100 }] };
+    const result = simulateBreakdown(rd, pd);
     
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15', capacity: 0 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
+    assertEqual(result.total, 1000, 'total 10 × 100');
+    assertEqual(result.bundlePricing, true, 'bundlePricing from product');
+  });
+  
+  test('12. Single guest: 1 × €115 = €115', () => {
+    const rd = { capacity: 1, variantId: 'v1' };
+    const pd = { priceType: 'bundle', variants: [{ id: 'v1', price: 115 }] };
+    const result = simulateBreakdown(rd, pd);
     
-    assertEqual(out.calculatedPrice, undefined, 'calculatedPrice not set for zero capacity');
+    assertEqual(result.total, 115, 'total for 1 guest');
   });
   
-  test('6. No capacity field: no calculatedPrice', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [{ id: 'v1', price: 115 }]
-    };
+  test('13. Zero guests: no multiplication', () => {
+    const rd = { capacity: 0, variantId: 'v1' };
+    const pd = { priceType: 'bundle', variants: [{ id: 'v1', price: 115 }] };
+    const result = simulateBreakdown(rd, pd);
     
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15' };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
-    
-    assertEqual(out.calculatedPrice, undefined, 'calculatedPrice not set without capacity');
+    assertEqual(result.total, 115, 'total stays unit price');
   });
   
-  test('7. Guest change: 1 guest × €115 = €115', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [{ id: 'v1', price: 115 }]
-    };
-    
-    const input = { shopifyProductId: 'p1', variantId: 'v1', date: '2026-12-15', capacity: 1 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
-    
-    assertEqual(out.calculatedPrice, 115, 'calculatedPrice for 1 guest');
-  });
-  
-  test('8. Variant selection: uses correct variant price', () => {
-    const env = createMockEnv();
-    env.productDetails = {
-      priceType: 'bundle',
-      variants: [
-        { id: 'v1', price: 50 },
-        { id: 'v2', price: 115 },
-        { id: 'v3', price: 200 }
-      ]
-    };
-    
-    const input = { shopifyProductId: 'p1', variantId: 'v2', date: '2026-12-15', capacity: 10 };
-    const out = simulateHelper(env.origPayloadBuilder, input, env.productDetails, () => 0);
-    
-    assertEqual(out.calculatedPrice, 1150, 'uses v2 price €115 × 10');
-    assertEqual(out.basePrice, 115, 'basePrice from v2');
-  });
-  
-  // ===== SOURCE FILE CHECKS =====
-  console.log('\n--- Source File Checks ---\n');
-  
-  test('9. Helper wraps ejunoBuildVendorConfirmationPayload', () => {
-    if (!helperJS.includes('ejunoBuildVendorConfirmationPayload')) {
-      throw new Error('Should wrap ejunoBuildVendorConfirmationPayload');
-    }
-  });
-  
-  test('10. Helper checks priceType === bundle', () => {
-    if (!helperJS.includes("priceType==='bundle'")) {
-      throw new Error('Should check priceType');
-    }
-  });
-  
-  test('11. Helper uses getSelectedAddOnsTotal', () => {
-    if (!helperJS.includes('getSelectedAddOnsTotal')) {
-      throw new Error('Should call getSelectedAddOnsTotal');
-    }
-  });
-  
-  test('12. Helper sets _822 marker', () => {
-    if (!helperJS.includes('._822=true')) {
-      throw new Error('Should set _822 marker');
-    }
-  });
-  
-  // ===== DEPOSIT POLICY CHECK =====
-  console.log('\n--- Deposit Policy (Hypothesis) ---\n');
-  
-  test('13. Deposit calculation: 30% of €23000 = €6900 (app responsibility)', () => {
-    // NOTE: Deposit calculation is done by the backend app, not theme.
-    // Theme only provides calculatedPrice. This test documents expected behavior.
-    const total = 23000;
-    const depositPercent = 30;
-    const expectedDeposit = total * depositPercent / 100;
-    assertEqual(expectedDeposit, 6900, 'Expected deposit');
-    console.log('        NOTE: Actual deposit calculation is app-side, unverified');
-  });
-  
-  // Summary
   console.log('\n========================================');
   console.log(`Total: ${passed} passed, ${failed} failed`);
   console.log('========================================\n');
   
-  console.log('IMPORTANT: Backend review modal fix is UNVERIFIED.');
-  console.log('This test only verifies theme sends calculatedPrice in payload.');
-  console.log('Actual review modal display is external app code (app.ejuno.io).\n');
+  console.log('FIX SUMMARY:');
+  console.log('- Bug: Review modal checked variant.priceType but services set product.priceType');
+  console.log('- Fix: Added "bundlePricing = isBundle(v) || pd.priceType === bundle"');
+  console.log('- Location: snippets/ejuno-payment-review.liquid\n');
   
   return { passed, failed };
 }

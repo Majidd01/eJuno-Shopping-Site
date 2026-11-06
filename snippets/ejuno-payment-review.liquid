@@ -44,10 +44,11 @@
       if (price > 0) {
         var label = (pkg ? 'Package: ' + pkg : 'Price') + ' ' + money(price);
         var amt = price;
+        var bundlePricing = isBundle(v) || pd.priceType === 'bundle';
         if (nights > 0) { amt = price * nights; label += ' × ' + plural(nights, 'night', 'nights'); }
-        else if (guests > 0 && isBundle(v)) { amt = price * guests; label += ' × ' + plural(guests, 'guest', 'guests'); }
+        else if (guests > 0 && bundlePricing) { amt = price * guests; label += ' × ' + plural(guests, 'guest', 'guests'); }
         out.lines.push([label, amt]); out.total += amt;
-        var sub = nights > 0 ? money(price) + ' per night × ' + plural(nights, 'night', 'nights') : (guests > 0 && isBundle(v) ? money(price) + ' per guest × ' + plural(guests, 'guest', 'guests') : money(price) + (isService() ? ' per booking' : ' per event'));
+        var sub = nights > 0 ? money(price) + ' per night × ' + plural(nights, 'night', 'nights') : (guests > 0 && bundlePricing ? money(price) + ' per guest × ' + plural(guests, 'guest', 'guests') : money(price) + (isService() ? ' per booking' : ' per event'));
         out.venue = { title: name + (pkg ? ' · ' + pkg + ' package' : ''), sub: sub, amount: amt }; out.venueSubtotal = amt;
       } else if (pkg) out.rows.push(['Package', pkg]);
     }
