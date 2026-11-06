@@ -180,9 +180,20 @@
 
   let selectedPhotos = [];
 
-  /* Trello 798: real disabled + aria-disabled until the box is ticked; re-synced after back/refresh autofill */
+  /* Trello 798: Submit stays disabled unless ALL mandatory fields valid + terms accepted.
+     Re-syncs on any input change, checkbox toggle, photo add/remove, and page restore. */
   const syncSubmit = () => {
-    const off = !termcheck || !termcheck.checked;
+    const applicantName = document.getElementById('applicant-name').value.trim();
+    const businessName = document.getElementById('business-name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const title = document.getElementById('content-title').value.trim();
+    const description = quill ? quill.getText().trim() : '';
+    const hasPhotos = selectedPhotos.length > 0;
+    const termsAccepted = termcheck && termcheck.checked;
+
+    const allFieldsValid = applicantName && businessName && validateEmail(email) && title && description && hasPhotos && termsAccepted;
+    const off = !allFieldsValid;
+
     submitButton.disabled = off;
     submitButton.setAttribute('aria-disabled', off ? 'true' : 'false');
   };
@@ -190,6 +201,12 @@
   termcheck.addEventListener('change', syncSubmit);
   window.addEventListener('pageshow', syncSubmit);
   setTimeout(syncSubmit, 300);
+
+  // Wire syncSubmit to all input fields for real-time validation
+  ['applicant-name', 'business-name', 'email', 'content-title'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', syncSubmit);
+  });
 
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -252,6 +269,8 @@
     addMoreBtn.style.display = selectedPhotos.length ? 'inline-block' : 'none';
     addMoreBtn.disabled = selectedPhotos.length >= 3;
     renderPreviews();
+    // Trello 798: re-sync submit button state on photo change
+    syncSubmit();
   }
 
   photosInput.addEventListener('change', () => {
@@ -321,6 +340,8 @@
     if (quill.getText().trim().length > 0) {
       hideFieldError('description-group');
     }
+    // Trello 798: re-sync submit button state on editor change
+    syncSubmit();
   });
 
   // Clear error when checkbox is checked
