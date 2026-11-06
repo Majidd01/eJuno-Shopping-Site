@@ -14,7 +14,7 @@
         {%- capture svc_url -%}{%- if collections[svc_h].id != blank -%}{{ routes.collections_url }}/{{ svc_h }}{%- else -%}{{ routes.search_url }}?q={{ svc_h }}&type=product{%- endif -%}{%- endcapture -%}
         <a href="{{ svc_url }}" class="ejuno-services-hub__card">
           <div class="ejuno-services-hub__media">
-            <img src="{{ parts[3] | asset_url }}" alt="{{ parts[1] | escape }}" width="900" height="600" loading="lazy">
+            <img src="{{ parts[3] | asset_url }}" alt="{{ parts[1] | escape }}" width="899" height="600" loading="lazy">
           </div>
           <div class="ejuno-services-hub__body">
             <h2 class="ejuno-services-hub__card-title">{{ parts[1] }}</h2>
