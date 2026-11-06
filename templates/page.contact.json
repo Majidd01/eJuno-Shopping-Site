@@ -14,7 +14,7 @@
       "settings": {
         "eyebrow": "Contact Us",
         "heading": "Tell Us What You Need",
-        "lead": "We&rsquo;re happy to help with your wedding plans, your listing or anything else. Email us at <a href=\"mailto:weddingplanners@ejuno.io\">weddingplanners@ejuno.io</a> or send a message below."
+        "lead": "We&rsquo;re happy to help with your wedding plans, your listing or anything else. Email us at <a href=\"mailto:support@ejuno.io\">support@ejuno.io</a> or send a message below."
       }
     },
     "form": {
@@ -46,7 +46,7 @@
           "type": "info_item",
           "settings": {
             "title": "Email",
-            "text": "<a href=\"mailto:weddingplanners@ejuno.io\">weddingplanners@ejuno.io</a>"
+            "text": "<a href=\"mailto:support@ejuno.io\">support@ejuno.io</a>"
           }
         }
       },
