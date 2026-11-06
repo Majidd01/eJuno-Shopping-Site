@@ -3570,22 +3570,6 @@ try {
 window.dispatchEvent(new CustomEvent('ejuno:datesConfirmed'));
 } catch (e) {}
 });
-/* Allow Enter to confirm dates (service registry + booking flows). */
-if (confirmDatesButton && !confirmDatesButton.dataset.ejunoEnterBound) {
-confirmDatesButton.dataset.ejunoEnterBound = '1';
-document.addEventListener('keydown', function (e) {
-if (e.key !== 'Enter') return;
-var modal = document.getElementById('ejuno-dates-modal');
-if (!modal) return;
-var open = !modal.classList.contains('hidden') && modal.getAttribute('aria-hidden') !== 'true' && modal.style.display !== 'none';
-if (!open) return;
-if (confirmDatesButton.disabled) return;
-var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
-if (tag === 'textarea' || tag === 'button' || (e.target && e.target.isContentEditable)) return;
-e.preventDefault();
-confirmDatesButton.click();
-});
-}
 refreshSelectedDatesModalUI();
 }
 if (bookMeButton) bookMeButton.addEventListener('click', () => {
@@ -4576,77 +4560,6 @@ observer.observe(targetNode, config);
 } else {
 }
 });
-window.ejunoGetRegistrySelectedDates = function () {
-if (typeof window.getCdpSelectedDates === 'function') {
-try {
-var fromGetter = window.getCdpSelectedDates();
-if (Array.isArray(fromGetter) && fromGetter.length) return fromGetter.slice();
-} catch (e) {}
-}
-if (typeof selectedDates !== 'undefined' && Array.isArray(selectedDates) && selectedDates.length) {
-return selectedDates.slice();
-}
-if (Array.isArray(window.ejunoStayDates) && window.ejunoStayDates.length) {
-return window.ejunoStayDates.slice();
-}
-return [];
-};
-window.ejunoGetRegistryVariantPrice = function (variantId) {
-var pd = window.productDetails || (typeof productDetails !== 'undefined' ? productDetails : null);
-var variants = (pd && pd.variants) || [];
-var match = variants.find(function (v) {
-return String(v.id || v.variantId) === String(variantId);
-}) || variants[0];
-if (!match) return null;
-var raw = match.price != null ? match.price : match.price_amount;
-var n = Number(raw);
-return Number.isFinite(n) ? n : null;
-};
-window.ejunoFormatRegistryMoney = function (amount) {
-var n = Number(amount);
-if (!Number.isFinite(n)) return '';
-try {
-if (window.Shopify && Shopify.formatMoney) {
-var cents = Math.round(n * 100);
-if (n >= 1000 && Number.isInteger(n)) {
-/* Some API prices are already in major units; prefer major-unit formatting below. */
-}
-return new Intl.NumberFormat(undefined, { style: 'currency', currency: (window.Shopify && Shopify.currency && Shopify.currency.active) || 'GBP' }).format(n);
-}
-} catch (e) {}
-return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'GBP' }).format(n);
-};
-window.ejunoConfirmServiceRegistryAdd = function (opts) {
-return new Promise(function (resolve) {
-var existing = document.getElementById('ejuno-service-registry-confirm');
-if (existing) existing.remove();
-var overlay = document.createElement('div');
-overlay.id = 'ejuno-service-registry-confirm';
-overlay.setAttribute('role', 'dialog');
-overlay.setAttribute('aria-modal', 'true');
-overlay.style.cssText = 'position:fixed;inset:0;background:rgba(17,17,17,.45);display:flex;align-items:center;justify-content:center;z-index:100000;padding:16px;';
-var box = document.createElement('div');
-box.style.cssText = 'background:#fff;border-radius:14px;max-width:420px;width:100%;padding:22px 22px 18px;box-shadow:0 18px 50px rgba(0,0,0,.2);font-family:inherit;';
-box.innerHTML = '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.6;">Add to registry</p>' +
-'<h3 style="margin:0 0 12px;font-size:20px;line-height:1.3;">Confirm service</h3>' +
-'<p style="margin:0 0 8px;font-size:14px;line-height:1.5;"><strong>Preferred date:</strong> ' + (opts.dateLabel || '') + '</p>' +
-'<p style="margin:0 0 8px;font-size:14px;line-height:1.5;"><strong>Price:</strong> ' + (opts.priceLabel || '') + '</p>' +
-'<p style="margin:0 0 16px;font-size:13px;line-height:1.45;opacity:.75;">This date is a preference for guests only. It does not reserve the vendor calendar.</p>' +
-'<div style="display:flex;gap:10px;justify-content:flex-end;">' +
-'<button type="button" data-cancel style="min-width:96px;padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,.15);background:#fff;cursor:pointer;">Cancel</button>' +
-'<button type="button" data-confirm style="min-width:96px;padding:10px 14px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;">Add to registry</button>' +
-'</div>';
-overlay.appendChild(box);
-document.body.appendChild(overlay);
-function close(result) {
-overlay.remove();
-resolve(result);
-}
-box.querySelector('[data-cancel]').addEventListener('click', function () { close(false); });
-box.querySelector('[data-confirm]').addEventListener('click', function () { close(true); });
-overlay.addEventListener('click', function (e) { if (e.target === overlay) close(false); });
-});
-};
 window.ejunoAddProductToRegistry = function (triggerBtn) {
 const btn = triggerBtn || document.getElementById('registry-btn');
 const activeCustomerId = localStorage.getItem('customerId');
@@ -4673,43 +4586,6 @@ variantId = urlParams.get('variant');
 if (!variantId && pd && pd.variants && pd.variants.length) {
 variantId = pd.variants[0].id || pd.variants[0].variantId;
 }
-const isService = (typeof window.ejunoBookingIsService === 'function' && window.ejunoBookingIsService())
-|| String(window.ejunoVendorType || '').toLowerCase() === 'service'
-|| (pd && String(pd.type || '').toLowerCase() === 'service')
-|| (btn && btn.getAttribute('data-ejuno-service-registry') === '1');
-if (isService) {
-const dates = window.ejunoGetRegistrySelectedDates();
-if (!dates.length) {
-showNotification('Please select a date first, then confirm it before adding to registry.', 'error');
-btn.disabled = false;
-const openDates = document.querySelector('[data-ejuno-open-dates], #selected-date-div, .ejuno-booking-field--dates');
-if (openDates && typeof openDates.click === 'function') {
-try { openDates.click(); } catch (e) {}
-}
-return;
-}
-const preferredDate = dates[dates.length - 1];
-const price = window.ejunoGetRegistryVariantPrice(variantId);
-const dateLabel = (typeof formatDateDisplay === 'function')
-? formatDateDisplay(preferredDate)
-: String(preferredDate);
-const priceLabel = price != null ? window.ejunoFormatRegistryMoney(price) : 'See listing';
-window.ejunoConfirmServiceRegistryAdd({ dateLabel: dateLabel, priceLabel: priceLabel }).then(function (ok) {
-if (!ok) {
-btn.disabled = false;
-return;
-}
-const requestData = {
-shopifyProductId: (pd && pd.shopifyProductId) ? pd.shopifyProductId : productId,
-variantId: variantId,
-preferredDate: preferredDate,
-date: preferredDate,
-listedPrice: price
-};
-sendDataToRegistry(requestData, true, btn);
-});
-return;
-}
 const requestData = {
 shopifyProductId: (pd && pd.shopifyProductId) ? pd.shopifyProductId : productId,
 variantId: variantId,
@@ -4726,14 +4602,24 @@ document.getElementById('registry-btn').click();
 }
 const registryBtn = document.getElementById('registry-btn');
 registryBtn.disabled = true;
-const legacyIsService = vendorType === 'Service'
-|| (typeof window.ejunoBookingIsService === 'function' && window.ejunoBookingIsService());
-if (legacyIsService) {
-window.ejunoAddProductToRegistry(registryBtn);
-} else if (vendorType === 'Venue') {
-showNotification('Add to registry is available for services only.', 'warn');
+if (vendorType === 'Venue' || vendorType === 'Service') {
+if (selectedDates.length === 0) {
+showNotification('Please select a date first !', 'error');
 registryBtn.disabled = false;
 return;
+}
+const lastValue = selectedDates.at(-1);
+function getVariantFromUrl() {
+const urlParams = new URLSearchParams(window.location.search);
+return urlParams.get("variant");
+}
+const variantIdbookReg = getVariantFromUrl();
+const requestData = {
+shopifyProductId: productData.shopifyProductId,
+variantId: variantIdbookReg || productData.variants[0].id,
+date: lastValue
+};
+sendDataToRegistry(requestData, true, registryBtn);
 } else {
 quantityValue = document.querySelector('.quantityValue')
 ? document.querySelector('.quantityValue').value.trim()
@@ -4754,16 +4640,10 @@ registryBtn.disabled = false;
 }
 }
 });
-function sendDataToRegistry(data, isServiceRegistry, button) {
+function sendDataToRegistry(data, isVenueOrService, button) {
 const apiUrl = `${window.EJUNO_API}/registry-products/`;
-const payload = isServiceRegistry
-? {
-shopifyProductId: data.shopifyProductId,
-variantId: data.variantId,
-preferredDate: data.preferredDate || data.date,
-date: data.preferredDate || data.date,
-listedPrice: data.listedPrice
-}
+const payload = isVenueOrService
+? { ...data, requiredQuantity: undefined }
 : { ...data, dates: undefined };
 const token = localStorage.getItem('authToken') || authToken;
 if (!token) {
@@ -4788,8 +4668,8 @@ throw new Error(errData.message || 'Failed to add to registry');
 return response.json();
 })
 .then(data => {
-const successMessage = isServiceRegistry
-? 'Service added to registry successfully!'
+const successMessage = isVenueOrService
+? 'Dates added to registry successfully!'
 : 'Product added to registry successfully!';
 showNotification(successMessage, 'success');
 })
@@ -4797,7 +4677,7 @@ showNotification(successMessage, 'success');
 showNotification(error.message, 'error');
 })
 .finally(() => {
-if (button) button.disabled = false;
+button.disabled = false;
 });
 }
 function runCdpLoginSuccessAction(afterLogin) {
