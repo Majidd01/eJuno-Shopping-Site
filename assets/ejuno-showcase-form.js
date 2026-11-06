@@ -81,13 +81,10 @@
     }
   }
 
+  // Only place caret when Quill editor itself receives focus via user action.
+  // Do NOT call setSelection on boot or selection-change to avoid stealing
+  // focus from other text inputs. (Preexisting bug fixed in #798 follow-up)
   quill.root.addEventListener('focus', placeCaretAtStart);
-  quill.on('selection-change', function (range) {
-    if (range == null && quill.getLength() <= 1) {
-      placeCaretAtStart();
-    }
-  });
-  placeCaretAtStart();
 
   // Image URL display element
   const imageUrlDisplay = document.getElementById('image-url-display');
