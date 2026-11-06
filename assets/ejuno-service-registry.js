@@ -1,9 +1,34 @@
 /**
  * Service-only "Add to Registry" — small standalone asset.
- * Do not put this logic in ejuno-product-booking-scripts.liquid (file is near Shopify's 256KB limit).
+ * Keep this out of ejuno-product-booking-scripts.liquid (near Shopify's 256KB limit).
  */
 (function () {
   'use strict';
+
+  var STYLE_ID = 'ejuno-service-registry-styles';
+
+  function ensureStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    var style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = [
+      '#ejuno-service-registry-confirm{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:rgba(22,18,15,.72);backdrop-filter:blur(6px);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-dialog{width:min(440px,100%);background:var(--paper,#fffdf9);border:1px solid var(--line,#ded5ca);border-radius:20px;box-shadow:var(--shadow,0 18px 50px rgba(32,28,25,.18));overflow:hidden;font-family:inherit;color:var(--ink,#201c19);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 22px 0;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-kicker{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--olive,#536046);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-title{margin:0;font-family:var(--serif,Georgia,serif);font-size:28px;font-weight:400;line-height:1.15;color:var(--ink,#201c19);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-close{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;padding:0;border:0;border-radius:50%;background:var(--soft,#ece5dd);color:var(--muted,#6d645d);font-size:26px;line-height:1;cursor:pointer;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-body{padding:16px 22px 8px;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-rows{display:grid;gap:10px;margin:0 0 14px;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-row{display:flex;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--line,#ded5ca);border-radius:14px;background:rgba(255,255,255,.72);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-row span{color:var(--muted,#6d645d);font-size:13px;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-row strong{font-size:14px;color:var(--ink,#201c19);text-align:right;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-note{margin:0;font-size:13px;line-height:1.5;color:var(--muted,#6d645d);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;padding:18px 22px 22px;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-actions .btn{min-height:44px;padding:0 20px;}',
+    ].join('');
+    document.head.appendChild(style);
+  }
 
   function notify(message, type) {
     if (typeof window.showNotification === 'function') {
@@ -19,27 +44,35 @@
       return true;
     }
     var pdp = document.querySelector('.ejuno-pdp');
-    if (pdp && (pdp.classList.contains('ejuno-pdp--service') || pdp.getAttribute('data-ejuno-service-hint') === '1')) {
+    if (
+      pdp &&
+      (pdp.classList.contains('ejuno-pdp--service') ||
+        pdp.getAttribute('data-ejuno-service-hint') === '1')
+    ) {
       return true;
     }
     var vt = String(window.ejunoVendorType || '').toLowerCase();
     return vt === 'service';
   }
 
-  function getSelectedDates() {
+  /** Services are single-day only — take exactly one preferred date. */
+  function getPreferredServiceDate() {
+    var dates = [];
     if (typeof window.getCdpSelectedDates === 'function') {
       try {
-        var dates = window.getCdpSelectedDates();
-        if (Array.isArray(dates) && dates.length) return dates.slice();
+        var fromGetter = window.getCdpSelectedDates();
+        if (Array.isArray(fromGetter) && fromGetter.length) dates = fromGetter.slice();
       } catch (e) {}
     }
-    if (Array.isArray(window.selectedDates) && window.selectedDates.length) {
-      return window.selectedDates.slice();
+    if (!dates.length && Array.isArray(window.selectedDates) && window.selectedDates.length) {
+      dates = window.selectedDates.slice();
     }
-    if (Array.isArray(window.ejunoStayDates) && window.ejunoStayDates.length) {
-      return window.ejunoStayDates.slice();
+    if (!dates.length && Array.isArray(window.ejunoStayDates) && window.ejunoStayDates.length) {
+      dates = window.ejunoStayDates.slice();
     }
-    return [];
+    if (!dates.length) return null;
+    // One day only for services.
+    return String(dates[0]);
   }
 
   function getVariantId(pd) {
@@ -97,6 +130,7 @@
   }
 
   function confirmAdd(opts) {
+    ensureStyles();
     return new Promise(function (resolve) {
       var existing = document.getElementById('ejuno-service-registry-confirm');
       if (existing) existing.remove();
@@ -105,28 +139,32 @@
       overlay.id = 'ejuno-service-registry-confirm';
       overlay.setAttribute('role', 'dialog');
       overlay.setAttribute('aria-modal', 'true');
-      overlay.style.cssText =
-        'position:fixed;inset:0;background:rgba(17,17,17,.45);display:flex;align-items:center;justify-content:center;z-index:100000;padding:16px;';
-
-      var box = document.createElement('div');
-      box.style.cssText =
-        'background:#fff;border-radius:14px;max-width:420px;width:100%;padding:22px;box-shadow:0 18px 50px rgba(0,0,0,.2);font-family:inherit;';
-      box.innerHTML =
-        '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.6;">Add to registry</p>' +
-        '<h3 style="margin:0 0 12px;font-size:20px;line-height:1.3;">Confirm service</h3>' +
-        '<p style="margin:0 0 8px;font-size:14px;"><strong>Preferred date:</strong> ' +
+      overlay.innerHTML =
+        '<div class="ejuno-sr-dialog" role="document">' +
+        '<div class="ejuno-sr-head">' +
+        '<div>' +
+        '<p class="ejuno-sr-kicker">Add to registry</p>' +
+        '<h3 class="ejuno-sr-title">Confirm service</h3>' +
+        '</div>' +
+        '<button type="button" class="ejuno-sr-close" data-cancel aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div class="ejuno-sr-body">' +
+        '<div class="ejuno-sr-rows">' +
+        '<div class="ejuno-sr-row"><span>Preferred date</span><strong>' +
         (opts.dateLabel || '') +
-        '</p>' +
-        '<p style="margin:0 0 8px;font-size:14px;"><strong>Price:</strong> ' +
+        '</strong></div>' +
+        '<div class="ejuno-sr-row"><span>Price</span><strong>' +
         (opts.priceLabel || '') +
-        '</p>' +
-        '<p style="margin:0 0 16px;font-size:13px;line-height:1.45;opacity:.75;">This date is a preference for guests only. It does not reserve the vendor calendar.</p>' +
-        '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
-        '<button type="button" data-cancel style="min-width:96px;padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,.15);background:#fff;cursor:pointer;">Cancel</button>' +
-        '<button type="button" data-confirm style="min-width:96px;padding:10px 14px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;">Add to registry</button>' +
+        '</strong></div>' +
+        '</div>' +
+        '<p class="ejuno-sr-note">Services are for one day only. This date is a preference for guests — it does not reserve the vendor calendar.</p>' +
+        '</div>' +
+        '<div class="ejuno-sr-actions">' +
+        '<button type="button" class="btn secondary" data-cancel>Cancel</button>' +
+        '<button type="button" class="btn primary" data-confirm>Add to registry</button>' +
+        '</div>' +
         '</div>';
 
-      overlay.appendChild(box);
       document.body.appendChild(overlay);
 
       function close(result) {
@@ -134,10 +172,12 @@
         resolve(result);
       }
 
-      box.querySelector('[data-cancel]').addEventListener('click', function () {
-        close(false);
+      overlay.querySelectorAll('[data-cancel]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          close(false);
+        });
       });
-      box.querySelector('[data-confirm]').addEventListener('click', function () {
+      overlay.querySelector('[data-confirm]').addEventListener('click', function () {
         close(true);
       });
       overlay.addEventListener('click', function (e) {
@@ -212,9 +252,9 @@
     if (btn) btn.disabled = true;
 
     var pd = window.productDetails || window.productData || {};
-    var dates = getSelectedDates();
-    if (!dates.length) {
-      notify('Please select a date first, then confirm it before adding to registry.', 'error');
+    var preferredDate = getPreferredServiceDate();
+    if (!preferredDate) {
+      notify('Please select one preferred date, then confirm it before adding to registry.', 'error');
       if (btn) btn.disabled = false;
       var openDates = document.querySelector(
         '[data-ejuno-open-dates], #selected-date-div, .ejuno-booking-field--dates button, .ejuno-booking-field--dates',
@@ -227,7 +267,6 @@
       return;
     }
 
-    var preferredDate = dates[dates.length - 1];
     var variantId = getVariantId(pd);
     var price = getVariantPrice(pd, variantId);
     var shopifyProductId =
@@ -249,6 +288,7 @@
           preferredDate: preferredDate,
           date: preferredDate,
           listedPrice: price,
+          offeringType: 'Service',
         },
         btn,
       );
@@ -259,15 +299,18 @@
     document.querySelectorAll('[data-ejuno-service-registry="1"]').forEach(function (btn) {
       if (btn.dataset.ejunoServiceRegistryBound === '1') return;
       btn.dataset.ejunoServiceRegistryBound = '1';
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        addServiceToRegistry(btn);
-      });
+      btn.addEventListener(
+        'click',
+        function (e) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          addServiceToRegistry(btn);
+        },
+        true,
+      );
     });
   }
 
-  // Prefer our service handler when V5/catalog path calls the shared helper.
   var previousAdd = window.ejunoAddProductToRegistry;
   window.ejunoAddProductToRegistry = function (triggerBtn) {
     if (isServiceContext(triggerBtn)) {

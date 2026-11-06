@@ -1,14 +1,29 @@
 {% comment %}
-  Production (ejuno.myshopify.com): ejuno.skylinxtech.co + Stripe live.
-  Test store (test-skylinx.myshopify.com): ejuno-dev.skylinxtech.co + Stripe test.
+  Backend + Stripe config for the shopping site.
+
+  LOCAL DEV (temporary): points at local ejuno-backend on :8081.
+  Switch back to staging/prod URLs when done testing.
+
+  Note: Shopify storefronts are HTTPS. Browsers block HTTP localhost calls
+  from HTTPS pages (mixed content). If Add to Registry fails in Network as
+  blocked/mixed-content, use an HTTPS tunnel (e.g. ngrok) to :8081 and put
+  that URL in ejuno_api_base instead.
 {% endcomment %}
 {% liquid
-  assign ejuno_api_base = 'https://ejuno-dev.skylinxtech.co/api'
-  assign ejuno_stripe_pk = 'pk_live_51M4hc4DtXWFAm5eDfF4SLa2nEn8pZzVZu8WUvkOWxLEkW28i4IbFnVG1sOGIHqHmy9rc6NMPMs2kDZyU2q13SmGj00NgSx793j'
+  comment
+    TEMP local backend — change this back to staging when ready:
+    https://ejuno-dev.skylinxtech.co/api
+  endcomment
+  assign ejuno_api_base = 'http://localhost:8081/api'
+  assign ejuno_stripe_pk = 'pk_test_51Qcm2nGDFESoFcQ1fmXVBE3phZ7O26qfTH2Il0PxLBnhyAaU8wGunq8bOtqNvZGPyXXJWlrjE8CIKL3F7uiklgnx00ZBuncLXL'
+
   assign shop_host = shop.permanent_domain | downcase
-  if shop_host == 'test-skylinx.myshopify.com' or shop_host contains 'test-skylinx'
-    assign ejuno_api_base = 'https://ejuno-dev.skylinxtech.co/api'
-    assign ejuno_stripe_pk = 'pk_test_51Qcm2nGDFESoFcQ1fmXVBE3phZ7O26qfTH2Il0PxLBnhyAaU8wGunq8bOtqNvZGPyXXJWlrjE8CIKL3F7uiklgnx00ZBuncLXL'
+  if shop_host == 'ejuno.myshopify.com'
+    comment
+      Keep production store on live API even during local registry testing.
+    endcomment
+    assign ejuno_api_base = 'https://ejuno.skylinxtech.co/api'
+    assign ejuno_stripe_pk = 'pk_live_51M4hc4DtXWFAm5eDfF4SLa2nEn8pZzVZu8WUvkOWxLEkW28i4IbFnVG1sOGIHqHmy9rc6NMPMs2kDZyU2q13SmGj00NgSx793j'
   endif
 %}
 <script>
@@ -16,6 +31,6 @@
   window.EJUNO_STRIPE_PUBLISHABLE_KEY = {{ ejuno_stripe_pk | json }};
   window.EJUNO_API = window.EJUNO_API_BASE;
   window.ejunoApiOrigin = function () {
-    return String(window.EJUNO_API_BASE || 'https://ejuno-dev.skylinxtech.co/api').replace(/\/api\/?$/, '');
+    return String(window.EJUNO_API_BASE || 'http://localhost:8081/api').replace(/\/api\/?$/, '');
   };
 </script>
