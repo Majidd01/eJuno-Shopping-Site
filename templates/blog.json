@@ -1,0 +1,44 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "blog-intro",
+      "settings": {
+        "show_banner": true,
+        "banner_asset": "ejuno-client-inspiration.jpg",
+        "eyebrow": "Inspiration",
+        "heading": "Ideas, places and details worth keeping",
+        "text": "Real advice and places worth knowing, from choosing a region to the small details, to help you plan a wedding in Italy that feels like yours."
+      }
+    },
+    "listing": {
+      "type": "blog-listing",
+      "settings": {
+        "hide_featured_inspiration": true,
+        "feature_handle": "the-best-months-to-get-married-in-italyand-where-to-go-each-season",
+        "image_overrides": "the-best-months-to-get-married-in-italyand-where-to-go-each-season:ejuno-article-2-3.jpg,should-you-get-married-in-a-city-coastline-or-countryside:ejuno-photo-10.jpg,will-your-family-and-friends-thank-youor-resent-youfor-choosing-a-wedding-in-italy:ejuno-article-2-4.jpg,wedding-website-must-haves-for-destination-weddings-in-italy:ejuno-article-2-2.jpg",
+        "more_blogs": "inspiration,destinations,the-trend-edits,expert-voices-1,the-look-1,planning-tips-1",
+        "latest_limit_inspiration": 5,
+        "row_limit": 3,
+        "latest_heading": "More ideas for planning in Italy",
+        "empty_eyebrow": "Inspiration",
+        "empty_heading": "New stories are on the way",
+        "empty_text": "We're writing practical guides and local tips for planning a wedding in Italy. In the meantime, start with the venues.",
+        "empty_button": "Explore venues",
+        "empty_url": ""
+      }
+    }
+  },
+  "order": [
+    "intro",
+    "listing"
+  ]
+}

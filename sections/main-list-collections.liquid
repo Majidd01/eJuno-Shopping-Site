@@ -1,0 +1,27 @@
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="copy">
+        <div class="eyebrow">Collections</div>
+        <h1 class="h2">Explore</h1>
+      </div>
+    </div>
+    <div class="result-grid">
+      {% for collection in collections %}
+        <a href="{{ collection.url }}" class="result-card">
+          {% if collection.featured_image %}
+            <img src="{{ collection.featured_image | image_url: width: 900 }}" alt="{{ collection.title | escape }}" width="{{ collection.featured_image.width }}" height="{{ collection.featured_image.height }}" loading="lazy">
+          {% endif %}
+          <div class="result-body"><h3>{{ collection.title }}</h3></div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Collections",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+
+<section class="utility-head"><div class="container"><h1 class="h1">Activate account</h1>
+{% form 'activate_customer_password' %}{{ form.errors | default_errors }}
+<div class="utility-panel" style="max-width:480px;margin:24px auto 0">
+  <div class="field" style="margin-bottom:12px"><input type="password" name="customer[password]" placeholder="Password"></div>
+  <div class="field" style="margin-bottom:12px"><input type="password" name="customer[password_confirmation]" placeholder="Confirm password"></div>
+  <button class="btn primary" type="submit">Activate</button>
+</div>{% endform %}</div></section>
+
+{% schema %}
+{
+  "name": "Customer activate_account",
+  "settings": []
+}
+{% endschema %}

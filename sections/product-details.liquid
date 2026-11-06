@@ -1,0 +1,72 @@
+{% assign current_variant = product.selected_or_first_available_variant %}<section class="pdp-top"><div class="container"><div class="pdp-info"><main class="pdp-main">{% if product.description != blank %}{{ product.description }}{% else %}<h2 class="h2" style="font-size:46px">{{ section.settings.heading }}</h2><p>{{ section.settings.text }}</p>{% endif %}<div class="pdp-facts">{% if product.tags.size > 0 %}{% for tag in product.tags limit: 6 %}<div class="fact"><small>Detail</small><strong>{{ tag }}</strong></div>{% endfor %}{% else %}{% for block in section.blocks %}<div class="fact" {{ block.shopify_attributes }}><small>{{ block.settings.label }}</small><strong>{{ block.settings.value }}</strong></div>{% endfor %}{% endif %}</div></main><aside class="booking-card"><h3>{{ section.settings.card_heading }}</h3><p style="color:var(--muted);margin:0 0 12px">{% render 'ejuno-money', cents: current_variant.price %}</p><div class="field">Preferred date</div><div class="field">Guest estimate</div><div class="field">Celebration type</div>{% form 'product', product %}<input type="hidden" name="id" value="{{ current_variant.id }}"><button class="btn primary" style="width:100%;margin-top:10px" type="submit" name="add"{% unless current_variant.available %} disabled{% endunless %}>{{ section.settings.button_label }}</button>{% endform %}<a class="btn secondary" style="width:100%;margin-top:10px" href="{{ section.settings.plan_url }}">{{ section.settings.plan_label }}</a></aside></div></div></section>
+
+{% schema %}
+{
+  "name": "Product details",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Fallback heading",
+      "default": "A setting with genuine presence"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Fallback text",
+      "default": "Venue detail is where imagery should become immersive and information should become practical."
+    },
+    {
+      "type": "text",
+      "id": "card_heading",
+      "label": "Card heading",
+      "default": "Plan around this venue"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Request Availability"
+    },
+    {
+      "type": "text",
+      "id": "plan_label",
+      "label": "Plan button label",
+      "default": "Add to Wedding Plan"
+    },
+    {
+      "type": "url",
+      "id": "plan_url",
+      "label": "Plan button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "fact",
+      "name": "Venue fact",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Guests"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Value",
+          "default": "Up to 120"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Product details"
+    }
+  ]
+}
+{% endschema %}

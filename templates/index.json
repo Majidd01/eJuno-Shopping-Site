@@ -1,0 +1,221 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "home-hero",
+      "settings": {
+        "image_alt": "Couple entering their wedding through open floral doors",
+        "eyebrow": "",
+        "show_region_chips": false,
+        "heading": "Enter the Wedding You Imagined",
+        "text": "Discover venues, local professionals and planning tools for your wedding in Italy.",
+        "show_search": false,
+        "search_placeholder": "Search by destination, venue style or service",
+        "search_button_label": "Search",
+        "venues_collection": "venue-1"
+      }
+    },
+    "regions": {
+      "type": "home-regions",
+      "blocks": {
+        "r1": {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-002.webp",
+            "title": "Lake Como",
+            "subtitle": "Lakeside villas · timeless elegance"
+          }
+        },
+        "r2": {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-003.webp",
+            "title": "Tuscany",
+            "subtitle": "Vineyards · estates · countryside"
+          }
+        },
+        "r3": {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-004.webp",
+            "title": "Amalfi Coast",
+            "subtitle": "Cliffside romance · sea views"
+          }
+        },
+        "r4": {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-005.webp",
+            "title": "Puglia",
+            "subtitle": "Masserias · whitewashed charm"
+          }
+        },
+        "r5": {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-006.webp",
+            "title": "Sicily",
+            "subtitle": "Heritage · warmth · Mediterranean light"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4",
+        "r5"
+      ],
+      "settings": {
+        "cta_label": "View all venues",
+        "cta_url": "/collections/venues"
+      }
+    },
+    "tools": {
+      "type": "home-tools",
+      "blocks": {
+        "t1": {
+          "type": "tool",
+          "settings": {
+            "num": "01",
+            "title": "Wedding Website",
+            "text": "Give guests one beautiful place for the details.",
+            "url": "/pages/wedding-website"
+          }
+        },
+        "t2": {
+          "type": "tool",
+          "settings": {
+            "num": "02",
+            "title": "Registry",
+            "text": "Add your favourite venues and wedding services to your registry and share it with guests so they can contribute to your special day.",
+            "url": "/pages/registry"
+          }
+        },
+        "t3": {
+          "type": "tool",
+          "settings": {
+            "num": "03",
+            "title": "Guest List",
+            "text": "Keep RSVPs and households clear.",
+            "url": "/pages/guest-list"
+          }
+        },
+        "t4": {
+          "type": "tool",
+          "settings": {
+            "num": "04",
+            "title": "Budget",
+            "text": "See the financial picture without spreadsheet chaos.",
+            "url": "/pages/budget"
+          }
+        },
+        "t6": {
+          "type": "tool",
+          "settings": {
+            "num": "05",
+            "title": "Checklist",
+            "text": "Know what matters next.",
+            "url": "/pages/wedding-check-list"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t6"
+      ],
+      "settings": {
+        "text": "Keep the practical side of planning in one place."
+      }
+    },
+    "vendors_banner": {
+      "type": "home-banner",
+      "settings": {
+        "fallback_asset": "HOME-BNR-001.webp",
+        "eyebrow": "Trusted professionals",
+        "heading": "Meet Italy’s Finest Wedding Vendors",
+        "text": "From planners and photographers to florists and chefs, discover people whose work belongs in the same world as the venues you love.",
+        "button_label": "Explore Vendors",
+        "button_url": "/pages/vendor-marketplace",
+        "min_height": 520
+      }
+    },
+    "journal": {
+      "type": "home-journal",
+      "blocks": {
+        "j1": {
+          "type": "card",
+          "settings": {
+            "fallback_asset": "HOME-IMG-007.webp",
+            "eyebrow": "Destinations",
+            "title": "Should You Get Married in a City, Coastline or Countryside?",
+            "text": "How the setting shapes the feel of your day, your guests and your budget.",
+            "url": "/blogs/destinations/should-you-get-married-in-a-city-coastline-or-countryside"
+          }
+        },
+        "j2": {
+          "type": "card",
+          "settings": {
+            "fallback_asset": "HOME-IMG-008.webp",
+            "eyebrow": "Planning",
+            "title": "The Best Months to Get Married in Italy",
+            "text": "Season by season: weather, light and where to go.",
+            "url": "/blogs/destinations/the-best-months-to-get-married-in-italyand-where-to-go-each-season"
+          }
+        },
+        "j3": {
+          "type": "card",
+          "settings": {
+            "fallback_asset": "ejuno-client-inspiration.jpg",
+            "eyebrow": "Guests",
+            "title": "Will Your Family and Friends Thank You or Resent You for Choosing a Wedding in Italy?",
+            "text": "What a destination wedding asks of your guests, and how to make it easy for them.",
+            "url": "/blogs/destinations/will-your-family-and-friends-thank-youor-resent-youfor-choosing-a-wedding-in-italy"
+          }
+        }
+      },
+      "block_order": [
+        "j1",
+        "j2",
+        "j3"
+      ],
+      "settings": {
+        "text": "Real advice and places worth knowing, to help you plan a wedding in Italy that feels like yours.",
+        "cta_url": "/blogs/inspiration",
+        "image_overrides": "will-your-family-and-friends-thank-youor-resent-youfor-choosing-a-wedding-in-italy:ejuno-article-2-4.jpg,the-best-months-to-get-married-in-italyand-where-to-go-each-season:ejuno-article-2-3.jpg,wedding-website-must-haves-for-destination-weddings-in-italy:ejuno-article-2-2.jpg"
+      }
+    },
+    "cta_banner": {
+      "type": "home-banner",
+      "settings": {
+        "fallback_asset": "HOME-BNR-002.webp",
+        "eyebrow": "A more meaningful way",
+        "heading": "Not sure where to start?",
+        "text": "Tell us what you have in mind. We’ll point you toward the right place, the right people and the right next step.",
+        "button_label": "Get Personalised Guidance",
+        "button_url": "/pages/contact",
+        "tight": true,
+        "min_height": 430
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "regions",
+    "tools",
+    "vendors_banner",
+    "journal",
+    "cta_banner"
+  ]
+}

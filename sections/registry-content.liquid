@@ -1,0 +1,59 @@
+<section class="section tight"><div class="container registry-layout"><div class="gift-grid"><div class="gift-card"><div class="eyebrow">Choose from eJuno</div><strong>Venues and services</strong><p style="color:var(--muted)">Add venues, stays and wedding services listed on eJuno straight to your registry.</p></div><div class="gift-card"><div class="eyebrow">Share it easily</div><strong>One link for guests</strong><p style="color:var(--muted)">Your registry sits on your wedding website, so guests can find it by your names or through your link.</p></div><div class="gift-card"><div class="eyebrow">Simple for guests</div><strong>Secure checkout</strong><p style="color:var(--muted)">Guests choose a gift and pay through our secure checkout.</p></div><div class="gift-card"><img src="{{ 'REG-IMG-001.webp' | asset_url }}" width="1672" height="941" loading="lazy" style="height:180px;width:100%;object-fit:cover;border-radius:12px"></div></div><div class="fund-card"><div class="eyebrow">Example fund</div><div class="amount">€4,850</div><p style="color:var(--muted)">raised so far for a honeymoon on the Amalfi Coast</p>{%- comment -%} Trello 689 BUG-05/07: Start Your Registry removed (it opened the couple search). {%- endcomment -%}</div></div></section>
+
+{% schema %}
+{
+  "name": "Registry content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Registry content"
+    }
+  ]
+}
+{% endschema %}

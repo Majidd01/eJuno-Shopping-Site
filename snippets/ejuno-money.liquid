@@ -1,0 +1,12 @@
+{% comment %}
+  Format cents in the shop currency (EUR) via Shopify's money filter.
+  Usage: {% render 'ejuno-money', cents: product.price_min %}
+{% endcomment %}
+{% liquid
+  assign amount_cents = cents | default: 0
+%}
+{% if amount_cents != blank and amount_cents > 0 %}
+  {{ amount_cents | money }}
+{% elsif show_zero %}
+  {{ 0 | money }}
+{% endif %}

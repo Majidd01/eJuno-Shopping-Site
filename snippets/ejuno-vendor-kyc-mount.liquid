@@ -1,0 +1,112 @@
+{% render 'ejuno-backend-config' %}
+{{ 'ejuno-vendor-kyc.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'ejuno-vendor-kyc.js' | asset_url }}" defer></script>
+
+<section class="ejuno-kyc-page">
+  <div class="ejuno-kyc-page__inner">
+    <div class="loader-new ejuno-kyc-loader" aria-live="polite" aria-busy="true">
+      <div class="three-body">
+        <div class="three-body__dot"></div>
+        <div class="three-body__dot"></div>
+        <div class="three-body__dot"></div>
+      </div>
+      <p class="ejuno-kyc-loader__text">Loading your application…</p>
+    </div>
+
+    <h2 id="vendorHead" class="ejuno-kyc-head" style="display:none;"></h2>
+    <div id="notification" class="notification ejuno-kyc-notification" role="status"></div>
+
+    <div class="container contract__data__section ejuno-kyc-contract">
+      <div class="content-area">
+        <div class="list__items__data">
+          <p class="eyebrow ejuno-kyc-steps-label">Your steps</p>
+          <ul class="items check__list_items ejuno-kyc-steps">
+            <li><input type="checkbox" disabled> <label>Review policy</label></li>
+            <li><input type="checkbox" disabled> <label>Upload documents</label></li>
+            <li><input type="checkbox" disabled> <label>Sign and submit</label></li>
+          </ul>
+        </div>
+        <div class="ejuno-kyc-main">
+          <div class="content-wrapper-agreement ejuno-kyc-agreement-wrap" style="display:none;">
+            <div class="agreement ejuno-kyc-agreement article-body">
+              {% if agreement_html != blank %}
+                {{ agreement_html }}
+              {% else %}
+                <h1>eJuno Vendor Service Agreement</h1>
+                <p>Agreement content is configured in the theme editor for the Vendor onboarding section.</p>
+              {% endif %}
+              <p class="end-of-agreement">
+                Please review the agreement above before uploading your documents and signing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rqsted-changes ejuno-kyc-changes" id="rqstedChanges" style="display:none;">
+        <h3 class="h3">Requested changes</h3>
+        <div id="comments" class="ejuno-kyc-changes__body"></div>
+      </div>
+
+      <div class="filesSection ejuno-kyc-files" id="filesSection" style="display:none;">
+        <div class="ejuno-kyc-files__head">
+          <p class="eyebrow">Final step</p>
+          <h3 class="ejuno-kyc-files__title ejuno-kyc-files__title--default">Documents &amp; signature</h3>
+          <h3 class="ejuno-kyc-files__title ejuno-kyc-files__title--resubmit" hidden>Re-upload documents</h3>
+          <p class="ejuno-kyc-files__lead ejuno-kyc-files__lead--default">Upload your file, enter your legal name as signature, then submit.</p>
+          <p class="ejuno-kyc-files__lead ejuno-kyc-files__lead--resubmit" hidden>Upload the corrected file(s) below, then submit again.</p>
+        </div>
+
+        <div class="ejuno-kyc-upload-row">
+          <label class="ejuno-kyc-upload" id="passport">
+            <span class="ejuno-kyc-upload__label">Passport / ID / driving licence</span>
+            <span class="ejuno-kyc-upload__hint">PDF, JPG, PNG, DOC — max one file</span>
+            <input class="title file-input" type="file" accept=".jpg,.png,.pdf,.jpeg,.webp,.doc,.docx,.heic" id="PASSPORT_ID">
+          </label>
+          <label class="ejuno-kyc-upload" id="trade-vat">
+            <span class="ejuno-kyc-upload__label">Trade licence / VAT</span>
+            <span class="ejuno-kyc-upload__hint">PDF or DOC</span>
+            <input class="title file-input" type="file" accept=".jpg,.png,.pdf,.jpeg,.webp,.doc,.docx,.heic" id="TRADE_LICENSE">
+          </label>
+        </div>
+
+        <div class="previewimages ejuno-kyc-previews">
+          <div id="passportPreview"></div>
+          <div id="tradePreview"></div>
+        </div>
+
+        <div class="ejuno-kyc-signature-change" id="ejunoKycSignatureChange" hidden>
+          <label class="ejuno-kyc-signature-change__label" for="updateSignatureCheckbox">
+            <input type="checkbox" id="updateSignatureCheckbox" class="ejuno-kyc-signature-change__input">
+            <span class="custom-checkbox" aria-hidden="true"></span>
+            <span class="ejuno-kyc-signature-change__text">Update my signature</span>
+          </label>
+          <p class="ejuno-kyc-signature-change__hint">Check this if eJuno asked you to correct your legal name.</p>
+        </div>
+
+        <div class="ejuno-kyc-signature" id="ejunoKycSignatureBlock">
+          <label class="ejuno-kyc-signature__label" for="signatureName">Full legal name (signature)</label>
+          <input class="ejuno-kyc-signature__input" placeholder="Full name" type="text" id="signatureName" autocomplete="name">
+        </div>
+
+        <div class="checkbox-container ejuno-kyc-terms">
+          <label class="ejuno-kyc-terms__label" for="agreeCheckbox">
+            <input type="checkbox" id="agreeCheckbox" class="input ejuno-kyc-terms__input">
+            <span class="custom-checkbox" aria-hidden="true"></span>
+            <span class="ejuno-kyc-terms__text">
+              {%- comment -%} Trello 649: T&C link removed from the vendor dashboard flow; the box confirms the service agreement above. {%- endcomment -%}
+              I have read and agree to the eJuno Vendor Service Agreement above
+            </span>
+          </label>
+        </div>
+
+        <div class="ejuno-kyc-submit-wrap">
+          <button type="button" id="submitBtn" class="btn primary ejuno-kyc-submit">
+            <span class="spinner-border" role="status" aria-hidden="true"></span>
+            <span class="ejuno-kyc-submit__label">Submit documents</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

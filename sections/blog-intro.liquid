@@ -1,0 +1,152 @@
+{%- comment -%} Blog banners (2 Nov 2026): every blog shows its intro on a full-width image banner. Inspiration keeps the section settings text and the Inspiration image. Other blogs: eyebrow = blog title; heading and text from a "Blog banner" block matching the blog handle, else the built-in default per category below. Image: block image, else the blog's newest article image, else the Inspiration asset. To restore the plain heading, untick "Show image banner on blog pages". {%- endcomment -%}
+{%- liquid
+  assign ej_is_insp = false
+  if blog.handle == 'inspiration'
+    assign ej_is_insp = true
+  endif
+  assign ej_eyebrow = blog.title | default: section.settings.eyebrow
+  assign ej_heading = ''
+  assign ej_text = ''
+  assign ej_img = nil
+  if ej_is_insp
+    assign ej_eyebrow = section.settings.eyebrow
+    assign ej_heading = section.settings.heading
+    assign ej_text = section.settings.text
+    assign ej_img = section.settings.banner_image
+  else
+    assign ej_key = blog.title | handleize
+    case ej_key
+      when 'destinations'
+        assign ej_heading = 'Where in Italy will you say yes?'
+        assign ej_text = 'From Lake Como to the Amalfi Coast, regional guides to help you find the corner of Italy that feels right for your day.'
+      when 'the-trend-edit', 'the-trend-edits'
+        assign ej_heading = 'What couples are loving in Italy right now'
+        assign ej_text = 'The colours, menus and ideas shaping Italian weddings this year, chosen for couples who want something fresh without the fuss.'
+      when 'expert-voices'
+        assign ej_heading = 'Advice from the people who make it happen'
+        assign ej_text = 'Planners, florists, photographers and venue owners share what years of weddings across Italy have taught them.'
+      when 'the-look'
+        assign ej_heading = 'Dresses, suits and style for an Italian wedding'
+        assign ej_text = 'Looks that suit the light, the warmth and the setting, from city ceremonies to long dinners in the countryside.'
+      when 'planning-tips'
+        assign ej_heading = 'Clear steps for planning a wedding in Italy'
+        assign ej_text = 'Practical guidance on budgets, paperwork, timelines and guests, so the planning feels calm and the day feels like yours.'
+      when 'real-celebrations', 'real-wedding', 'real-weddings'
+        assign ej_heading = 'Real weddings, real couples, real Italy'
+        assign ej_text = 'Stories from couples who married in Italy, with the places, people and small moments that made their day.'
+      when 'wedding-decor', 'wedding-decor-12'
+        assign ej_heading = 'Flowers, tables and details with an Italian touch'
+        assign ej_text = 'Ideas for styling your celebration, from lemons on long tables to candlelit courtyards and simple seasonal blooms.'
+      when 'wedding-season', 'wedding-season123'
+        assign ej_heading = 'Choosing the right season for your Italian wedding'
+        assign ej_text = 'What each month brings, from spring gardens to golden harvest light, and how to plan around weather, crowds and prices.'
+      when 'style-guide'
+        assign ej_heading = 'A style guide for weddings in Italy'
+        assign ej_text = 'Palettes, stationery and finishing touches that help your celebration feel at home in its setting.'
+      when 'trending-ideas', 'trends'
+        assign ej_heading = 'Fresh ideas for weddings in Italy'
+        assign ej_text = 'New ways couples are celebrating, from intimate dinners to weekend gatherings with family and friends.'
+      when 'october-2025', 'october-2026'
+        assign ej_heading = 'Autumn weddings in Italy'
+        assign ej_text = 'Soft light, vineyard harvests and quieter venues make October one of the loveliest months to marry in Italy.'
+      when 'celebration', 'celebrations'
+        assign ej_heading = 'Celebrations to remember in Italy'
+        assign ej_text = 'Parties, dinners and gatherings around the wedding day, with ideas for welcoming your guests the Italian way.'
+      when 'style-me-pretty'
+        assign ej_heading = 'Pretty ideas for a wedding in Italy'
+        assign ej_text = 'Soft palettes, beautiful settings and thoughtful details to inspire a celebration that feels effortless and personal.'
+      when 'news', 'journal'
+        assign ej_heading = 'News and notes from eJuno'
+        assign ej_text = 'Fresh stories, updates and ideas for couples planning a wedding in Italy, gathered in one place.'
+      else
+        assign ej_heading = 'Stories for planning a wedding in Italy'
+        assign ej_text = 'Ideas, places and practical advice to help you plan a celebration in Italy that feels like yours.'
+    endcase
+  endif
+  for b in section.blocks
+    assign bh = b.settings.blog_handle | strip
+    if bh == blog.handle
+      if b.settings.eyebrow != blank
+        assign ej_eyebrow = b.settings.eyebrow
+      endif
+      if b.settings.heading != blank
+        assign ej_heading = b.settings.heading
+      endif
+      if b.settings.text != blank
+        assign ej_text = b.settings.text
+      endif
+      if b.settings.image != blank
+        assign ej_img = b.settings.image
+      endif
+      break
+    endif
+  endfor
+  comment
+    Trello 794 (2.1/3.1): Destinations banner uses approved image 1.6; the Inspiration fallback uses approved image 3.1 (desktop crop + mobile full image).
+  endcomment
+  assign ej794_dest = false
+  if blog.handle == 'destinations' and ej_img == blank
+    assign ej794_dest = true
+  endif
+  if ej_img == blank and ej_is_insp == false and ej794_dest == false
+    for a in blog.articles limit: 10
+      if a.image != blank
+        assign ej_img = a.image
+        break
+      endif
+    endfor
+  endif
+  if ej_img != blank
+    assign ej_bn_src = ej_img | image_url: width: 2400
+    assign ej_bn_sm = ej_img | image_url: width: 900
+  elsif ej794_dest
+    assign ej_bn_src = 'ejuno-794c-1-6-d.jpg' | asset_url
+    assign ej_bn_sm = 'ejuno-794c-1-6-m.jpg' | asset_url
+  else
+    assign ej_bn_asset = section.settings.banner_asset | default: 'ejuno-client-inspiration.jpg'
+    if ej_bn_asset == 'ejuno-client-inspiration.jpg'
+      assign ej_bn_src = 'ejuno-794c-3-1-d.jpg' | asset_url
+      assign ej_bn_sm = 'ejuno-794c-3-1-m.jpg' | asset_url
+    else
+      assign ej_bn_src = ej_bn_asset | asset_url
+      assign ej_bn_sm = ej_bn_src
+    endif
+  endif
+-%}
+{%- if section.settings.show_banner -%}
+<section class="ej-insp-banner" data-blog="{{ blog.handle }}"><picture><source media="(max-width: 749px)" srcset="{{ ej_bn_sm }}"><img src="{{ ej_bn_src }}" alt="{{ ej_heading | escape }}" width="1600" height="1600" loading="eager" fetchpriority="high"></picture><div class="ej-insp-banner__overlay"></div><div class="container ej-insp-banner__copy"><div class="eyebrow">{{ ej_eyebrow }}</div><h1 class="h1">{{ ej_heading }}</h1><p class="lead">{{ ej_text }}</p></div></section>
+<style>.ej-insp-banner{position:relative;width:100%;min-height:clamp(380px,52vw,620px);display:flex;align-items:flex-end;overflow:hidden;color:#fff}.ej-insp-banner picture,.ej-insp-banner img{position:absolute;inset:0;width:100%;height:100%}.ej-insp-banner img{object-fit:cover;object-position:center 45%}.ej-insp-banner__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,10,.15) 0%,rgba(20,14,10,.35) 45%,rgba(20,14,10,.78) 100%)}.ej-insp-banner__copy{position:relative;z-index:1;padding-top:96px;padding-bottom:clamp(40px,6vw,72px)}.ej-insp-banner__copy .eyebrow{text-transform:uppercase}.ej-insp-banner__copy .eyebrow,.ej-insp-banner__copy .h1,.ej-insp-banner__copy .lead{color:#fff}.ej-insp-banner__copy .h1{max-width:820px;margin:10px 0 14px;font-family:Georgia,'Times New Roman',serif;text-shadow:0 2px 18px rgba(0,0,0,.35)}.ej-insp-banner__copy .lead{max-width:640px;opacity:.95}@media (max-width:749px){.ej-insp-banner{min-height:440px}.ej-insp-banner__copy{padding-bottom:36px}}</style>
+{%- else -%}
+<section class="utility-head"><div class="container"><div class="eyebrow">{{ ej_eyebrow }}</div><h1 class="h1">{{ ej_heading }}</h1><p class="lead">{{ ej_text }}</p></div></section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blog introduction",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_banner", "label": "Show image banner on blog pages", "default": true },
+    { "type": "image_picker", "id": "banner_image", "label": "Inspiration banner image (overrides theme asset)" },
+    { "type": "text", "id": "banner_asset", "label": "Fallback banner theme asset", "default": "ejuno-client-inspiration.jpg" },
+    { "type": "text", "id": "eyebrow", "label": "Inspiration eyebrow", "default": "Inspiration" },
+    { "type": "text", "id": "heading", "label": "Inspiration heading", "default": "Ideas, places and details worth keeping" },
+    { "type": "textarea", "id": "text", "label": "Inspiration text", "default": "Real advice and places worth knowing, from choosing a region to the small details, to help you plan a wedding in Italy that feels like yours." },
+    { "type": "paragraph", "content": "Other blogs use built-in text per category and their newest story image. Add a Blog banner block to override any of them." }
+  ],
+  "blocks": [
+    {
+      "type": "blog_banner",
+      "name": "Blog banner",
+      "settings": [
+        { "type": "text", "id": "blog_handle", "label": "Blog handle (e.g. destinations)" },
+        { "type": "text", "id": "eyebrow", "label": "Eyebrow (empty = blog title)" },
+        { "type": "text", "id": "heading", "label": "Heading (empty = default)" },
+        { "type": "textarea", "id": "text", "label": "Text (empty = default)" },
+        { "type": "image_picker", "id": "image", "label": "Banner image (empty = newest story image)" }
+      ]
+    }
+  ],
+  "presets": [ { "name": "Blog introduction" } ]
+}
+{% endschema %}

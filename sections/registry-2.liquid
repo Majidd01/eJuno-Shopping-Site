@@ -1,0 +1,66 @@
+{%- comment -%} Trello 681/683: one large honeymoon photo with the three gift ideas as a list beside it. {%- endcomment -%}
+<section class="section tight">
+  <div class="container registry-split">
+    <figure class="registry-split__photo">
+      <img src="{%- if section.settings.image_1 != blank -%}{{ section.settings.image_1 | image_url: width: 1800 }}{%- else -%}{{ section.settings.fallback_1 | asset_url }}{%- endif -%}" alt="{{ section.settings.image_alt | escape }}" width="1600" height="1200" loading="lazy">
+    </figure>
+    <div class="registry-split__copy">
+      <ul class="registry-list">
+        <li><div class="eyebrow">{{ section.settings.eyebrow }}</div><strong>Venues and services</strong><p>Add venues, stays and wedding services listed on eJuno straight to your registry.</p></li>
+        <li><div class="eyebrow">Share it easily</div><strong>One link for guests</strong><p>Your registry sits on your wedding website, so guests can find it by your names or through your link.</p></li>
+        <li><div class="eyebrow">Simple for guests</div><strong>Secure checkout</strong><p>Guests choose a gift and pay through our secure checkout.</p></li>
+      </ul>
+      {%- comment -%} Trello 689 BUG-05/07: the mock "$4,850 toward a honeymoon" line and the Start Your Registry button (it opened the couple search) are removed. {%- endcomment -%}
+      {%- comment -%} Trello 714 DISC-37: CTA like the other Plan pages, into the couple dashboard (registry lives there). {%- endcomment -%}
+      {%- liquid
+        assign ej_reg_url = 'https://app.ejuno.io/couple-dashboard'
+        if shop.permanent_domain contains 'test-skylinx'
+          assign ej_reg_url = 'https://ejuno-staging.web.app/couple-dashboard'
+        endif
+      -%}
+      {%- comment -%} Trello 757 (reopen 3 Nov): signed-in couples go straight to the registry tab of the dashboard. {%- endcomment -%}
+      <div style="margin-top:22px"><a class="btn primary" href="{{ ej_reg_url }}" data-ejuno-registry-cta data-loggedin-href="https://ejuno-staging.web.app/couple-dashboard/registry">Start Your Registry</a></div>
+      <script>
+        (function () {
+          try {
+            if (!(localStorage.getItem('customerId') && localStorage.getItem('authToken'))) return;
+            document.querySelectorAll('[data-ejuno-registry-cta]').forEach(function (a) { a.href = a.getAttribute('data-loggedin-href'); });
+          } catch (e) {}
+        })();
+      </script>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "registry 2",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "text", "id": "image_alt", "label": "Photo alt text", "default": "Honeymoon detail" },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Large photo (honeymoon detail: suitcase on a terrace with a sea view)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "REG-IMG-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Choose from eJuno"
+    }
+  ],
+  "presets": [
+    {
+      "name": "registry 2"
+    }
+  ]
+}
+{% endschema %}

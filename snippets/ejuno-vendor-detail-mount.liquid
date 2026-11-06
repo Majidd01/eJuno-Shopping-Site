@@ -1,0 +1,49 @@
+{% comment %}
+  Vendor detail — reads ?id= from URL, loads vendor + products from eJuno API (live parity).
+{% endcomment %}
+{% liquid
+  assign vd_api = api_base | default: 'https://ejuno-dev.skylinxtech.co/api'
+%}
+{{ 'ejuno-vendor-detail.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="ejuno-vendor-detail is-loading"
+  data-ejuno-vendor-detail
+  data-api-base="{{ vd_api | escape }}"
+>
+  {% render 'ejuno-skeleton-vendor-detail' %}
+
+  <div class="container ejuno-vendor-detail__missing" data-vendor-missing hidden>
+    <p class="ejuno-vendor-detail__empty">
+      Missing vendor id. Choose a vendor from the
+      <a href="/pages/vendor-marketplace">marketplace</a>.
+    </p>
+  </div>
+
+  <div class="ejuno-vendor-detail__content" data-vendor-content hidden>
+    <div class="container ejuno-vendor-detail__back">
+      <a href="/pages/vendor-marketplace" class="ejuno-vendor-detail__back-link">← Back to vendors</a>
+    </div>
+
+    <div class="ejuno-vendor-detail__gallery-wrap container">
+      <div class="ejuno-vendor-detail__gallery" data-vendor-gallery></div>
+    </div>
+
+    <div class="container ejuno-vendor-detail__layout">
+      <aside class="ejuno-vendor-detail__profile" data-vendor-profile></aside>
+      <div class="ejuno-vendor-detail__main">
+        <h2 class="ejuno-vendor-detail__section-title">{{ products_heading | default: 'Services & listings' }}</h2>
+        <div class="ejuno-vendor-detail__products" data-vendor-products></div>
+
+        <div class="ejuno-vendor-detail__reviews">
+          <h2 class="ejuno-vendor-detail__section-title" data-vendor-reviews-heading>
+            {{ reviews_heading | default: 'Ratings & reviews' }}
+          </h2>
+          <div data-vendor-reviews></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'ejuno-vendor-detail.js' | asset_url }}" defer></script>

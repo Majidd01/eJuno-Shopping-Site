@@ -1,0 +1,32 @@
+{% comment %}
+  System-wide currency: follows the shop/market currency (EUR on eJuno).
+  Booking, cart fallbacks, and JS price helpers read these globals.
+{% endcomment %}
+{%- liquid
+  assign ej_cur = cart.currency.iso_code | default: shop.currency | default: 'EUR'
+  case ej_cur
+    when 'EUR'
+      assign ej_sym = '€'
+    when 'GBP'
+      assign ej_sym = '£'
+    when 'USD'
+      assign ej_sym = '$'
+    else
+      assign ej_sym = cart.currency.symbol | default: ej_cur
+  endcase
+-%}
+<script>
+  window.EJUNO_CURRENCY = {{ ej_cur | json }};
+  window.EJUNO_CURRENCY_SYMBOL = {{ ej_sym | json }};
+  window.EJUNO_MONEY_FORMAT = {{ shop.money_format | json }};
+  if (typeof window.getSelectedCurrency !== 'function') {
+    window.getSelectedCurrency = function () {
+      return window.EJUNO_CURRENCY || 'EUR';
+    };
+  }
+  if (typeof window.getCurrencySymbol !== 'function') {
+    window.getCurrencySymbol = function () {
+      return window.EJUNO_CURRENCY_SYMBOL || '€';
+    };
+  }
+</script>

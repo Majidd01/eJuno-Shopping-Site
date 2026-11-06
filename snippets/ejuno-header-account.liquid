@@ -1,0 +1,48 @@
+{% liquid
+  assign couple_url = section.settings.login_couple_url | default: 'https://ejuno-staging.web.app/couple-dashboard'
+  assign vendor_url = section.settings.login_vendor_url | default: 'https://vendor-staging-ejuno.web.app/'
+  assign guest_url = section.settings.login_guest_url | default: 'https://ejuno-staging.web.app/guest/login'
+%}
+
+<div
+  class="header-account"
+  data-header-account
+  data-url-couple="{{ couple_url | escape }}"
+  data-url-vendor="{{ vendor_url | escape }}"
+  data-url-guest="{{ guest_url | escape }}"
+>
+  <button
+    type="button"
+    class="header-icon header-icon--account"
+    data-header-account-toggle
+    aria-label="Account"
+    aria-expanded="false"
+    aria-haspopup="true"
+    aria-controls="ejuno-header-account-menu"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.75"/>
+      <path d="M5 20c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <div
+    id="ejuno-header-account-menu"
+    class="header-account__menu"
+    data-header-account-menu
+    hidden
+    role="menu"
+  >
+    <div class="header-account__panel">
+      <p class="header-account__greeting" data-header-account-greeting hidden></p>
+      <div class="header-account__signed-out" data-header-account-signed-out>
+        <a class="header-account__item" href="{{ couple_url }}" role="menuitem" data-account-action="couple-login">Login as Couple</a>
+        <a class="header-account__item" href="{{ vendor_url }}" role="menuitem" data-account-action="vendor-login">Login as Vendor</a>
+        <a class="header-account__item" href="{{ guest_url }}" role="menuitem" data-account-action="guest-login">Event Guest</a>
+      </div>
+      <div class="header-account__signed-in" data-header-account-signed-in hidden>
+        <a class="header-account__item header-account__item--primary" href="{{ couple_url }}" data-header-account-dashboard role="menuitem">Open dashboard</a>
+        <button type="button" class="header-account__item header-account__item--button" data-header-account-signout role="menuitem">Sign out</button>
+      </div>
+    </div>
+  </div>
+</div>

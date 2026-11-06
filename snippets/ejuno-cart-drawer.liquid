@@ -1,0 +1,28 @@
+<div
+  id="ejuno-cart-drawer"
+  class="ejuno-cart-drawer"
+  hidden
+  aria-hidden="true"
+  data-money-format="{{ shop.money_format | escape }}"
+  data-currency="{{ cart.currency.iso_code | default: shop.currency }}"
+>
+  <div class="ejuno-cart-drawer__backdrop" data-ejuno-cart-close tabindex="-1"></div>
+  <aside class="ejuno-cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="ejuno-cart-drawer-title">
+    <header class="ejuno-cart-drawer__head">
+      <h2 id="ejuno-cart-drawer-title" class="ejuno-cart-drawer__title">Your cart</h2>
+      <button type="button" class="ejuno-cart-drawer__close" data-ejuno-cart-close aria-label="Close cart">&times;</button>
+    </header>
+    <div class="ejuno-cart-drawer__notices" data-ejuno-cart-notices aria-live="polite"></div>
+    <div class="ejuno-cart-drawer__body" data-ejuno-cart-body>
+      <p class="ejuno-cart-drawer__empty">Your cart is empty. Explore venues and registry picks to begin.</p>
+    </div>
+    <footer class="ejuno-cart-drawer__foot">
+      <div class="ejuno-cart-drawer__subtotal">
+        <span>Subtotal</span>
+        <strong data-ejuno-cart-subtotal>{{ cart.total_price | money }}</strong>
+      </div>
+      <a href="{{ routes.cart_url }}" class="btn secondary ejuno-cart-drawer__view" style="width:100%">View cart</a>
+      <a href="/checkout" class="btn primary ejuno-cart-drawer__checkout" style="width:100%;margin-top:10px" data-ejuno-cart-checkout>Checkout</a>
+    </footer>
+  </aside>
+</div>

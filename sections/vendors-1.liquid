@@ -1,0 +1,39 @@
+<section class="market-hero"><img src="{% if section.settings.image_1 != blank %}{{ section.settings.image_1 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_1 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy"><div class="market-hero-copy"><div class="eyebrow">{{ section.settings.eyebrow }}</div><h1 class="h1">{{ section.settings.heading }}</h1></div></section>
+
+{% schema %}
+{
+  "name": "vendors 1",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (VMP-IMG-001.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "VMP-IMG-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Vendor marketplace"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Meet the People Who Make It Happen"
+    }
+  ],
+  "presets": [
+    {
+      "name": "vendors 1"
+    }
+  ]
+}
+{% endschema %}

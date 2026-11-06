@@ -1,0 +1,59 @@
+<section class="section tight"><div class="container"><div class="metrics"><div class="metric"><strong>4.9/5</strong><span>Average experience</span></div><div class="metric"><strong>92%</strong><span>Would recommend</span></div><div class="metric"><strong>Italy</strong><span>Destination expertise</span></div><div class="metric"><strong>One</strong><span>Connected journey</span></div></div></div></section><section class="section tight"><div class="container"><div class="quotes"><div class="quote-card"><div class="stars">★★★★★</div><h3>It felt curated, not overwhelming.</h3><p style="color:var(--muted)">We could move from venues into planning without losing track of what mattered.</p></div><div class="quote-card"><div class="stars">★★★★★</div><h3>Everything was easier to understand.</h3><p style="color:var(--muted)">The tools made the planning feel much more joined-up.</p></div><div class="quote-card"><div class="stars">★★★★★</div><h3>A calmer way to plan.</h3><p style="color:var(--muted)">The platform gave us a clearer route through the decisions.</p></div></div></div></section>
+
+{% schema %}
+{
+  "name": "Reviews content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Reviews content"
+    }
+  ]
+}
+{% endschema %}

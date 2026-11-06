@@ -1,0 +1,158 @@
+.ejuno-card-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+
+.ejuno-card-price__label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ejuno-card-price__amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+/* Equal-height collection / search cards: column flex + price pinned to bottom */
+.result-grid {
+  align-items: stretch;
+}
+
+.result-card:not(.featured-result) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+.result-card:not(.featured-result) > img {
+  flex-shrink: 0;
+}
+
+.result-card:not(.featured-result) .result-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.result-card:not(.featured-result) .result-body .ejuno-card-price {
+  margin-top: auto;
+  padding-top: 12px;
+  flex-shrink: 0;
+}
+
+.result-card:not(.featured-result) .result-card__title,
+.result-card:not(.featured-result) h3 {
+  flex-shrink: 0;
+  min-height: calc(1.28em * 2);
+}
+
+.result-card:not(.featured-result) .result-meta {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  min-height: 1.35em;
+  max-height: 1.35em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tag slot: grows with wrapped tags; row height still equalized by result-grid stretch */
+.result-card:not(.featured-result) .tagline {
+  flex: 1 1 auto;
+  min-height: 42px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-content: flex-start;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.featured-result .tagline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-content: flex-start;
+  margin-top: 10px;
+}
+
+.result-card .tagline .tag {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.35;
+  padding: 7px 10px;
+  box-sizing: border-box;
+}
+
+.featured-result .result-body {
+  justify-content: flex-start;
+}
+
+.featured-result .result-body .ejuno-card-price {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.featured-result .ejuno-card-price__amount {
+  font-size: 17px;
+}
+
+.product-card .ejuno-card-price {
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.ejuno-vendor-detail__product-body .ejuno-card-price {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+.ejuno-pdp-rec__track .result-body .ejuno-card-price {
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 13px;
+}
+
+.ejuno-pdp-rec__track .ejuno-card-price__amount {
+  font-size: 14px;
+}
+
+.ejuno-cart-page__unit.ejuno-card-price,
+.ejuno-cart-line__price.ejuno-card-price {
+  margin-top: 6px;
+  padding-top: 0;
+  gap: 4px 6px;
+}
+
+.ejuno-cart-page__unit .ejuno-card-price__amount,
+.ejuno-cart-line__price .ejuno-card-price__amount {
+  font-size: 14px;
+}
+
+@media (max-width: 760px) {
+  .ejuno-card-price__amount {
+    font-size: 15px;
+  }
+
+  .featured-result .ejuno-card-price__amount {
+    font-size: 16px;
+  }
+}

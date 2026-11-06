@@ -1,0 +1,75 @@
+/* Trello 675 · client review round 2 (Oct 20, 2026). Loaded after the core CSS. */
+
+/* 01.01 Colour: no olive. Labels use dark grey; one cream, one white, one dark. */
+:root { --olive: #4a423c; --paper: #ffffff; }
+.tools-band { background: #ffffff; }
+.homepage-regions--tiles .region-card { background: #211d1a !important; }
+.task.done .boxcheck { background: var(--berry, #9b5068); border-color: var(--berry, #9b5068); }
+.donut { background: conic-gradient(#9b5068 0 38%, #b97d90 38% 63%, #d8b4c0 63% 79%, #efe2e6 79% 100%); }
+.status { background: #f3e7eb; color: #7e3d55; }
+.status.status--pending { background: #f1ece6; color: #5a524b; }
+.bar-fill { background: var(--berry, #9b5068); }
+
+/* 01.02 Home: card titles line up at the top. */
+.region-card .region-copy { display: flex; flex-direction: column; justify-content: flex-start; }
+.tools-grid .tool-link { align-items: flex-start; }
+.tools-grid .tool-link h3 { margin-top: 0; }
+.home-hero-live__filters input[type="month"] { min-width: 0; }
+
+/* 01.03 Plan Your Wedding: no "Tool 01-05" labels; last row of the tools grid is centred. */
+.plan-tool > .eyebrow { display: none; }
+.plan-tools { display: flex !important; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.plan-tools > .plan-tool { flex: 0 1 calc((100% - 32px) / 3); box-sizing: border-box; }
+@media (max-width: 989px) { .plan-tools > .plan-tool { flex-basis: calc((100% - 16px) / 2); } }
+@media (max-width: 599px) { .plan-tools > .plan-tool { flex-basis: 100%; } }
+
+/* 01.04 Wedding Website: no A / B / C letters on the cards. */
+.template-page-wedding-website .tool-link > .num { display: none; }
+
+/* 01.05 Services: header matches the other pages (small label, no underline). */
+.ejuno-services-hub__head .eyebrow { margin-bottom: 10px; }
+.ejuno-services-hub__title::after { display: none !important; }
+.ejuno-services-hub__title { display: block; }
+
+/* 01.06 Marketplace hero: soft dark gradient so the white headline is readable. */
+.market-hero::after {
+  background: linear-gradient(0deg, rgba(22,18,15,.62) 0%, rgba(22,18,15,.28) 45%, rgba(22,18,15,.08) 75%);
+}
+.market-hero .market-hero-copy { text-shadow: 0 2px 18px rgba(0,0,0,.25); }
+
+/* 01.07 Become a Partner form: one title colour, standard label spacing, one intro size. */
+.ejuno-vendor-form h2 { color: var(--ink, #201c19) !important; }
+/* Trello 664 (reopen): heading as in QA screenshot, "Become a Partner - eJuno" with eJuno in plum. */
+.ejuno-vendor-form h2 span { color: #7a2a45 !important; display: inline !important; }
+.ejuno-vendor-form .ejuno-vendor-form__lang { color: var(--ink, #201c19) !important; }
+.ejuno-vendor-form .ejuno-vendor-form__eyebrow { letter-spacing: .18em !important; font-size: 11px !important; color: var(--olive) !important; }
+.ejuno-vendor-form .value-prop,
+.ejuno-vendor-form .ejuno-vendor-form__note,
+.ejuno-vendor-form .ejuno-vendor-form__lang { font-size: 15px !important; line-height: 1.55 !important; }
+.ejuno-vendor-form .ejuno-vendor-form__lang { display: block; margin-top: 4px; }
+
+/* 01.09 Reviews: stats stay hidden until there are 10+ published reviews. */
+#platform-reviews-metrics:not(.is-ready) { display: none !important; }
+
+/* 01.12 Contact: visible field labels, same style as the partner form. */
+.contact-form .field label.visually-hidden {
+  position: static !important; width: auto !important; height: auto !important; margin: 0 0 6px !important;
+  clip: auto !important; clip-path: none !important; overflow: visible !important; white-space: normal !important;
+  display: block; font-size: 13px; font-weight: 600; color: var(--ink, #201c19);
+}
+
+/* Trello 665 (reopen): Region (and Category) sit inline with the All / Service / Venue chips, not pushed to the far right. */
+@media (min-width: 761px) {
+  .ejuno-vendor-filters { justify-content: flex-start !important; }
+  .ejuno-vendor-filters .ejuno-vendor-type-tabs { flex: 0 0 auto !important; }
+  .ejuno-vendor-filters .ejuno-vendor-category-pill,
+  .ejuno-vendor-filters .ejuno-vendor-region-pill { margin-left: 0 !important; flex: 0 0 auto !important; }
+}
+
+/* Trello 666 / 668 (reopen): email links + desktop helper card. */
+a[href^="mailto:" i] { color: var(--berry, #9b5068); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; position: relative; z-index: 1; pointer-events: auto; }
+.ej-mailto-card { position: absolute; z-index: 9999; background: #fff; border: 1px solid var(--line, #e2d9cf); border-radius: 14px; box-shadow: 0 12px 32px rgba(32, 28, 25, .14); padding: 14px 16px; min-width: 260px; font-size: 14px; }
+.ej-mailto-card__addr { margin: 0 0 10px; font-weight: 600; color: var(--ink, #201c19); }
+.ej-mailto-card__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ej-mailto-card__btn { display: inline-block; padding: 7px 12px; border: 1px solid var(--line, #e2d9cf); border-radius: 999px; background: #fff; color: #4a423c !important; text-decoration: none !important; font: inherit; font-size: 13px; cursor: pointer; }
+.ej-mailto-card__btn:hover { border-color: var(--berry, #9b5068); color: var(--berry, #9b5068) !important; }

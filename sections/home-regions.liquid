@@ -1,0 +1,281 @@
+{%- comment -%} Trello 713 reopen: destinations removed from under the homepage search; turn on with "Show this section". {%- endcomment -%}{%- if section.settings.show_section -%}<section id="destinations" class="section tight homepage-regions{% if section.settings.card_style == 'tiles' %} homepage-regions--tiles{% endif %}">
+  <div class="container">
+    <div class="section-head compact">
+      <div class="copy">
+        <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+        <h2 class="h2">{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.text }}</p>
+      </div>
+      {% if section.settings.cta_label != blank %}
+        {% liquid
+          assign cta_href = section.settings.cta_url
+          if cta_href == blank and collections.venues != blank
+            assign cta_href = collections.venues.url
+          endif
+          if cta_href == blank
+            assign cta_href = '/collections/venues'
+          endif
+        %}
+        <a href="{{ cta_href }}" class="btn ghost homepage-regions__cta">{{ section.settings.cta_label }}</a>
+      {% endif %}
+    </div>
+    <div class="region-row">
+      {% for block in section.blocks %}
+        {% liquid
+          if block.settings.image != blank
+            assign img = block.settings.image | image_url: width: 900
+            assign alt = block.settings.image.alt | default: block.settings.title
+            assign w = block.settings.image.width
+            assign h = block.settings.image.height
+          else
+            assign img = block.settings.fallback_asset | append: '' | prepend: '' 
+            assign img = block.settings.fallback_asset | asset_url
+            assign alt = block.settings.title
+            assign w = 800
+            assign h = 1000
+          endif
+        %}
+        {% liquid
+          assign venues_base = '/collections/venues'
+          if collections.venues != blank
+            assign venues_base = collections.venues.url
+          endif
+          assign region_location = block.settings.location_filter | strip
+          if region_location == blank
+            case block.settings.title
+              when 'Lake Como'
+                assign region_location = 'Italian Lakes'
+              else
+                assign region_location = block.settings.title
+            endcase
+          endif
+          assign region_loc_param = region_location | url_param_escape
+          assign region_href = venues_base | append: '?filter.p.m.custom.location=' | append: region_loc_param
+          if block.settings.url != blank and block.settings.url contains 'filter.p.m.custom.location'
+            assign region_href = block.settings.url
+          endif
+        %}
+        <a class="region-card" href="{{ region_href }}" {{ block.shopify_attributes }}>
+          <img src="{{ img }}" alt="{{ alt | escape }}" width="{{ w }}" height="{{ h }}" loading="lazy">
+          <div class="region-copy">
+            <h3>{{ block.settings.title }}</h3>
+            <span>{{ block.settings.subtitle }}</span>
+            {%- if block.settings.best_for != blank -%}
+              <span class="region-copy__best">Best for: {{ block.settings.best_for }}</span>
+            {%- endif -%}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{%- endif -%}
+{% stylesheet %}
+/* Review p17: destinations as big photo tiles with the region name on the photo. */
+.homepage-regions--tiles .region-card {
+  position: relative;
+  border: 0;
+  background: #2a2420;
+  aspect-ratio: 3 / 4;
+  isolation: isolate;
+}
+.homepage-regions--tiles .region-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s ease;
+}
+.homepage-regions--tiles .region-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(0deg, rgba(20,16,12,.72) 0%, rgba(20,16,12,.25) 45%, rgba(20,16,12,0) 70%);
+}
+.homepage-regions--tiles .region-copy {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px;
+  color: #fff;
+}
+.homepage-regions--tiles .region-copy h3 { color: #fff; }
+.homepage-regions--tiles .region-copy span { color: rgba(255,255,255,.9); display: block; }
+.region-copy__best { display: block; margin-top: 6px; font-size: 12px; font-style: italic; }
+/* Review p18 motion: slow zoom on hover and as the tile scrolls into view. */
+.homepage-regions--tiles .region-card:hover img,
+.homepage-regions--tiles .region-card:focus-visible img,
+.homepage-regions--tiles .region-card.is-inview img { transform: scale(1.06); }
+@media (max-width: 760px) {
+  /* Mobile: swipe row so every tile is the same size (review p4). */
+  .homepage-regions--tiles .region-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    margin-right: calc(-1 * var(--gutter, 18px));
+    padding-right: var(--gutter, 18px);
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .homepage-regions--tiles .region-row::-webkit-scrollbar { display: none; }
+  .homepage-regions--tiles .region-card { flex: 0 0 78%; scroll-snap-align: start; aspect-ratio: 4 / 5; }
+  .homepage-regions--tiles .region-card img { height: 100%; }
+  .homepage-regions--tiles .region-copy { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .homepage-regions--tiles .region-card img { transition: none; transform: none !important; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Home regions",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_section", "label": "Show this section", "info": "Trello 713: off so no destinations show under the homepage search.", "default": false },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Discover Italy"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Five regions. Five distinct wedding moods."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Start with the place. Each destination opens its own atmosphere, venues and style."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "View all venues"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA URL"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "tiles", "label": "Photo tiles (name on the photo)" },
+        { "value": "cards", "label": "Cards (text under the photo)" }
+      ],
+      "default": "tiles"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "region",
+      "name": "Region",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Fallback asset filename",
+          "default": "HOME-IMG-002.webp"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Lake Como"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Lakeside villas · timeless elegance"
+        },
+        {
+          "type": "text",
+          "id": "best_for",
+          "label": "Best for",
+          "info": "Optional one-liner shown as \"Best for: …\", e.g. relaxed multi-day weddings."
+        },
+        {
+          "type": "text",
+          "id": "location_filter",
+          "label": "Venues location filter value",
+          "info": "Must match the Location facet on /collections/venues (e.g. Puglia, Italian Lakes). Defaults from title; Lake Como uses Italian Lakes."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Custom link (optional override)",
+          "info": "Leave blank to auto-link with location filter. Only used if it already contains filter.p.m.custom.location."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home regions",
+      "blocks": [
+        {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-002.webp",
+            "title": "Lake Como",
+            "subtitle": "Lakeside villas · timeless elegance"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-003.webp",
+            "title": "Tuscany",
+            "subtitle": "Vineyards · estates · countryside"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-004.webp",
+            "title": "Amalfi Coast",
+            "subtitle": "Cliffside romance · sea views"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-005.webp",
+            "title": "Puglia",
+            "subtitle": "Masserias · whitewashed charm"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "fallback_asset": "HOME-IMG-006.webp",
+            "title": "Sicily",
+            "subtitle": "Heritage · warmth · Mediterranean light"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

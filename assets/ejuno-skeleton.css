@@ -1,0 +1,271 @@
+/* PDP screen loader — in global head so first paint shows overlay (no flash) */
+@keyframes ejuno-pdp-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ejuno-pdp-screen-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10140;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(246, 241, 235, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.ejuno-pdp-screen-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ejuno-pdp-screen-loader__spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(155, 80, 104, 0.2);
+  border-top-color: var(--berry, #9b5068);
+  border-radius: 50%;
+  animation: ejuno-pdp-loader-spin 0.75s linear infinite;
+}
+
+.ejuno-pdp--gate:not(.ejuno-pdp--revealed) > .container,
+.ejuno-pdp--gate:not(.ejuno-pdp--revealed) > .ejuno-pdp-sticky-cta {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ejuno-pdp--gate.ejuno-pdp--revealed > .container,
+.ejuno-pdp--gate.ejuno-pdp--revealed > .ejuno-pdp-sticky-cta {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.35s ease;
+}
+
+/* Shared shimmer skeleton — PDP, vendor marketplace, vendor detail */
+@keyframes ejuno-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.ejuno-skeleton-block,
+.ejuno-skeleton-line {
+  display: block;
+  border-radius: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(222, 213, 202, 0.45) 0%,
+    rgba(246, 241, 235, 0.95) 45%,
+    rgba(222, 213, 202, 0.45) 100%
+  );
+  background-size: 200% 100%;
+  animation: ejuno-skeleton-shimmer 1.35s ease-in-out infinite;
+}
+
+.ejuno-skeleton-line {
+  height: 14px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+}
+
+.ejuno-skeleton-line--lg {
+  height: 18px;
+  width: 88%;
+}
+
+.ejuno-skeleton-line--short {
+  width: 62%;
+  margin-bottom: 0;
+}
+
+.ejuno-skeleton-line--title {
+  height: 22px;
+  width: 70%;
+  margin-bottom: 18px;
+  border-radius: 10px;
+}
+
+.ejuno-skeleton-grid--facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.ejuno-skeleton-block {
+  min-height: 72px;
+}
+
+.ejuno-skeleton-block--field {
+  min-height: 52px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+}
+
+.ejuno-skeleton-block--btn {
+  min-height: 50px;
+  margin-top: 6px;
+  border-radius: 999px;
+}
+
+.ejuno-skeleton-block--img {
+  min-height: 280px;
+  border-radius: 18px;
+  width: 100%;
+}
+
+.ejuno-skeleton-block--avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  min-height: 88px;
+}
+
+/* Vendor marketplace card grid */
+.ejuno-skeleton-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.ejuno-skeleton-result-card {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.ejuno-skeleton-result-card .ejuno-skeleton-block--img {
+  min-height: 220px;
+  border-radius: 0;
+}
+
+.ejuno-skeleton-result-card__body {
+  padding: 16px 18px 20px;
+}
+
+.ejuno-vendor-grid-skeleton {
+  padding: 8px 0 32px;
+}
+
+.ejuno-vendor-grid-skeleton[hidden] {
+  display: none !important;
+}
+
+/* Vendor detail (V5 mount) */
+.ejuno-vendor-detail__skeleton {
+  padding-bottom: 48px;
+}
+
+.ejuno-vendor-detail__skeleton-gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 200px 200px;
+  gap: 10px;
+  max-width: var(--max);
+  margin: 24px auto 0;
+  padding: 0 var(--gutter);
+}
+
+.ejuno-vendor-detail__skeleton-gallery .ejuno-skeleton-block:first-child {
+  grid-row: 1 / 3;
+  min-height: 100%;
+}
+
+.ejuno-vendor-detail__skeleton-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 32px;
+  max-width: var(--max);
+  margin: 32px auto 0;
+  padding: 0 var(--gutter);
+}
+
+.ejuno-vendor-detail__skeleton-profile {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 22px;
+  background: var(--paper);
+}
+
+.ejuno-vendor-detail__skeleton-profile .ejuno-skeleton-block--avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.ejuno-vendor-detail.is-loading [data-vendor-content] {
+  display: none !important;
+}
+
+.ejuno-vendor-detail.is-loading .ejuno-vendor-detail__skeleton {
+  display: block;
+}
+
+.ejuno-vendor-detail:not(.is-loading) .ejuno-vendor-detail__skeleton {
+  display: none;
+}
+
+/* Legacy vendor detail page */
+#vendor-detail-wrapper.vd-loading .vd-skeleton-page {
+  display: block;
+}
+
+#vendor-detail-wrapper.vd-loading .vd-live-content {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+#vendor-detail-wrapper:not(.vd-loading) .vd-skeleton-page {
+  display: none;
+}
+
+.vd-skeleton-page {
+  padding: 16px max(var(--gutter, 18px), 16px) 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.vd-skeleton-page .ejuno-vendor-detail__skeleton-gallery {
+  margin-top: 12px;
+  padding: 0;
+}
+
+@media (max-width: 760px) {
+  .ejuno-skeleton-grid--facts,
+  .ejuno-skeleton-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ejuno-skeleton-block {
+    min-height: 58px;
+  }
+
+  .ejuno-vendor-detail__skeleton-gallery {
+    grid-template-columns: 1fr;
+    grid-template-rows: min(52vw, 280px);
+  }
+
+  .ejuno-vendor-detail__skeleton-gallery .ejuno-skeleton-block:first-child {
+    grid-row: auto;
+  }
+
+  .ejuno-vendor-detail__skeleton-layout {
+    grid-template-columns: 1fr;
+  }
+}

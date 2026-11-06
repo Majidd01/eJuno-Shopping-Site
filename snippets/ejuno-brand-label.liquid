@@ -1,0 +1,9 @@
+{% comment %}
+  Normalizes Shopify vendor strings like EJUNO/ejuno to styled eJuno (not CSS-uppercased).
+{% endcomment %}
+{% assign brand_key = text | downcase | strip %}
+{% if brand_key == 'ejuno' %}
+  <span class="ejuno-brand-word">eJuno</span>
+{% else %}
+  {{ text }}
+{% endif %}

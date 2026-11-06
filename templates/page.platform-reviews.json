@@ -1,0 +1,32 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "s1": {
+      "type": "reviews-1",
+      "settings": {
+        "fallback_1": "ejuno-photo-11.jpg"
+      }
+    },
+    "s2": {
+      "type": "reviews-2",
+      "settings": {}
+    },
+    "s3": {
+      "type": "reviews-3",
+      "settings": {}
+    }
+  },
+  "order": [
+    "s1",
+    "s2",
+    "s3"
+  ]
+}

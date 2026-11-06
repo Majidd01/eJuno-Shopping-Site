@@ -1,0 +1,86 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "header": {
+      "type": "header",
+      "settings": {
+        "transparent_over_hero": true,
+        "logo_text": "Juno",
+        "logo_tagline": "Weddings in Italy",
+        "show_search_icon": true,
+        "show_account_menu": true,
+        "login_couple_url": "https://ejuno-staging.web.app/couple-dashboard",
+        "login_vendor_url": "https://vendor-staging-ejuno.web.app/",
+        "login_guest_url": "https://ejuno-staging.web.app/guest/login",
+        "show_wishlist_icon": false,
+        "utility_label": "Find a Wedding",
+        "utility_url": "/pages/couple-wedding-website",
+        "show_shop_menu": false,
+        "shop_label": "Shop",
+        "venues_url": "/collections/venue",
+        "accommodation_url": "/collections/accommodation",
+        "villa_url": "/collections/villa"
+      },
+      "blocks": {
+        "explore": {
+          "type": "nav_link",
+          "settings": {
+            "label": "Venue",
+            "url": "/collections/venue",
+            "megamenu": "explore"
+          }
+        },
+        "plan": {
+          "type": "nav_link",
+          "settings": {
+            "label": "Plan Your Wedding",
+            "url": "/pages/plan-your-wedding"
+          }
+        },
+        "services": {
+          "type": "nav_link",
+          "settings": {
+            "label": "Services",
+            "url": "/pages/all-services",
+            "megamenu": "services"
+          }
+        },
+        "inspiration": {
+          "type": "nav_link",
+          "settings": {
+            "label": "Inspiration",
+            "url": "/blogs/inspiration"
+          }
+        },
+        "vendors": {
+          "type": "nav_link",
+          "settings": {
+            "label": "For Vendors",
+            "url": "/pages/vendor",
+            "placement": "beside_cta"
+          }
+        }
+      },
+      "block_order": [
+        "explore",
+        "services",
+        "inspiration",
+        "plan",
+        "vendors"
+      ]
+    }
+  },
+  "order": [
+    "header"
+  ]
+}

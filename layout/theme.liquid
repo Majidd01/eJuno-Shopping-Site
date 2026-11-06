@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  {%- liquid
+    # Trello 657: Honeymoon Villas merged into Villas. Redirect only once the Villas collection really holds them
+    # (its rule includes the 'honeymoon villas' tag), so no listing ever disappears.
+    assign ej_hv_redirect = false
+    if template.name == 'collection' and collection.handle contains 'honeymoon-villa'
+      assign ej_hv_first = collection.products.first
+      if ej_hv_first != blank
+        assign ej_hv_cols = ej_hv_first.collections | map: 'handle' | join: ','
+        assign ej_hv_cols = ',' | append: ej_hv_cols | append: ','
+        if ej_hv_cols contains ',villa,'
+          assign ej_hv_redirect = true
+        endif
+      endif
+    endif
+  -%}
+  {%- if ej_hv_redirect -%}
+    <meta http-equiv="refresh" content="0;url=/collections/villa"><link rel="canonical" href="{{ shop.url }}/collections/villa">
+    <script>location.replace('/collections/villa' + location.search);</script>
+  {%- endif -%}
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f1eb">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <title>
+    {%- liquid
+      assign ej_title = page_title
+      if request.page_type == 'blog' and blog.handle == 'destinations' or request.page_type == 'blog' and blog.handle == 'inspiration'
+        assign ej_title = 'Inspiration'
+      elsif request.page_type == 'page' and page.handle == 'wedding-check-list'
+        assign ej_title = 'Wedding Checklist'
+      elsif request.page_type == 'page' and page.handle == 'vendor'
+        assign ej_title = 'Become a Partner - eJuno'
+      endif
+    -%}
+    {{ ej_title }}{% if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless ej_title contains shop.name or ej_title contains 'eJuno' %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+  {%- liquid
+    assign ej_desc = page_description
+    if ej_desc == blank and request.page_type == 'index'
+      assign ej_desc = 'Discover venues, local professionals and planning tools for your wedding in Italy.'
+    endif
+  -%}
+  {% if ej_desc != blank %}
+    <meta name="description" content="{{ ej_desc | escape }}">
+  {% endif %}
+  {%- comment -%} 2026-10-23 brand favicon set (theme assets). settings.favicon is kept only as a fallback if the brand set is switched off. {%- endcomment -%}
+  {%- liquid
+    assign ejuno_brand_favicon = true
+    if ejuno_brand_favicon == false and settings.favicon != blank
+      assign favicon_32 = settings.favicon | image_url: width: 32, height: 32
+      assign favicon_180 = settings.favicon | image_url: width: 180, height: 180
+      assign favicon_512 = settings.favicon | image_url: width: 512, height: 512
+    else
+      assign favicon_32 = 'ejuno-favicon-32.png' | asset_url
+      assign favicon_180 = 'ejuno-apple-touch-icon.png' | asset_url
+      assign favicon_512 = 'ejuno-favicon-512.png' | asset_url
+    endif
+  -%}
+{%- comment -%} 2026-10-26 colour-scheme favicon: grey in light mode, white in dark mode {%- endcomment -%}
+<link rel="icon" href="{{ 'ejuno-favicon-light.svg' | asset_url }}" type="image/svg+xml" media="(prefers-color-scheme: light)">
+<link rel="icon" href="{{ 'ejuno-favicon-dark.svg' | asset_url }}" type="image/svg+xml" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="{{ 'ejuno-favicon-light-32.png' | asset_url }}" sizes="32x32" type="image/png" media="(prefers-color-scheme: light)">
+<link rel="icon" href="{{ 'ejuno-favicon-dark-32.png' | asset_url }}" sizes="32x32" type="image/png" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="{{ 'ejuno-favicon-light-512.png' | asset_url }}" sizes="512x512" type="image/png" media="(prefers-color-scheme: light)">
+<link rel="icon" href="{{ 'ejuno-favicon-dark-512.png' | asset_url }}" sizes="512x512" type="image/png" media="(prefers-color-scheme: dark)">
+  <link rel="apple-touch-icon" href="{{ favicon_180 }}" sizes="180x180">
+  {%- comment -%} Trello 669: load Inter (body/UI). Iowan Old Style is used from the device when installed; licensed web files still needed. {%- endcomment -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  {{ 'ejuno.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-responsive.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-collection-search.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-collection-filters.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-cart.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-skeleton.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-cookie-consent.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-faq.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-ui.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-card-price.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-qa-reopen.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-675.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'ejuno-mailto.js' | asset_url }}" defer></script>
+  {{ 'ejuno-todo.css' | asset_url | stylesheet_tag }}
+  {{ 'ejuno-reopen-1022.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'ejuno-reopen-1022.js' | asset_url }}" defer></script>
+  {% render 'ejuno-backend-config' %}
+  {% render 'ejuno-currency-config' %}
+  <script src="{{ 'ejuno-notifications.js' | asset_url }}"></script>
+  <script src="{{ 'ejuno-card-price.js' | asset_url }}" defer></script>
+  <script src="{{ 'ejuno-auth-from-url.js' | asset_url }}"></script>
+  {{ content_for_header }}
+</head>
+<body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}{% if template.name == 'index' %} homepage{% endif %}">
+  {% sections 'header-group' %}
+  <main id="MainContent" role="main">
+    {{ content_for_layout }}
+  </main>
+  {% sections 'footer-group' %}
+  {% render 'ejuno-cart-drawer' %}
+  {% render 'ejuno-cookie-consent' %}
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <button class="close" type="button" data-close aria-label="Close">&times;</button>
+      <div class="eyebrow">eJuno</div>
+      <h3 class="modal-title h3" style="margin:10px 0 8px">Continue</h3>
+      <p class="modal-body" style="color:var(--muted)"></p>
+      <button class="btn primary" type="button" data-close>Close</button>
+    </div>
+  </div>
+  <script src="{{ 'ejuno.js' | asset_url }}" defer></script>
+  <script src="{{ 'ejuno-header-account.js' | asset_url }}" defer></script>
+  <script src="{{ 'ejuno-cart.js' | asset_url }}" defer></script>
+  <script src="{{ 'ejuno-faq.js' | asset_url }}" defer></script>
+  <script src="{{ 'ejuno-cookie-consent.js' | asset_url }}" defer></script>
+  <script src="{{ 'ejuno-ui.js' | asset_url }}" defer></script>
+<style>.ejuno-brand-word{text-transform:none!important;letter-spacing:inherit}</style>
+<script>/* QA: keep brand as eJuno inside uppercase labels */(function(){function f(r){var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode()){if(/eJuno/i.test(n.nodeValue)&&n.parentElement&&!n.parentElement.closest('.ejuno-brand-word,script,style,textarea,input')&&getComputedStyle(n.parentElement).textTransform==='uppercase')a.push(n)}a.forEach(function(n){var fr=document.createDocumentFragment();n.nodeValue.split(/(ejuno)/i).forEach(function(p){if(/^ejuno$/i.test(p)){var s=document.createElement('span');s.className='ejuno-brand-word';s.textContent='eJuno';fr.appendChild(s)}else if(p)fr.appendChild(document.createTextNode(p))});n.parentNode.replaceChild(fr,n)})}if(document.readyState!=='loading')f(document.body);else document.addEventListener('DOMContentLoaded',function(){f(document.body)})})();</script>
+</body>
+</html>

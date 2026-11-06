@@ -1,0 +1,18 @@
+{%- comment -%} Trello 689 BUG-01: the Become a Partner application form is hidden. Tick "Show the application form" in the theme editor to bring it back. {%- endcomment -%}
+{%- if section.settings.show_form -%}
+  {% render 'ejuno-vendor-onboarding-mount' %}
+{%- else -%}
+  <style>a[href="#vendorForm"]{display:none!important}</style>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Vendor onboarding form",
+  "tag": "section",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_form", "label": "Show the application form", "default": false }
+  ],
+  "presets": [{ "name": "Vendor onboarding form" }]
+}
+{% endschema %}

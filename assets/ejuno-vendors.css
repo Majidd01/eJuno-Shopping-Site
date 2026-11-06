@@ -1,0 +1,289 @@
+.ejuno-vendor-marketplace {
+  padding: 0 0 56px;
+}
+
+.ejuno-vendor-toolbar {
+  margin-bottom: 0;
+}
+
+.ejuno-vendor-facets {
+  margin: 0;
+  position: relative;
+  z-index: 40;
+}
+
+.ejuno-vendor-facets .ejuno-facets__scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 0 22px;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #201c19 rgba(32, 28, 25, 0.12);
+}
+
+.ejuno-vendor-facets .ejuno-facets__scroll::-webkit-scrollbar {
+  height: 5px;
+}
+
+.ejuno-vendor-facets .ejuno-facets__scroll::-webkit-scrollbar-track {
+  background: rgba(32, 28, 25, 0.1);
+  border-radius: 999px;
+}
+
+.ejuno-vendor-facets .ejuno-facets__scroll::-webkit-scrollbar-thumb {
+  background: #201c19;
+  border-radius: 999px;
+}
+
+.ejuno-vendor-filters {
+  margin: 20px 0 28px;
+  align-items: center;
+  gap: 10px;
+}
+
+.ejuno-vendor-type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ejuno-vendor-category-pill {
+  flex: 0 1 auto;
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .ejuno-vendor-category-pill {
+    margin-left: 0;
+    flex: 1 1 100%;
+  }
+
+  .ejuno-vendor-category-pill .ejuno-facet-pill__trigger {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.ejuno-vendor-filters .chip.ejuno-vendor-tab-chip {
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  font-family: var(--sans);
+  font-size: 13px;
+  color: #5c534c;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.ejuno-vendor-filters .chip.ejuno-vendor-tab-chip::after {
+  display: none;
+  content: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ejuno-vendor-filters .chip.ejuno-vendor-tab-chip:hover {
+    border-color: var(--berry);
+    color: var(--berry-dark);
+    background: rgba(155, 80, 104, 0.06);
+  }
+}
+
+.ejuno-vendor-filters .chip.ejuno-vendor-tab-chip.is-active {
+  border-color: var(--berry);
+  color: var(--berry-dark);
+  font-weight: 600;
+  background: rgba(155, 80, 104, 0.1);
+}
+
+.ejuno-vendor-category-pill {
+  position: relative;
+  list-style: none;
+  z-index: 1;
+}
+
+.ejuno-vendor-category-pill[open] {
+  z-index: 50;
+}
+
+.ejuno-vendor-category-pill > summary.ejuno-facet-pill__trigger {
+  list-style: none;
+}
+
+.ejuno-vendor-category-pill[hidden] {
+  display: none !important;
+}
+
+.ejuno-vendor-category-pill .ejuno-facet-pill__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.ejuno-vendor-category-pill .ejuno-facet-pill__trigger::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #6d645d;
+  border-bottom: 1.5px solid #6d645d;
+  transform: rotate(45deg) translateY(-2px);
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.ejuno-vendor-category-pill[open] .ejuno-facet-pill__trigger::after {
+  transform: rotate(-135deg) translateY(2px);
+}
+
+.ejuno-vendor-category-pill.is-active .ejuno-facet-pill__trigger {
+  border-color: #c4b5a8;
+  color: #201c19;
+}
+
+.ejuno-vendor-facets .ejuno-facet-pill__panel {
+  position: absolute;
+  z-index: 60;
+  left: 0;
+  top: calc(100% + 8px);
+  min-width: 240px;
+  max-width: min(320px, 90vw);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow2);
+  padding: 14px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.ejuno-vendor-facets .ejuno-facet-pill__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ejuno-vendor-facets .ejuno-facet-pill__option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 4px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #201c19;
+  border: 0;
+  background: transparent;
+  font-family: var(--sans);
+}
+
+.ejuno-vendor-facets .ejuno-facet-pill__option:hover,
+.ejuno-vendor-facets .ejuno-facet-pill__option.is-selected {
+  color: var(--berry);
+  font-weight: 600;
+}
+
+.ejuno-vendor-grid-skeleton,
+.ejuno-vendor-grid-loading {
+  text-align: center;
+  padding: 40px 16px 12px;
+  color: var(--muted);
+}
+
+.ejuno-vendor-grid-skeleton[hidden],
+.ejuno-vendor-grid-loading[hidden] {
+  display: none !important;
+}
+
+.ejuno-vendor-grid-loading p {
+  margin: 0;
+  font-size: 15px;
+}
+
+.ejuno-vendor-grid {
+  margin-top: 8px;
+}
+
+.ejuno-vendor-grid .tag {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+}
+
+.ejuno-vendor-grid .result-card.is-filtered-out {
+  display: none !important;
+}
+
+.ejuno-vendor-marketplace__load {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 28px var(--gutter) 8px;
+}
+
+.ejuno-vendor-marketplace__load [data-vendor-load-more] {
+  display: none !important;
+}
+
+.ejuno-vendor-marketplace__meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.ejuno-vendor-marketplace__state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--muted);
+}
+
+.ejuno-vendor-marketplace__spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--line);
+  border-top-color: var(--berry);
+  border-radius: 50%;
+  animation: ejuno-vendor-spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes ejuno-vendor-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .ejuno-vendor-marketplace {
+    padding-bottom: 40px;
+  }
+
+  .ejuno-vendor-facets .ejuno-facet-pill__panel {
+    left: 0;
+    right: 0;
+    max-width: none;
+    width: 100%;
+    position: relative;
+    top: 8px;
+    box-shadow: none;
+    border: 1px solid var(--line);
+  }
+
+  .result-grid .result-card h3,
+  .result-grid .result-card__title {
+    font-size: clamp(22px, 5vw, 28px);
+  }
+}
+
+/* Review p12: person's name small under the business name */
+.result-card__person {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 6px;
+}

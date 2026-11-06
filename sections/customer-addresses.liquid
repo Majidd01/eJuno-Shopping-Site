@@ -1,0 +1,14 @@
+
+<section class="section"><div class="container">
+  <h1 class="h2">Addresses</h1>
+  {% for address in customer.addresses %}
+    <div class="utility-panel" style="margin-bottom:16px">{{ address | format_address }}</div>
+  {% endfor %}
+</div></section>
+
+{% schema %}
+{
+  "name": "Customer addresses",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,39 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "page-intro",
+      "settings": {
+        "layout_class": "utility-head",
+        "eyebrow": "Legal",
+        "heading": "Return and Refund Policy",
+        "lead": "Our return and refund terms for purchases made through eJuno."
+      }
+    },
+    "policy_nav": {
+      "type": "policy-nav",
+      "settings": {
+        "active_policy": "return"
+      }
+    },
+    "content": {
+      "type": "policy-content",
+      "settings": {
+        "content": "<p><strong>Venue and service deposits</strong></p><p>Deposits paid to secure a venue or a wedding service booked through eJuno are non-refundable in all cases, including if the booking is cancelled, moved to another date or reduced. The deposit confirms the date and the vendor&rsquo;s commitment to your wedding, so it cannot be returned once paid. Any further payments are governed by the terms agreed with the venue or vendor for that booking. The return terms below apply only to physical goods bought on eJuno.</p><p>Questions about a booking? Contact <a href=\"mailto:support@ejuno.io\">support@ejuno.io</a>.</p><p><strong>1.General Return Policy</strong></p><p>We offer a 30-day return policy, allowing you to request a return within 30 days of receiving your item.</p><p><strong>Eligibility for Returns</strong><br/><br/>To qualify for a return, the item must:</p><ul><li>Be in its original condition, unused or unworn.</li><li>Include all original tags and packaging.</li><li>Be accompanied by a receipt or proof of purchase.</li></ul><p></p><p>To initiate a return, please contact us at <a href=\"mailto:support@ejuno.io\" title=\"mailto:support@ejuno.io\"><strong>support@ejuno.io</strong></a>. Returns must be shipped to the address provided during the return process. Items sent back without prior approval will not be accepted.</p><p>For any return inquiries, please reach out to <a href=\"mailto:support@ejuno.io\" title=\"mailto:support@ejuno.io\">support@ejuno.io</a>.</p><p><strong>2.Damaged or Defective Items</strong></p><p>The following items are not eligible for returns:</p><ul><li>Perishable goods, including food, flowers, and plants.</li><li>Customised or personalised products.</li><li>Personal care items, such as cosmetics and beauty products.</li><li>Hazardous materials, flammable liquids, and gases.</li></ul><p>Please contact us if you are unsure about the eligibility of a specific item.</p><p><strong>Note:</strong> Items purchased on sale and gift cards are non-returnable.</p><p><strong>4.Exchanges</strong></p><p>For exchanges, we recommend returning the original item for a refund. Once the return is approved, you may place a new order for the desired item.</p><p><strong>5.European Union 14-Day Cooling-Off Period</strong></p><p>If your order is shipped to a location within the European Union, you are entitled to a 14-day cooling-off period. During this time, you may cancel or return your order for any reason, provided the item meets the following conditions:</p><ul><li>It is unused and in its original condition.</li><li>It includes all tags and packaging.</li><li>A receipt or proof of purchase is provided.</li></ul><p>To exercise this right, please contact us<br/>at <a href=\"mailto:support@ejuno.io\" title=\"mailto:support@ejuno.io\"><strong>support@ejuno.io </strong></a>within 14 days of receiving your order.</p><p><strong>6. Refund Process</strong><br/><br/>Once your return is received and inspected, we will notify you of the approval or rejection of your refund request.</p><p>If approved, the refund will be issued to your original payment method within 10 business days. Please note that processing times may vary depending on your financial institution.</p><p>If more than 15 business days have passed since your refund was approved and you have not received it, please contact us at <a href=\"mailto:support@ejuno.io\" title=\"mailto:support@ejuno.io\"><strong>support@ejuno.io</strong></a>.</p>"
+      }
+    }
+  },
+  "order": [
+    "intro",
+    "policy_nav",
+    "content"
+  ]
+}

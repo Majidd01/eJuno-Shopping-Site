@@ -1,0 +1,43 @@
+{% comment %}
+  Shared card price label for Shopify products.
+  Renders nothing when price is missing or not greater than zero.
+  Usage: {% render 'ejuno-card-price', product: product %}
+{% endcomment %}
+{% if product %}
+  {% liquid
+    assign price_cents = product.price_min
+    if price_cents == blank
+      assign price_cents = product.price
+    endif
+
+    assign type_l = product.type | default: '' | downcase | strip
+    assign use_starting_from = false
+
+    if product.price_varies
+      assign use_starting_from = true
+    endif
+
+    if type_l == 'venue' or type_l == 'service' or type_l == 'villa' or type_l contains 'venue' or type_l contains 'villa' or type_l contains 'accommodation'
+      assign use_starting_from = true
+    endif
+
+    for tag in product.tags
+      assign tag_l = tag | downcase
+      if tag_l == 'venue' or tag_l == 'service' or tag_l == 'villa' or tag_l contains 'accommodation'
+        assign use_starting_from = true
+        break
+      endif
+    endfor
+  %}
+
+  {% if price_cents != blank and price_cents > 0 %}
+    <div class="ejuno-card-price">
+      {% if use_starting_from %}
+        <span class="ejuno-card-price__label">Starting from</span>
+        <span class="ejuno-card-price__amount">{% render 'ejuno-money-listing', cents: price_cents %}</span>
+      {% else %}
+        <span class="ejuno-card-price__amount">{% render 'ejuno-money-listing', cents: price_cents %}</span>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endif %}

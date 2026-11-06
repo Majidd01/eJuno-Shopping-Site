@@ -1,0 +1,41 @@
+{%- assign pi_has_photo = false -%}
+{%- if section.settings.image != blank or section.settings.image_fallback != blank -%}{%- assign pi_has_photo = true -%}{%- endif -%}
+<section class="{{ section.settings.layout_class }}{% if pi_has_photo %} plan-intro--photo{% endif %}">
+  <div class="container">
+    {%- if pi_has_photo -%}<div class="plan-intro__grid"><div class="plan-intro__copy">{%- endif -%}
+    <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1 class="h1">{{ section.settings.heading }}</h1>
+    {% if section.settings.lead != blank %}
+      <p class="lead">{{ section.settings.lead }}</p>
+    {% endif %}
+    {%- if pi_has_photo -%}
+      </div>
+      <figure class="plan-intro__photo">
+        <img src="{%- if section.settings.image != blank -%}{{ section.settings.image | image_url: width: 2000 }}{%- else -%}{{ section.settings.image_fallback | asset_url }}{%- endif -%}" alt="{{ section.settings.image_alt | escape }}" width="1600" height="1000" loading="eager">
+      </figure>
+    </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Page intro",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "select", "id": "layout_class", "label": "Layout style", "options": [
+      { "value": "utility-head", "label": "Utility" },
+      { "value": "plan-intro", "label": "Plan intro" },
+      { "value": "product-head", "label": "Product head" }
+    ], "default": "plan-intro" },
+    { "type": "image_picker", "id": "image", "label": "Photo beside the headline", "info": "Trello 679: wide planning photo (flat lay of a notebook, invitations and a map of Italy). Leave empty for a text-only intro." },
+    { "type": "text", "id": "image_fallback", "label": "Fallback theme asset", "info": "Used until a photo is picked. Leave blank for no photo." },
+    { "type": "text", "id": "image_alt", "label": "Photo alt text", "default": "Wedding planning details" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Plan your wedding" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Three phases. Six planning tools." },
+    { "type": "textarea", "id": "lead", "label": "Lead", "default": "Start with the roadmap: shape the day, organise people and budget, then share with guests. When you are ready, open the tool that matches what you need to do next." }
+  ],
+  "presets": [{ "name": "Page intro" }]
+}
+{% endschema %}

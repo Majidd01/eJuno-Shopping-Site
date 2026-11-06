@@ -1,0 +1,74 @@
+<section class="b2b-hero">
+  <img
+    src="{% if section.settings.image_1 != blank %}{{ section.settings.image_1 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_1 | asset_url }}{% endif %}"
+    width="1672"
+    height="941"
+    loading="lazy"
+    alt=""
+  >
+  <div class="b2b-copy">
+    <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1 class="h1">{{ section.settings.heading }}</h1>
+    <p>{{ section.settings.subtext }}</p>
+    {%- if section.settings.register_url != blank -%}<a href="{{ section.settings.register_url }}" class="btn primary vendor-register-btn" target="_self">{{ section.settings.register_label | default: 'Register Now' }}</a>{%- endif -%}
+  </div>
+</section>
+
+{%- comment -%} Card 723: stronger scrim + text shadow so white copy stays readable over the light floral photo. {%- endcomment -%}
+<style>
+  .b2b-hero:after{background:linear-gradient(90deg,rgba(22,18,15,.86) 0%,rgba(22,18,15,.62) 38%,rgba(22,18,15,.18) 72%,rgba(22,18,15,.08) 100%)}
+  .b2b-copy .eyebrow{color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.55)}
+  .b2b-copy .h1{text-shadow:0 2px 18px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.35)}
+  .b2b-copy p{color:#fff;text-shadow:0 1px 12px rgba(0,0,0,.55),0 1px 2px rgba(0,0,0,.4)}
+  @media (max-width:749px){.b2b-hero:after{background:linear-gradient(180deg,rgba(22,18,15,.5) 0%,rgba(22,18,15,.72) 55%,rgba(22,18,15,.82) 100%)}}
+</style>
+
+{% schema %}
+{
+  "name": "partner 1",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (PART-IMG-001.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "PART-IMG-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Become a partner"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join a Curated Network, Not Another Listing Site"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Clear standards, a stronger showcase and a direct route to couples planning destination weddings."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "Start Application"
+    },{"type":"text","id":"register_label","label":"Register button label","default":"Register Now"},{"type":"text","id":"register_url","label":"Register button URL","default":"https://vendor-staging-ejuno.web.app/register"}
+  ],
+  "presets": [
+    {
+      "name": "partner 1"
+    }
+  ]
+}
+{% endschema %}

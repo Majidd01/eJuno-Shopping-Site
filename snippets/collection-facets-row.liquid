@@ -1,0 +1,245 @@
+{% comment %}
+  Filter pill row — rendered in desktop scroll + cloned into mobile sheet.
+  @param show_counts {Boolean}
+  @param apply_label {String}
+  @param context {String} desktop | mobile
+{% endcomment %}
+<div class="filters ejuno-facets__row" role="group" aria-label="Filter collection" data-facets-row data-facets-context="{{ context | default: 'desktop' }}">
+  {% liquid
+    assign has_price_filter = false
+    for filter in collection.filters
+      if filter.type == 'price_range'
+        assign has_price_filter = true
+        break
+      endif
+    endfor
+  %}
+  {% for filter in collection.filters %}
+    {% liquid
+      assign skip_availability = false
+      assign fl = filter.label | downcase
+      assign fp = filter.param_name | default: '' | downcase
+      if fl == 'availability' or fl == 'out of stock' or fl contains 'availability'
+        assign skip_availability = true
+      endif
+      if fp contains 'availability'
+        assign skip_availability = true
+      endif
+    %}
+    {% unless skip_availability %}
+    {% liquid
+      assign pill_label = filter.label
+      case filter.label
+        when 'Venue Category'
+          assign pill_label = 'Venue Type'
+        when 'Capacity'
+          assign pill_label = 'Guest Capacity'
+      endcase
+      assign pill_active = false
+      if filter.active_values.size > 0
+        assign pill_active = true
+      endif
+      if filter.type == 'price_range'
+        if filter.min_value.value != blank or filter.max_value.value != blank
+          assign pill_active = true
+        endif
+      endif
+      assign value_count = filter.values.size
+    %}
+    <details class="ejuno-facet-pill{% if pill_active %} is-active{% endif %}{% if filter.type == 'price_range' %} ejuno-facet-pill--price{% endif %}" data-facet-pill data-facet-label="{{ pill_label | escape }}">
+      <summary class="chip ejuno-facet-pill__trigger">
+        <span>{{ pill_label }}</span>
+        {% if filter.active_values.size > 0 %}
+          <span class="ejuno-facet-pill__badge">{{ filter.active_values.size }}</span>
+        {% endif %}
+      </summary>
+      <div class="ejuno-facet-pill__panel">
+        <div class="ejuno-facet-pill__panel-head">
+          <p class="ejuno-facet-pill__panel-title">{{ pill_label }}</p>
+          {% if pill_active %}
+            <button type="button" class="ejuno-facet-pill__panel-clear" data-facet-clear-panel>Clear</button>
+          {% endif %}
+        </div>
+
+        {% case filter.type %}
+          {% when 'list', 'boolean' %}
+            {% if value_count > 8 %}
+              <input
+                type="search"
+                class="ejuno-facet-pill__search"
+                placeholder="Search {{ pill_label | downcase }}…"
+                data-facet-search
+                autocomplete="off"
+                aria-label="Search {{ pill_label }}"
+              >
+            {% endif %}
+            <ul class="ejuno-facet-pill__list" role="list" data-facet-list>
+              {% for value in filter.values %}
+                <li data-facet-list-item>
+                  <label class="ejuno-facet-pill__option">
+                    <input
+                      type="checkbox"
+                      name="{{ value.param_name }}"
+                      value="{{ value.value }}"
+                      {% if value.active %}checked{% endif %}
+                      {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                      data-facet-input
+                    >
+                    <span>{{ value.label | escape }}</span>
+                    {% if show_counts %}
+                      <span class="ejuno-facet-pill__count">({{ value.count }})</span>
+                    {% endif %}
+                  </label>
+                </li>
+              {% endfor %}
+            </ul>
+            <p class="ejuno-facet-pill__empty-search" data-facet-empty-search hidden>No matches</p>
+          {% when 'price_range' %}
+            <div class="ejuno-facet-pill__price">
+              <label class="ejuno-facet-pill__price-field">
+                <span>Min</span>
+                <input
+                  type="text" autocomplete="off" data-ej-price-text
+                  name="{{ filter.min_value.param_name }}"
+                  {% if filter.min_value.value %}{% assign ej_pr = filter.min_value.value | modulo: 100 %}value="{% if ej_pr == 0 %}{{ filter.min_value.value | divided_by: 100 }}{% else %}{{ filter.min_value.value | divided_by: 100.0 }}{% endif %}"{% endif %}
+                  min="0"
+                  max="{{ filter.range_max | divided_by: 100.0 | ceil }}"
+                  step="any"
+                  placeholder="0"
+                  data-facet-input
+                  data-facet-price="min"
+                  inputmode="decimal"
+                >
+              </label>
+              <label class="ejuno-facet-pill__price-field">
+                <span>Max</span>
+                <input
+                  type="text" autocomplete="off" data-ej-price-text
+                  name="{{ filter.max_value.param_name }}"
+                  {% if filter.max_value.value %}{% assign ej_pr = filter.max_value.value | modulo: 100 %}value="{% if ej_pr == 0 %}{{ filter.max_value.value | divided_by: 100 }}{% else %}{{ filter.max_value.value | divided_by: 100.0 }}{% endif %}"{% endif %}
+                  min="0"
+                  max="{{ filter.range_max | divided_by: 100.0 | ceil }}"
+                  step="any"
+                  placeholder="{{ filter.range_max | divided_by: 100.0 | ceil }}"
+                  data-facet-input
+                  data-facet-price="max"
+                  inputmode="decimal"
+                >
+              </label>
+            </div>
+          {% else %}
+            <p class="ejuno-facet-pill__unsupported">{{ filter.label }}</p>
+        {% endcase %}
+
+        <div class="ejuno-facet-pill__footer">
+          <button type="button" class="btn secondary" data-facet-clear-panel>Reset</button>
+          <button type="submit" class="btn primary" data-facet-apply-panel>Apply</button>
+        </div>
+      </div>
+    </details>
+    {% endunless %}
+  {% endfor %}
+
+  {% comment %} Fallback Price pill when Search & Discovery has not exposed price_range yet {% endcomment %}
+  {% unless has_price_filter %}
+    {% liquid
+      assign price_min_active = request.query_parameters['filter.v.price.gte']
+      assign price_max_active = request.query_parameters['filter.v.price.lte']
+      assign price_pill_active = false
+      if price_min_active != blank or price_max_active != blank
+        assign price_pill_active = true
+      endif
+    %}
+    <details class="ejuno-facet-pill ejuno-facet-pill--price{% if price_pill_active %} is-active{% endif %}" data-facet-pill data-facet-label="Price" data-facet-price-fallback>
+      <summary class="chip ejuno-facet-pill__trigger">
+        <span>Price</span>
+      </summary>
+      <div class="ejuno-facet-pill__panel">
+        <div class="ejuno-facet-pill__panel-head">
+          <p class="ejuno-facet-pill__panel-title">Price</p>
+          {% if price_pill_active %}
+            <button type="button" class="ejuno-facet-pill__panel-clear" data-facet-clear-panel>Clear</button>
+          {% endif %}
+        </div>
+        <div class="ejuno-facet-pill__price">
+          <label class="ejuno-facet-pill__price-field">
+            <span>Min</span>
+            <input
+              type="text" autocomplete="off" data-ej-price-text
+              name="filter.v.price.gte"
+              {% if price_min_active != blank %}value="{{ price_min_active | escape }}"{% endif %}
+              min="0"
+              step="any"
+              placeholder="0"
+              data-facet-input
+              data-facet-price="min"
+              inputmode="decimal"
+            >
+          </label>
+          <label class="ejuno-facet-pill__price-field">
+            <span>Max</span>
+            <input
+              type="text" autocomplete="off" data-ej-price-text
+              name="filter.v.price.lte"
+              {% if price_max_active != blank %}value="{{ price_max_active | escape }}"{% endif %}
+              min="0"
+              step="any"
+              placeholder="Any"
+              data-facet-input
+              data-facet-price="max"
+              inputmode="decimal"
+            >
+          </label>
+        </div>
+        <div class="ejuno-facet-pill__footer">
+          <button type="button" class="btn secondary" data-facet-clear-panel>Reset</button>
+          <button type="submit" class="btn primary" data-facet-apply-panel>Apply</button>
+        </div>
+      </div>
+    </details>
+  {% endunless %}
+
+  {% if collection.sort_options.size > 0 %}
+    {% liquid
+      assign sort_pill_active = false
+      if request.query_parameters.sort_by != blank
+        assign sort_pill_active = true
+      endif
+    %}
+    <details
+      class="ejuno-facet-pill ejuno-facet-pill--sort{% if sort_pill_active %} is-active{% endif %}"
+      data-facet-pill
+      data-facet-label="Sort"
+      data-facet-sort-only
+    >
+      <summary class="chip ejuno-facet-pill__trigger">
+        <span>Sort</span>
+      </summary>
+      <div class="ejuno-facet-pill__panel">
+        <div class="ejuno-facet-pill__panel-head">
+          <p class="ejuno-facet-pill__panel-title">Sort by</p>
+        </div>
+        <ul class="ejuno-facet-pill__list ejuno-facet-pill__list--sort" role="list">
+          {% for option in collection.sort_options %}
+            <li>
+              <label class="ejuno-facet-pill__option ejuno-facet-pill__option--radio">
+                <input
+                  type="radio"
+                  name="sort_by"
+                  value="{{ option.value }}"
+                  {% if option.value == collection.sort_by %}checked{% endif %}
+                  data-facet-input
+                  data-facet-sort
+                >
+                <span>{{ option.name | escape }}</span>
+              </label>
+            </li>
+          {% endfor %}
+        </ul>
+        <div class="ejuno-facet-pill__footer">
+          <button type="submit" class="btn primary" data-facet-apply-panel>Apply</button>
+        </div>
+      </div>
+    </details>
+  {% endif %}
+</div>

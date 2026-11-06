@@ -1,0 +1,35 @@
+{% comment %}
+  Venue / PDP fact tile — param: label, value, extra_class (optional)
+{% endcomment %}
+{% liquid
+  assign fact_label = label | default: 'Detail'
+  assign fact_value = value | default: ''
+  assign fact_key = fact_label | downcase | handle
+  if fact_key == 'guests' or fact_label == 'Guests'
+    assign fact_key = 'guests'
+  elsif fact_key contains 'bedroom'
+    assign fact_key = 'bedrooms'
+  elsif fact_key contains 'bath'
+    assign fact_key = 'bathrooms'
+  elsif fact_key == 'setting'
+    assign fact_key = 'setting'
+  elsif fact_key == 'style'
+    assign fact_key = 'style'
+  elsif fact_key == 'reception'
+    assign fact_key = 'reception'
+  elsif fact_key == 'stay'
+    assign fact_key = 'stay'
+  elsif fact_key == 'season'
+    assign fact_key = 'season'
+  endif
+%}
+<div
+  class="fact ejuno-pdp-fact{% if extra_class != blank %} {{ extra_class }}{% endif %}"
+  data-ejuno-fact="{{ fact_key }}"
+>
+  <span class="ejuno-pdp-fact__icon" data-ejuno-fact-icon="{{ fact_key }}" aria-hidden="true"></span>
+  <div class="ejuno-pdp-fact__copy">
+    <small>{{ fact_label }}</small>
+    <strong>{{ fact_value }}</strong>
+  </div>
+</div>

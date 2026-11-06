@@ -1,0 +1,40 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "s1": {
+      "type": "partner-1",
+      "settings": {
+        "fallback_1": "ejuno-client-become-partner.jpg"
+      }
+    },
+    "s2": {
+      "type": "partner-2",
+      "settings": {
+        "point_fallback_1": "ejuno-794c-2-6.jpg",
+        "point_fallback_2": "ejuno-794c-2-7.jpg"
+      }
+    },
+    "s3": {
+      "type": "partner-3",
+      "settings": {}
+    },
+    "s4": {
+      "type": "vendor-form",
+      "settings": {}
+    }
+  },
+  "order": [
+    "s1",
+    "s2",
+    "s3",
+    "s4"
+  ]
+}

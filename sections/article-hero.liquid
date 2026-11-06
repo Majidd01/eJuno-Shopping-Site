@@ -1,0 +1,27 @@
+<article><header class="article-head"><div class="eyebrow">{% if article.tags.size > 0 %}{{ article.tags.first }}{% else %}{{ section.settings.eyebrow }}{% endif %}</div><h1 class="h1">{{ article.title }}</h1>{% if article.excerpt != blank %}<p class="lead">{{ article.excerpt }}</p>{% endif %}</header>{% if article.image %}<img class="article-hero-img" src="{{ article.image | image_url: width: 1800 }}" alt="{{ article.image.alt | default: article.title | escape }}" width="{{ article.image.width }}" height="{{ article.image.height }}" loading="eager">{% elsif section.settings.image != blank %}<img class="article-hero-img" src="{{ section.settings.image | image_url: width: 1800 }}" alt="{{ article.title | escape }}" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}" loading="eager">{% else %}<img class="article-hero-img" src="{{ 'ART-IMG-001.webp' | asset_url }}" alt="{{ article.title | escape }}" width="1672" height="941" loading="eager">{% endif %}</article>
+
+{% schema %}
+{
+  "name": "Article hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Fallback image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Fallback eyebrow",
+      "default": "Inspiration"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article hero"
+    }
+  ]
+}
+{% endschema %}

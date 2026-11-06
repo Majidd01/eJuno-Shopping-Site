@@ -1,0 +1,39 @@
+<section class="market-hero"><img src="{% if section.settings.image_1 != blank %}{{ section.settings.image_1 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_1 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy"><div class="market-hero-copy"><div class="eyebrow">{{ section.settings.eyebrow }}</div><h1 class="h1">{{ section.settings.heading }}</h1></div></section>
+
+{% schema %}
+{
+  "name": "services 1",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (SVC-IMG-001.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "SVC-IMG-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Wedding services"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The People and Details Behind the Day"
+    }
+  ],
+  "presets": [
+    {
+      "name": "services 1"
+    }
+  ]
+}
+{% endschema %}

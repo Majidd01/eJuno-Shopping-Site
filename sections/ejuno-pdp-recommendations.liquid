@@ -1,0 +1,135 @@
+{% comment %}
+  PDP — Recommended for you (Shopify product recommendations + collection fallback).
+{% endcomment %}
+{% liquid
+  assign rec_limit = section.settings.limit | default: 8
+  assign show_section = false
+  assign fb_col = nil
+
+  if product != blank
+    if recommendations.performed and recommendations.products_count > 0
+      assign show_section = true
+    else
+      if section.settings.fallback_collection != blank
+        assign fb_col = collections[section.settings.fallback_collection]
+        if fb_col != blank and fb_col.products_count > 0
+          assign show_section = true
+        endif
+      endif
+    endif
+  endif
+%}
+
+{% if show_section %}
+  <section
+    class="section tight ejuno-pdp-rec ejuno-section"
+    id="shopify-section-{{ section.id }}"
+    data-ejuno-pdp-rec
+    data-product-id="{{ product.id }}"
+    data-rec-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ rec_limit }}"
+  >
+    <div class="container">
+      <div class="ejuno-pdp-rec__head">
+        <div class="copy">
+          {% if section.settings.eyebrow != blank %}
+            <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+          {% endif %}
+          <h2 class="h2">{{ section.settings.heading }}</h2>
+          {% if section.settings.text != blank %}
+            <p class="lead ejuno-pdp-rec__lead">{{ section.settings.text }}</p>
+          {% endif %}
+        </div>
+        <div class="ejuno-pdp-rec__nav" data-rec-nav>
+          <button type="button" class="ejuno-pdp-rec__nav-btn" data-rec-prev aria-label="Previous recommendations">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="ejuno-pdp-rec__nav-btn" data-rec-next aria-label="Next recommendations">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ejuno-pdp-rec__viewport">
+        <div class="ejuno-pdp-rec__track" data-rec-track tabindex="0" aria-label="{{ section.settings.heading | escape }}">
+          {% if recommendations.performed and recommendations.products_count > 0 %}
+            {% for rec in recommendations.products limit: rec_limit %}
+              {% unless rec.id == product.id %}
+                {% render 'collection-result-card', product: rec, featured: false, eager: false %}
+              {% endunless %}
+            {% endfor %}
+          {% else %}
+            {% if fb_col != blank %}
+              {% assign rec_shown = 0 %}
+              {% for rec in fb_col.products %}
+                {% if rec.id == product.id %}
+                  {% continue %}
+                {% endif %}
+                {% if rec_shown >= rec_limit %}
+                  {% break %}
+                {% endif %}
+                {% render 'collection-result-card', product: rec, featured: false, eager: false %}
+                {% assign rec_shown = rec_shown | plus: 1 %}
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% if request.page_type == 'product' %}
+  {{ 'ejuno-pdp-recommendations.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'ejuno-pdp-recommendations.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "PDP recommendations",
+  "tag": "section",
+  "class": "ejuno-section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Recommended"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recommended for you"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Supporting text",
+      "default": "Venues and listings couples often explore next."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Maximum products",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback collection",
+      "info": "Used when Shopify has no recommendations yet. Usually your Venues collection."
+    }
+  ],
+  "presets": [
+    {
+      "name": "PDP recommendations"
+    }
+  ]
+}
+{% endschema %}

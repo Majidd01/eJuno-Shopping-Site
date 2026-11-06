@@ -1,0 +1,27 @@
+{%- comment -%}
+  Trello 717: Transport subcategory chips (same look as the Accommodation type tabs).
+  Each chip is a Shopify tag URL (/collections/transport/<tag>), so listings need the matching tag,
+  e.g. "boat-yacht-transfers". With no listings the collection shows its normal empty state.
+{%- endcomment -%}
+{%- liquid
+  assign tt_url = '/collections/' | append: collection.handle
+  assign tt_defs = 'Boat & Yacht Transfers|boat-yacht-transfers;Helicopter Transfers|helicopter-transfers;Flight Booking|flight-booking;Private Driver / Chauffeur|private-driver-chauffeur;Airport Transfers|airport-transfers;Van & Minibus Rental|van-minibus-rental;Bus & Coach Rental|bus-coach-rental;Car Rental|car-rental;Other|other' | split: ';'
+  assign tt_active = ''
+  if current_tags.size > 0
+    assign tt_active = current_tags | first | handleize
+  endif
+-%}
+<nav class="ejuno-accom-tabs" aria-label="Transport type">
+  <a class="ejuno-accom-tab{% if tt_active == blank %} is-active{% endif %}" href="{{ tt_url }}"{% if tt_active == blank %} aria-current="page"{% endif %}>All</a>
+  {%- for def in tt_defs -%}
+    {%- assign parts = def | split: '|' -%}
+    <a class="ejuno-accom-tab{% if tt_active == parts[1] %} is-active{% endif %}" href="{{ tt_url }}/{{ parts[1] }}"{% if tt_active == parts[1] %} aria-current="page"{% endif %}>{{ parts[0] | escape }}</a>
+  {%- endfor -%}
+</nav>
+<style>
+  .ejuno-accom-tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 0 22px;padding:2px 0 4px}
+  .ejuno-accom-tabs::-webkit-scrollbar{display:none}
+  .ejuno-accom-tab{flex:0 0 auto;padding:10px 18px;border:1px solid var(--line,#e5ddd3);border-radius:999px;background:rgba(255,255,255,.72);font-size:14px;color:#5c534c;text-decoration:none;white-space:nowrap}
+  .ejuno-accom-tab:hover{border-color:var(--berry,#9b5068);color:var(--berry,#9b5068)}
+  .ejuno-accom-tab.is-active{background:var(--berry,#9b5068);border-color:var(--berry,#9b5068);color:#fff}
+</style>

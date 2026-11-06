@@ -1,0 +1,94 @@
+{% comment %}
+  Live vendor grid — collection-style toolbar + result cards.
+{% endcomment %}
+{% liquid
+  assign mp_search = search_placeholder | default: 'Search by name...'
+  assign mp_search_btn = search_button_label | default: 'Search'
+  assign mp_api = api_base | default: 'https://ejuno-dev.skylinxtech.co/api/vendors'
+  assign mp_detail = detail_page_url | default: '/pages/vendor-detail?id='
+  assign mp_load = load_more_label | default: 'Load more vendors'
+  assign mp_loading = load_more_loading | default: 'Loading…'
+  assign mp_featured_id = featured_vendor_id | default: '69e9087bed415e607ba5961c'
+%}
+{{ 'ejuno-vendors.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="ejuno-vendor-marketplace"
+  data-ejuno-vendor-marketplace
+  data-api-base="{{ mp_api | escape }}"
+  data-detail-url="{{ mp_detail | escape }}"
+  data-featured-vendor-id="{{ mp_featured_id | escape }}"
+  data-placeholder-image="{{ 'VEN-IMG-001.webp' | asset_url }}"
+  data-auto-load-all="true"
+>
+  <div class="container market-search-wrap ejuno-vendor-toolbar">
+    <div class="market-search ejuno-collection-search">
+      <span class="ejuno-collection-search__icon-wrap" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.75"/>
+          <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <input
+        type="search"
+        data-vendor-search
+        placeholder="{{ mp_search }}"
+        autocomplete="off"
+        aria-label="{{ mp_search }}"
+      >
+      <button
+        type="button"
+        class="btn primary ejuno-collection-search__btn"
+        data-vendor-search-btn
+        aria-label="{{ mp_search_btn }}"
+      >
+        {{ mp_search_btn }}
+      </button>
+    </div>
+
+    <facet-filters class="ejuno-facets ejuno-vendor-facets">
+      <div class="filters ejuno-facets__row ejuno-vendor-filters" role="group" aria-label="Filter vendors">
+        <div class="ejuno-vendor-type-tabs" data-vendor-tabs role="tablist">
+          <button type="button" class="chip ejuno-vendor-tab-chip is-active" data-vendor-tab="all" role="tab">All</button>
+          <button type="button" class="chip ejuno-vendor-tab-chip" data-vendor-tab="Service" role="tab">Services</button>
+          <button type="button" class="chip ejuno-vendor-tab-chip" data-vendor-tab="Venue" role="tab">Venues</button>
+        </div>
+
+        <details class="ejuno-facet-pill ejuno-vendor-category-pill" data-vendor-category-pill data-facet-pill hidden>
+          <summary class="chip ejuno-facet-pill__trigger">
+            <span data-vendor-category-label>Category</span>
+          </summary>
+          <div class="ejuno-facet-pill__panel">
+            <ul class="ejuno-facet-pill__list" data-vendor-category-list role="list"></ul>
+          </div>
+        </details>
+
+        {%- comment -%} Trello 665: filter by region (from each vendor's service regions). {%- endcomment -%}
+        <details class="ejuno-facet-pill ejuno-vendor-region-pill" data-vendor-region-pill data-facet-pill hidden>
+          <summary class="chip ejuno-facet-pill__trigger">
+            <span data-vendor-region-label>Region</span>
+          </summary>
+          <div class="ejuno-facet-pill__panel">
+            <ul class="ejuno-facet-pill__list" data-vendor-region-list role="list"></ul>
+          </div>
+        </details>
+      </div>
+    </facet-filters>
+  </div>
+
+  <div class="ejuno-vendor-grid-skeleton" data-vendor-loading aria-live="polite">
+    <div class="container">
+      {% render 'ejuno-skeleton-vendor-cards' %}
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="result-grid ejuno-vendor-grid" data-vendor-grid></div>
+  </div>
+
+  <div class="ejuno-vendor-marketplace__load" data-vendor-load-wrap hidden>
+    <p class="ejuno-vendor-marketplace__meta" data-vendor-load-meta></p>
+  </div>
+</section>
+
+<script src="{{ 'ejuno-vendors.js' | asset_url }}" defer></script>

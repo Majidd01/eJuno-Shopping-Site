@@ -1,0 +1,59 @@
+<section class="section"><div class="container"><div class="section-head"><div class="copy"><div class="eyebrow">Portfolio first</div><h2 class="h2">Let the work do some of the selling</h2><p>Share your best work. Selected pieces are featured in eJuno Inspiration stories.</p></div></div><div class="portfolio-grid"><img src="{{ 'SHW-IMG-002.webp' | asset_url }}" width="1448" height="1086" loading="lazy"><div class="portfolio-stack"><img src="{{ 'SVC-IMG-002.webp' | asset_url }}" width="1122" height="1402" loading="lazy"><img src="{{ 'SVC-IMG-003.webp' | asset_url }}" width="1122" height="1402" loading="lazy"></div><div class="portfolio-stack"><img src="{{ 'SVC-IMG-005.webp' | asset_url }}" width="1122" height="1402" loading="lazy"><img src="{{ 'VMP-IMG-004.webp' | asset_url }}" width="1672" height="941" loading="lazy"></div></div></div></section>
+
+{% schema %}
+{
+  "name": "Showcase content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Showcase content"
+    }
+  ]
+}
+{% endschema %}

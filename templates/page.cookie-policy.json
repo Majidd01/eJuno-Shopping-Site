@@ -1,0 +1,49 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "page-intro",
+      "settings": {
+        "layout_class": "utility-head",
+        "eyebrow": "Legal",
+        "heading": "Cookie Policy",
+        "lead": "How eJuno uses cookies and similar technologies on our website."
+      }
+    },
+    "policy_nav": {
+      "type": "policy-nav",
+      "settings": {
+        "active_policy": "cookie"
+      }
+    },
+    "content": {
+      "type": "policy-content",
+      "settings": {
+        "content": "<p><strong>Last Updated:</strong> November 22, 2024</p><p>This Cookie Policy explains how <strong>eJuno</strong> (\"we,\" \"us,\" or \"our\") uses cookies and similar tracking technologies to recognise you when you visit our website at [<a href=\"https://eJuno.io/\">https://eJuno.io</a>] (the \"Website\"). It provides details about what cookies are, why we use them, and how you can control their usage.</p><p>In some cases, the data collected through cookies may constitute personal information or become personal information if combined with other data.</p><p><strong>1. What Are Cookies?</strong></p><p>Cookies are small text files placed on your computer or mobile device when you visit a website. They are widely used to make websites function efficiently, enhance user experience, and provide analytics and other reporting information.</p><ul><li><strong>First-party cookies:</strong> Set directly by the website you are visiting.</li><li><strong>Third-party cookies:</strong> Set by external providers for services like advertising, analytics, or embedded content.</li></ul><p></p><p>Third-party cookies enable features such as targeted advertisements and social media integration, recognising your device across multiple websites.</p><p><strong>2. Why Do We Use Cookies?</strong></p><p>We use cookies for several purposes, including:</p><ul><li><strong>Essential Cookies:</strong> To enable core functionality such as security, network management, and accessibility. These are  required for our Website to function.</li><li><strong>Analytics and Customisation   Cookies:</strong> To  understand user behaviour, analyse traffic, and enhance user experience.</li><li><strong>Advertising Cookies:</strong> To deliver relevant  advertisements, limit repeated exposure, and measure the effectiveness of campaigns.</li></ul><p><strong>3. Types of Cookies We Use</strong></p><p>Below is a breakdown of the cookies we use on our Website and their purposes:</p><p><strong>Essential Cookies</strong></p><p>These cookies are necessary for the basic operation of our Website.</p><p></p>"
+      }
+    },
+    "cookie_details": {
+      "type": "policy-cookie-details",
+      "settings": {
+        "updatetext": "<p><strong>Analytics and Customisation Cookies</strong></p><p>These cookies help us analyse site usage and improve performance.</p>",
+        "updatetextTwo": "<p><strong>Advertising Cookies</strong></p><p>These cookies provide relevant advertising content and track campaign performance.</p>",
+        "updatetextThree": "<p><strong>Unclassified Cookies</strong></p><p>These are cookies that we are in the process of categorising.</p>",
+        "updatetextFour": "<p><strong>4. How Can You Control Cookies?</strong></p><p><strong>Using the Cookie Consent Manager</strong></p><p>You can manage your cookie preferences through the <strong>Cookie Consent Manager </strong>available on our Website. Essential cookies cannot be disabled as they are required for core functionality.</p><p><strong>Browser Settings</strong></p><p>Most web browsers allow you to control cookies through their settings. Instructions for popular browsers are provided below:</p><ul><li><a href=\"https://support.google.com/chrome/answer/95647?hl=en\">Chrome</a></li><li><a href=\"https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences\">Firefox</a></li><li><a href=\"https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac\">Safari</a></li><li><a href=\"https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09\">Edge</a></li></ul><p><strong>Advertising Preferences</strong></p><p>For opting out of targeted advertisements, you can visit:</p><ul><li><a href=\"http://optout.aboutads.info/\">Digital Advertising Alliance</a></li><li><a href=\"http://www.youronlinechoices.eu/\">European Interactive Digital Advertising Alliance</a></li></ul><p><strong>5. Other Tracking Technologies</strong></p><p>In addition to cookies, we may use technologies like web beacons (tracking pixels) and Flash Cookies:</p><ul><li><strong>Web Beacons:</strong> Tiny graphics that monitor activity, such as email opens and clicks, to measure campaign performance.</li><li><strong>Flash Cookies (Local Shared  Objects):</strong> Used for specific features, fraud prevention, or analytics. You can manage Flash Cookies through your browser or Adobe's Flash Player settings.</li></ul><p><strong>6.Targeted Advertising</strong></p><p>We may partner with third parties to deliver tailored advertisements. These third parties use cookies or similar technologies to gather information about your browsing activities. Note that this data does not include personal identifiers unless you provide them.</p><p><strong>7.Updates to This Cookie Policy</strong></p><p>We may update this Cookie Policy from time to time to reflect changes in technologies, laws, or operational practices. Please check this page regularly for updates.</p><p><strong>8.Contact Us</strong></p><p>If you have any questions about this Cookie Policy or our use of cookies, please contact us:</p><p><strong>Email:</strong> <a href=\"mailto:support@ejuno.io\" title=\"mailto:support@ejuno.io\">support@ejuno.io</a></p><p><strong>Address:</strong></p><p>Dubai Commer City<br/>Business Cluster - Building 2<br/>BCB2 511-SD54, Fifth Floor<br/>Dubai, United Arab Emirates</p>"
+      }
+    }
+  },
+  "order": [
+    "intro",
+    "policy_nav",
+    "content",
+    "cookie_details"
+  ]
+}

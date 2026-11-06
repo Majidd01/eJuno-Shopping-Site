@@ -1,0 +1,133 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "page-intro",
+      "settings": {
+        "eyebrow": "Plan your wedding",
+        "heading": "Three phases. Five planning tools.",
+        "lead": "Start with the roadmap: shape the day, organise people and budget, then share with guests. When you are ready, open the tool that matches what you need to do next.",
+        "layout_class": "plan-intro",
+        "image_fallback": "ejuno-794c-3-6.jpg",
+        "image_alt": "A set wedding table by the lake"
+      }
+    },
+    "tools": {
+      "type": "plan-tools-map",
+      "settings": {
+        "phases_kicker": "Step 1 · Your roadmap",
+        "phases_heading": "Three phases of planning",
+        "phases_lead": "A simple roadmap of how most weddings come together. Follow it in order, or jump to the step you need.",
+        "tools_kicker": "Step 2 · Open a tool",
+        "tools_heading": "Tools to run the plan",
+        "tools_lead": "Each tool opens a dedicated workspace in eJuno: website, registry, guests, budget, and checklist.",
+        "tool_fallbacks": "ejuno-photo-13.jpg,ejuno-photo-14.jpg,ejuno-photo-15.jpg,ejuno-photo-16.jpg,ejuno-photo-17.jpg"
+      },
+      "blocks": {
+        "s1": {
+          "type": "step",
+          "settings": {
+            "eyebrow": "01 · Shape the day",
+            "title": "Venue & Vision",
+            "text": "Place, style, season and scale."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "eyebrow": "02 · Organise it",
+            "title": "People & Money",
+            "text": "Guests, budget and checklist."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "eyebrow": "03 · Share it",
+            "title": "Website & Registry",
+            "text": "Give guests a clear home for the wedding."
+          }
+        },
+        "t1": {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Wedding Website",
+            "text": "Details, communication and RSVP journey.",
+            "url": "/pages/wedding-website"
+          }
+        },
+        "t2": {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Registry",
+            "text": "Add your favourite venues and wedding services to your registry and share it with guests so they can contribute to your special day.",
+            "url": "/pages/registry"
+          }
+        },
+        "t3": {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Guest List",
+            "text": "Households, RSVPs, dietary needs and travel plans.",
+            "url": "/pages/guest-list"
+          }
+        },
+        "t4": {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Budget",
+            "text": "Plan, track and understand the spend.",
+            "url": "/pages/budget"
+          }
+        },
+        "t6": {
+          "type": "tool",
+          "settings": {
+            "eyebrow": "",
+            "title": "Checklist",
+            "text": "Know what matters now and what comes later.",
+            "url": "/pages/wedding-check-list"
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t6"
+      ]
+    },
+    "cta": {
+      "type": "plan-cta",
+      "settings": {
+        "heading_line_1": "Effortless Planning.",
+        "heading_line_2": "Exceptional Weddings.",
+        "text": "eJuno brings clarity to every step of your wedding journey. Discover venues, connect with trusted vendors and plan each moment with confidence, all in one place.",
+        "button_label": "Start Planning",
+        "button_url": "https://ejuno-staging.web.app/couple-dashboard",
+        "plum": true
+      }
+    }
+  },
+  "order": [
+    "intro",
+    "tools",
+    "cta"
+  ]
+}

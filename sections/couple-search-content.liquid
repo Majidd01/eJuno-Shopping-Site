@@ -1,0 +1,59 @@
+<section class="section tight"><div class="container"><div class="utility-panel"><div class="section-head"><div class="copy"><div class="eyebrow">How it works</div><h2 class="h2" style="font-size:42px">Find the right couple, then go straight there</h2></div></div><div class="tools-grid"><div class="tool-link"><span class="num">01</span><div><h3>Search</h3><p>Enter the couple name using the existing eJuno lookup.</p></div></div><div class="tool-link"><span class="num">02</span><div><h3>Match</h3><p>Review the correct wedding or registry result.</p></div></div><div class="tool-link"><span class="num">03</span><div><h3>Open</h3><p>Continue into the published website or registry.</p></div></div></div></div></div></section>
+
+{% schema %}
+{
+  "name": "Couple Search content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Couple Search content"
+    }
+  ]
+}
+{% endschema %}

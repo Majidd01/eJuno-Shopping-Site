@@ -1,0 +1,141 @@
+
+<section class="section ejuno-cart-page">
+  <div class="container">
+    <header class="ejuno-cart-page__head section-head">
+      <div class="copy">
+        <p class="eyebrow">Cart</p>
+        <h1 class="h2">Your cart</h1>
+        {% if cart.item_count > 0 %}
+          {% assign cart_line_count = cart.items.size %}
+          <p class="lead ejuno-cart-page__lead">{{ cart_line_count }} item{% if cart_line_count != 1 %}s{% endif %} ready for checkout</p>
+        {% endif %}
+      </div>
+    </header>
+
+    {% if cart.item_count == 0 %}
+      <div class="ejuno-cart-page__empty">
+        <p class="ejuno-cart-page__empty-text">Your cart is empty. Explore venues and registry picks to begin.</p>
+        <a class="btn primary" href="{{ routes.collections_url }}/venues">Explore venues</a>
+        <a class="btn secondary ejuno-cart-page__empty-secondary" href="{{ routes.all_products_collection_url }}">Browse shop</a>
+      </div>
+    {% else %}
+      <form action="{{ routes.cart_url }}" method="post" id="ejuno-cart-form" class="ejuno-cart-page__form" data-ejuno-cart-page-form>
+        <div class="ejuno-cart-page__layout">
+          <div class="ejuno-cart-page__lines" role="list">
+            {% for item in cart.items %}
+              <article
+                class="ejuno-cart-page__line"
+                role="listitem"
+                data-cart-line
+                data-line-key="{{ item.key }}"
+                data-variant-id="{{ item.variant_id }}"
+                data-unit-price-cents="{{ item.final_price }}"
+              >
+                <a class="ejuno-cart-page__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                  {% if item.image %}
+                    <img
+                      class="ejuno-cart-page__img"
+                      src="{{ item.image | image_url: width: 176, height: 176, crop: 'center' }}"
+                      alt="{{ item.product.title | escape }}"
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    <span class="ejuno-cart-page__img ejuno-cart-page__img--placeholder" aria-hidden="true"></span>
+                  {% endif %}
+                </a>
+
+                <div class="ejuno-cart-page__details">
+                  <div class="ejuno-cart-page__details-top">
+                    <div class="ejuno-cart-page__copy">
+                      <a class="ejuno-cart-page__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                      {% unless item.variant.title == blank or item.variant.title == 'Default Title' %}
+                        <p class="ejuno-cart-page__variant">{{ item.variant.title | escape }}</p>
+                      {% endunless %}
+                      {% if item.selling_plan_allocation %}
+                        <p class="ejuno-cart-page__variant">{{ item.selling_plan_allocation.selling_plan.name | escape }}</p>
+                      {% endif %}
+                      {% liquid
+                        assign cart_type = item.product.type | default: '' | downcase
+                        assign cart_starting = false
+                        if cart_type == 'venue' or cart_type == 'service' or cart_type contains 'venue' or cart_type contains 'accommodation'
+                          assign cart_starting = true
+                        endif
+                      %}
+                      <div class="ejuno-cart-page__unit ejuno-card-price">
+                        {% if cart_starting %}
+                          <span class="ejuno-card-price__label">Starting from</span>
+                        {% endif %}
+                        <span class="ejuno-card-price__amount">{% render 'ejuno-money', cents: item.final_price %}</span>
+                        {% unless cart_starting %}
+                          <span class="ejuno-card-price__label" style="text-transform:none;letter-spacing:0;font-weight:500">each</span>
+                        {% endunless %}
+                      </div>
+                    </div>
+                    <p class="ejuno-cart-page__line-total">{% render 'ejuno-money', cents: item.final_line_price %}</p>
+                  </div>
+
+                  <div class="ejuno-cart-page__actions">
+                    <div class="ejuno-cart-qty" data-ejuno-cart-qty>
+                      <button type="button" class="ejuno-cart-qty__btn" data-qty-minus aria-label="Decrease quantity for {{ item.product.title | escape }}">−</button>
+                      <input
+                        class="ejuno-cart-qty__input"
+                        type="number"
+                        name="updates[]"
+                        value="{{ item.quantity }}"
+                        min="0"
+                        inputmode="numeric"
+                        aria-label="Quantity for {{ item.product.title | escape }}"
+                      >
+                      <button type="button" class="ejuno-cart-qty__btn" data-qty-plus aria-label="Increase quantity for {{ item.product.title | escape }}">+</button>
+                    </div>
+                    <a class="ejuno-cart-page__remove" href="{{ item.url_to_remove }}">Remove</a>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          <aside class="ejuno-cart-page__summary" aria-labelledby="ejuno-cart-summary-title">
+            <div class="ejuno-cart-page__summary-card">
+              <div class="ejuno-cart-page__summary-head">
+                <span class="ejuno-cart-page__order-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" focusable="false">
+                    <path d="M8 7h11a1 1 0 0 1 1 1v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                    <path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h6A1.5 1.5 0 0 1 17 5.5V7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                    <path d="M10 12h6M10 16h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <h2 id="ejuno-cart-summary-title" class="ejuno-cart-page__summary-title">Order summary</h2>
+              </div>
+              <div class="ejuno-cart-page__summary-row">
+                <span>Subtotal</span>
+                <strong>{% render 'ejuno-money', cents: cart.total_price %}</strong>
+              </div>
+              <p class="ejuno-cart-page__summary-note">Shipping, taxes, and discounts are calculated at checkout.</p>
+              <div class="ejuno-cart-page__summary-actions">
+                <button
+                  class="btn primary ejuno-cart-page__checkout"
+                  type="submit"
+                  name="checkout"
+                  data-ejuno-cart-checkout
+                >
+                  Checkout
+                </button>
+                <a class="btn secondary ejuno-cart-page__continue-btn" href="{{ routes.collections_url }}/venues">Continue shopping</a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "settings": []
+}
+{% endschema %}

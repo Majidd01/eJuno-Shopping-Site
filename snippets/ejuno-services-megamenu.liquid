@@ -1,0 +1,68 @@
+<div id="services-megamenu" class="header-megamenu shop-megamenu" hidden>
+  <div class="shop-megamenu__panel">
+    <div class="shop-megamenu__inner container">
+      <header class="shop-megamenu__intro">
+        <p class="shop-megamenu__intro-text">Trusted professionals for every detail of your wedding day.</p>
+      </header>
+      <div class="shop-megamenu__grid shop-megamenu__grid--shop">
+      <a class="shop-megamenu__item shop-megamenu__item--all" href="/pages/all-services">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'all' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>All Services</strong>
+          <span>All you need under one roof.</span>
+        </span>
+      </a>
+      <a class="shop-megamenu__item" href="/collections/photo-film">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'photo' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Photo &amp; Film</strong>
+          <span>Professional photography and videography to capture every moment.</span>
+        </span>
+      </a>
+      <a class="shop-megamenu__item" href="/collections/design-artistry">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'design' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Design &amp; Artistry</strong>
+          <span>Floral design, decor, staging, and creative wedding artistry.</span>
+        </span>
+      </a>
+      <a class="shop-megamenu__item" href="/collections/gastronomy-bar">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'food' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Gastronomy &amp; Bar</strong>
+          <span>Catering, mixology, bar services, and gourmet experiences.</span>
+        </span>
+      </a>
+      <a class="shop-megamenu__item" href="/collections/{%- if collections['entertainment-1'].id != blank -%}entertainment-1{%- else -%}entertainment{%- endif -%}">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'entertainment' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Entertainment</strong>
+          <span>Live bands, DJs, performers, and interactive entertainment.</span>
+        </span>
+      </a>
+      <a class="shop-megamenu__item" href="/collections/beauty-fashion">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'beauty' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Beauty &amp; Fashion</strong>
+          <span>Makeup, hairstyling, bridal styling, and fashion services.</span>
+        </span>
+      </a>
+      <a class="shop-megamenu__item" href="/collections/enhancements">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'enhancements' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Enhancements</strong>
+          <span>Special effects, lighting, staging, and unique wedding enhancements.</span>
+        </span>
+      </a>
+      {%- comment -%} Trello 717: Transport category. Falls back to a search until the 'transport' collection exists. {%- endcomment -%}
+      <a class="shop-megamenu__item" href="{%- if collections['transport'].id != blank -%}/collections/transport{%- else -%}{{ routes.search_url }}?q=transport&amp;type=product{%- endif -%}">
+        <span class="shop-megamenu__icon shop-megamenu__icon--svg" aria-hidden="true">{% render 'ejuno-service-icon', icon: 'transport' %}</span>
+        <span class="shop-megamenu__copy">
+          <strong>Transport</strong>
+          <span>Boat, helicopter and airport transfers, chauffeurs, coaches and car rental.</span>
+        </span>
+      </a>
+    </div>
+    </div>
+  </div>
+</div>

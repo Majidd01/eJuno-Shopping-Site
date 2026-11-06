@@ -1,0 +1,80 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+<section class="pdp-top">
+  <div class="container">
+    <div class="pdp-titlebar">
+      <div>
+        <div class="eyebrow">{% if product.type != blank %}{{ product.type }}{% else %}Venue{% endif %}</div>
+        <h1 class="h1">{{ product.title }}</h1>
+      </div>
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+        <button class="btn primary" type="submit" name="add"{% unless current_variant.available %} disabled{% endunless %}>
+          {% if current_variant.available %}Request Availability{% else %}Unavailable{% endif %}
+        </button>
+      {% endform %}
+    </div>
+    <div class="pdp-gallery">
+      {% if product.media.size > 0 %}
+        {% for media in product.media limit: 4 %}
+          {% if forloop.first %}
+            <img class="main" src="{{ media | image_url: width: 1600 }}" alt="{{ media.alt | default: product.title | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="eager">
+          {% elsif forloop.index == 4 %}
+            <img class="wide" src="{{ media | image_url: width: 1600 }}" alt="{{ media.alt | default: product.title | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy">
+          {% else %}
+            <img src="{{ media | image_url: width: 1200 }}" alt="{{ media.alt | default: product.title | escape }}" width="{{ media.preview_image.width }}" height="{{ media.preview_image.height }}" loading="lazy">
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <img class="main" src="{{ 'PDP-IMG-001.webp' | asset_url }}" alt="{{ product.title | escape }}" width="1672" height="941" loading="eager">
+        <img src="{{ 'PDP-IMG-002.webp' | asset_url }}" alt="" width="1672" height="941" loading="lazy">
+        <img src="{{ 'PDP-IMG-003.webp' | asset_url }}" alt="" width="1672" height="941" loading="lazy">
+        <img class="wide" src="{{ 'PDP-IMG-004.webp' | asset_url }}" alt="" width="1672" height="941" loading="lazy">
+      {% endif %}
+    </div>
+    <div class="pdp-info">
+      <main class="pdp-main">
+        {% if product.description != blank %}
+          {{ product.description }}
+        {% else %}
+          <h2 class="h2" style="font-size:46px">A setting with genuine presence</h2>
+          <p>Venue detail is where imagery should become immersive and information should become practical.</p>
+        {% endif %}
+        <div class="pdp-facts">
+          {% if product.tags.size > 0 %}
+            {% for tag in product.tags limit: 6 %}
+              <div class="fact"><small>Detail</small><strong>{{ tag }}</strong></div>
+            {% endfor %}
+          {% else %}
+            <div class="fact"><small>Guests</small><strong>Up to 120</strong></div>
+            <div class="fact"><small>Setting</small><strong>Lakefront</strong></div>
+            <div class="fact"><small>Style</small><strong>Historic villa</strong></div>
+            <div class="fact"><small>Reception</small><strong>Indoor & outdoor</strong></div>
+            <div class="fact"><small>Stay</small><strong>Private rooms</strong></div>
+            <div class="fact"><small>Season</small><strong>Spring to autumn</strong></div>
+          {% endif %}
+        </div>
+      </main>
+      <aside class="booking-card">
+        <h3>Plan around this venue</h3>
+        <p style="color:var(--muted);margin:0 0 12px">{% render 'ejuno-money', cents: current_variant.price %}</p>
+        <div class="field">Preferred date</div>
+        <div class="field">Guest estimate</div>
+        <div class="field">Celebration type</div>
+        {% form 'product', product %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+          <button class="btn primary" style="width:100%;margin-top:10px" type="submit" name="add"{% unless current_variant.available %} disabled{% endunless %}>Request Availability</button>
+        {% endform %}
+        <a class="btn secondary" style="width:100%;margin-top:10px" href="/pages/plan-your-wedding">Add to Wedding Plan</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": []
+}
+{% endschema %}

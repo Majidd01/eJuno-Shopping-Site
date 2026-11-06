@@ -1,0 +1,24 @@
+<section class="market-hero"><img src="{{ 'VEN-IMG-001.webp' | asset_url }}" width="2172" height="724" loading="eager"><div class="market-hero-copy"><div class="eyebrow">Explore collection</div><h1 class="h1" style="font-size:64px">Extraordinary Places for Your Wedding</h1></div></section><div class="container market-search-wrap"><div class="market-search"><input placeholder="Search venues or locations"><a class="btn primary" data-action="This uses the current venue collection search/filter behaviour in production.">Search</a></div><div class="filters"><span class="chip">Region</span><span class="chip">Venue Type</span><span class="chip">Guest Capacity</span><span class="chip">Wedding Style</span><span class="chip">Features</span><span class="chip">Sort</span></div>{% if collection != blank and collection.products_count > 0 %}
+<div class="result-grid">
+  {% paginate collection.products by 24 %}
+  {% for product in collection.products %}
+    {% render 'collection-result-card',
+      product: product,
+      featured: forloop.first,
+      eager: forloop.first
+    %}
+  {% endfor %}
+  {% endpaginate %}
+</div>
+{% else %}
+<div class="result-grid"><a href="{{ routes.collections_url }}/venues" class="result-card featured-result"><img src="{{ 'VEN-IMG-002.webp' | asset_url }}" width="1448" height="1086" loading="lazy" alt="Villa Balbiano"><div class="result-body"><h3>Villa Balbiano</h3><div class="result-meta">Lake Como · Historic Villa</div><div class="tagline"><span class="tag">Lakeside</span><span class="tag">Villa</span><span class="tag">Luxury</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-003.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Borgo Santo Pietro"><div class="result-body"><h3>Borgo Santo Pietro</h3><div class="result-meta">Tuscany · Country Estate</div><div class="tagline"><span class="tag">Estate</span><span class="tag">Countryside</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-004.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Villa Cimbrone"><div class="result-body"><h3>Villa Cimbrone</h3><div class="result-meta">Amalfi Coast · Sea View</div><div class="tagline"><span class="tag">Cliffside</span><span class="tag">View</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-005.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Masseria Moroseta"><div class="result-body"><h3>Masseria Moroseta</h3><div class="result-meta">Puglia · Design Masseria</div><div class="tagline"><span class="tag">Masseria</span><span class="tag">Modern</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-006.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Villa Tasca"><div class="result-body"><h3>Villa Tasca</h3><div class="result-meta">Sicily · Garden Estate</div><div class="tagline"><span class="tag">Garden</span><span class="tag">Historic</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-007.webp' | asset_url }}" width="1448" height="1086" loading="lazy" alt="Castello di Velona"><div class="result-body"><h3>Castello di Velona</h3><div class="result-meta">Tuscany · Castle Venue</div><div class="tagline"><span class="tag">Castle</span><span class="tag">Tuscany</span></div></div></a></div>
+{% endif %}</div>
+
+{% schema %}
+{
+  "name": "Venues collection",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": []
+}
+{% endschema %}

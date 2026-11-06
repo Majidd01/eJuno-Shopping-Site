@@ -1,0 +1,94 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "venue-detail",
+      "blocks": {
+        "fact1": {
+          "type": "fact",
+          "settings": {
+            "label": "Guests",
+            "value": "Up to 120"
+          }
+        },
+        "fact2": {
+          "type": "fact",
+          "settings": {
+            "label": "Setting",
+            "value": "Lakefront"
+          }
+        },
+        "fact3": {
+          "type": "fact",
+          "settings": {
+            "label": "Style",
+            "value": "Historic villa"
+          }
+        },
+        "fact4": {
+          "type": "fact",
+          "settings": {
+            "label": "Reception",
+            "value": "Indoor & outdoor"
+          }
+        },
+        "fact5": {
+          "type": "fact",
+          "settings": {
+            "label": "Stay",
+            "value": "Private rooms"
+          }
+        },
+        "fact6": {
+          "type": "fact",
+          "settings": {
+            "label": "Season",
+            "value": "Spring to autumn"
+          }
+        }
+      },
+      "block_order": [
+        "fact1",
+        "fact2",
+        "fact3",
+        "fact4",
+        "fact5",
+        "fact6"
+      ],
+      "settings": {
+        "eyebrow": "Lake Como · Historic Villa",
+        "button_label": "Request Availability",
+        "heading": "A lakefront setting with genuine presence",
+        "text": "Venue detail is where imagery should become immersive and information should become practical. The page gives the venue room to breathe, then brings the important facts and actions into view without drowning the user in decoration.",
+        "card_heading": "Plan around this venue",
+        "field_date": "Preferred date",
+        "field_guests": "Guest estimate",
+        "field_type": "Celebration type",
+        "plan_label": "Add to Wedding Plan",
+        "plan_url": "/pages/plan-your-wedding"
+      }
+    },
+    "recommendations": {
+      "type": "ejuno-pdp-recommendations",
+      "settings": {
+        "eyebrow": "Recommended",
+        "heading": "Recommended for you",
+        "text": "Venues and listings couples often explore next.",
+        "limit": 8,
+        "fallback_collection": "venues"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "recommendations"
+  ]
+}

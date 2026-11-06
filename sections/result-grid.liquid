@@ -1,0 +1,804 @@
+{% liquid
+  assign search_query = request.query_parameters.q | default: ''
+  assign per_page = section.settings.products_per_page | default: 12
+  assign search_placeholder = section.settings.search_placeholder
+  if section.settings.auto_search_placeholder and collection != blank
+    if collection.handle == 'venues' or collection.handle == 'venue' or collection.handle == 'accommodation' or collection.handle == 'villa'
+      assign search_placeholder = 'Search venues or locations'
+    else
+      assign search_placeholder = 'Search services or vendors'
+    endif
+  endif
+  assign feature_first = section.settings.feature_first_product
+
+  assign pin_handle = section.settings.pinned_product_handle | strip | downcase
+  if section.settings.pin_only_venues and collection != blank and collection.handle != 'venues'
+    assign pin_handle = ''
+  endif
+%}
+<script>
+  /* Trello 793: tidy price params before anything reads them. 1e3 -> 1000, negative or empty values are dropped, Min > Max is swapped. */
+  (function () {
+    try {
+      var u = new URL(window.location.href), p = u.searchParams, ch = false;
+      var pn = function (v) { v = String(v == null ? '' : v).trim(); if (/^\+?(\d+\.?\d*|\.\d+)e[+-]?\d+$/i.test(v)) return Number(v); v = v.replace(/[^0-9.,-]/g, ''); if (/^-?\d{1,3}([.,]\d{3})+$/.test(v)) v = v.replace(/[.,]/g, ''); else v = v.replace(/\.(?=.*[.,])/g, '').replace(',', '.'); return parseFloat(v); };
+      ['filter.v.price.gte', 'filter.v.price.lte'].forEach(function (k) {
+        if (!p.has(k)) return;
+        var raw = String(p.get(k)).trim(), n = pn(raw);
+        /* Trello 793 reopen (5 Nov): anything that isn't a plain price (30+5, 5-, abc) is dropped and flagged, not read as a number */
+        if (raw !== '' && !/^\+?(\d+\.?\d*|\.\d+)e[+-]?\d+$/i.test(raw) && !(/^(\d+([.,]\d{1,2})?|\d{1,3}(\.\d{3})+(,\d{1,2})?|\d{1,3}(,\d{3})+(\.\d{1,2})?)$/).test(raw)) { p.delete(k); ch = true; try { sessionStorage.setItem('ejPriceUrlInvalid', '1'); } catch (e) {} return; }
+        if (raw === '' || !isFinite(n) || n < 0 || /^-/.test(raw)) { p.delete(k); ch = true; return; }
+        if (/e/i.test(raw)) { p.set(k, String(n)); ch = true; }
+      });
+      var g = pn(p.get('filter.v.price.gte')), l = pn(p.get('filter.v.price.lte'));
+      if (p.has('filter.v.price.gte') && p.has('filter.v.price.lte') && isFinite(g) && isFinite(l) && g > l) {
+        var a = p.get('filter.v.price.gte'); p.set('filter.v.price.gte', p.get('filter.v.price.lte')); p.set('filter.v.price.lte', a); ch = true;
+      }
+      
+      if (ch) { p.delete('page'); window.location.replace(u.pathname + (p.toString() ? '?' + p.toString() : '') + u.hash); }
+    } catch (e) {}
+  })();
+</script>
+<div class="container market-search-wrap ejuno-collection-toolbar" id="shopify-section-{{ section.id }}">
+  <form
+    id="FacetFiltersForm"
+    class="ejuno-collection-form"
+    action="{{ collection.url }}"
+    method="get"
+    role="search"
+  >
+    {% if section.settings.show_search %}
+      <div class="market-search ejuno-collection-search">
+        <span class="ejuno-collection-search__icon-wrap" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.75"/>
+            <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <input
+          type="search"
+          id="EjunoCollectionSearch-{{ section.id }}"
+          data-collection-search-input
+          name="q"
+          value="{{ search_query | escape }}"
+          placeholder="{{ search_placeholder }}"
+          aria-label="{{ search_placeholder }}"
+          autocomplete="off"
+        >
+        <button
+          type="button"
+          class="btn primary ejuno-collection-search__submit"
+          data-collection-search-btn
+          aria-label="{{ section.settings.search_label }}"
+        >
+          <span class="ejuno-collection-search__submit-text">{{ section.settings.search_label }}</span>
+          <svg class="ejuno-collection-search__submit-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.75"/>
+            <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+
+    {% render 'collection-facets',
+      search_query: search_query,
+      show_counts: section.settings.show_filter_counts,
+      apply_label: section.settings.filter_apply_label
+    %}
+  </form>
+
+  {% if collection != blank %}
+    {% paginate collection.products by per_page %}
+{%- liquid
+  assign ejuno_pf_gte = -1
+  assign ejuno_pf_lte = -1
+  for ejf in collection.filters
+    if ejf.type == 'price_range'
+      if ejf.min_value.value != blank
+        assign ejuno_pf_gte = ejf.min_value.value | times: 1
+      endif
+      if ejf.max_value.value != blank
+        assign ejuno_pf_lte = ejf.max_value.value | times: 1
+      endif
+    endif
+  endfor
+-%}
+      {%- liquid
+        assign ej_accom_handle = settings.ejuno_accommodation_handle | default: 'accommodation'
+        assign ej_villa_handle = settings.ejuno_villa_handle | default: 'villa'
+      -%}
+      {%- if collection.handle == ej_accom_handle or collection.handle == ej_villa_handle -%}
+        {% render 'ejuno-accommodation-tabs', accom_handle: ej_accom_handle, villa_handle: ej_villa_handle, types: 'Villa:@villa,Hotel:hotel,Resort:resort,Estate:estate,Other:other' %}
+      {%- endif -%}
+      {% comment %}card717 subcats hidden 2026-10-30: {%- if collection.handle == 'transport' -%}{% render 'ejuno-transport-tabs' %}{%- endif -%}{% endcomment %}
+      <p class="ejuno-collection-search-status" data-collection-search-status role="status" aria-live="polite" hidden></p>
+      <div
+        class="result-grid boost-sd__filter-product-list"
+        data-collection-grid
+        data-section-id="{{ section.id }}"
+        data-current-page="{{ paginate.current_page }}"
+        data-total-pages="{{ paginate.pages }}"
+        data-per-page="{{ per_page }}"
+      >
+        {% if collection.products_count == 0 %}
+          {%- liquid
+            assign ej_empty_filtered = false
+            if search_query != blank
+              assign ej_empty_filtered = true
+            endif
+            for ejf in collection.filters
+              if ejf.active_values.size > 0 or ejf.min_value.value != blank or ejf.max_value.value != blank
+                assign ej_empty_filtered = true
+              endif
+            endfor
+          -%}
+          {%- comment -%} Trello 747: context-aware empty-state CTA (venue pages no longer offer "See all services"). {%- endcomment -%}
+          {%- liquid
+            assign ej_empty_kind = 'other'
+            case collection.handle
+              when 'venue', 'venues', 'accommodation', 'villa'
+                assign ej_empty_kind = 'venue'
+              when 'photo-film', 'design-artistry', 'gastronomy-bar', 'entertainment', 'entertainment-1', 'beauty-fashion', 'enhancements', 'transport', 'services', 'all-services'
+                assign ej_empty_kind = 'service'
+            endcase
+            if ej_empty_kind == 'other' and collection.template_suffix contains 'venue'
+              assign ej_empty_kind = 'venue'
+            endif
+            comment
+              Trello 747 reopen 3 Nov: any non-venue page said "listings". Name the type: venue-ish handles -> venues,
+              service handles -> services, everything else (all, search, mixed collections) -> services & venues.
+            endcomment
+            if ej_empty_kind == 'other'
+              if collection.handle contains 'venue' or collection.handle contains 'villa' or collection.handle contains 'accommodation'
+                assign ej_empty_kind = 'venue'
+              elsif collection.handle == 'service' or collection.handle contains 'services' or collection.template_suffix contains 'service'
+                assign ej_empty_kind = 'service'
+              endif
+            endif
+            assign ej_kind_word = 'services &amp; venues'
+            if ej_empty_kind == 'venue'
+              assign ej_kind_word = 'venues'
+            elsif ej_empty_kind == 'service'
+              assign ej_kind_word = 'services'
+            endif
+            assign ej_clear_label = 'See all ' | append: ej_kind_word
+            if ej_empty_kind == 'venue'
+              if collection.handle == 'accommodation' or collection.handle == 'villa'
+                assign ej_clear_label = 'See all stays'
+              else
+                assign ej_clear_label = 'See all venues'
+              endif
+            endif
+          -%}
+          <div class="ejuno-collection-empty ejuno-empty-friendly" data-empty-kind="{{ ej_empty_kind }}" data-ej-empty>
+            {%- comment -%} Trello 747 reopen 2 Nov: production has no Search & Discovery price filter, so Liquid can't see filter.v.price.* and showed the unfiltered state. Render both states; the script below picks the filtered one whenever the URL carries filters. {%- endcomment -%}
+            <div data-ej-empty-filtered data-kind-word="{{ ej_kind_word }}"{% unless ej_empty_filtered %} hidden{% endunless %}>
+              <h3 data-ej-empty-title>No {{ ej_kind_word }} match your filters</h3>
+              <p data-ej-empty-text>Try changing or removing a filter, or clear the filters to see everything.</p>
+              <div class="ejuno-empty-friendly__actions">
+                <a class="btn primary" href="{{ collection.url }}" data-ej-clear-filters>Clear filters</a>
+                <a class="btn ghost" href="/pages/contact">Ask us</a>
+              </div>
+            </div>
+            <div data-ej-empty-default{% if ej_empty_filtered %} hidden{% endif %}>
+            {%- if false -%}
+              <h3>Nothing matches those filters yet</h3>
+              <p>Try removing a filter, or tell us what you have in mind and we&rsquo;ll help you find it.</p>
+              <div class="ejuno-empty-friendly__actions">
+                <a class="btn primary" href="{{ collection.url }}">{{ ej_clear_label }}</a>
+                <a class="btn ghost" href="/pages/contact">Ask us</a>
+              </div>
+            {%- else -%}
+              <h3>New listings are on their way</h3>
+              <p>We&rsquo;re adding new places and professionals all the time. Tell us what you&rsquo;re looking for and we&rsquo;ll help you find it.</p>
+              <div class="ejuno-empty-friendly__actions">
+                {%- case ej_empty_kind -%}
+                  {%- when 'venue' -%}<a class="btn primary" href="/blogs/inspiration">Get venue inspiration</a>
+                  {%- when 'service' -%}<a class="btn primary" href="/pages/all-services">See all services</a>
+                  {%- else -%}<a class="btn primary" href="/pages/plan-your-wedding">Plan your wedding</a>
+                {%- endcase -%}
+                <a class="btn ghost" href="/pages/contact">Ask us</a>
+              </div>
+            {%- endif -%}
+            </div>
+            <script>
+              (function () {
+                var box = document.currentScript && document.currentScript.closest('[data-ej-empty]');
+                if (!box) return;
+                var params = new URLSearchParams(window.location.search), active = false;
+                params.forEach(function (v, k) { if ((k.indexOf('filter.') === 0 || k === 'q') && String(v).trim() !== '') active = true; });
+                if (!active) return;
+                box.querySelector('[data-ej-empty-filtered]').hidden = false;
+                box.querySelector('[data-ej-empty-default]').hidden = true;
+                var pn = function (v) { v = String(v == null ? '' : v).replace(/[^0-9.,-]/g, ''); if (/^-?\d{1,3}([.,]\d{3})+$/.test(v)) v = v.replace(/[.,]/g, ''); else v = v.replace(/\.(?=.*[.,])/g, '').replace(',', '.'); return parseFloat(v); }; var g = pn(params.get('filter.v.price.gte')), l = pn(params.get('filter.v.price.lte'));
+                if (!isFinite(g) && !isFinite(l)) return;
+                if (isFinite(g) && isFinite(l) && g > l) { var t = g; g = l; l = t; }
+                function f(n) { return '\u20ac' + (function (n) { var c = Math.round(Number(n) * 100), w = Math.floor(c / 100), r = c % 100; return String(w).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (r ? ',' + (r < 10 ? '0' : '') + r : ''); })(n); } /* Trello 657 v2: euro style */
+                var ek = box.getAttribute('data-empty-kind'), kind = ek === 'venue' ? 'venues' : (ek === 'service' ? 'services' : 'services & venues');
+                var range = isFinite(g) && isFinite(l) ? (g === l ? 'at exactly ' + f(g) : 'between ' + f(g) + ' and ' + f(l)) : (isFinite(g) ? 'from ' + f(g) : 'up to ' + f(l));
+                box.querySelector('[data-ej-empty-title]').textContent = 'No ' + kind + ' match your filters';
+                box.querySelector('[data-ej-empty-text]').textContent = 'We have no ' + kind + ' priced ' + range + '. Try changing the price range or clear the filters.';
+              })();
+            </script>
+          </div>
+          <style>
+            .ejuno-empty-friendly{grid-column:1/-1;opacity:1;color:#201c19;text-align:center;padding:48px 20px;max-width:560px;margin:0 auto}
+            .ejuno-empty-friendly h3{font-family:var(--serif);font-weight:400;font-size:28px;margin:0 0 10px;color:#201c19;opacity:1}
+            .ejuno-empty-friendly p{color:#5a524b;margin:0 0 20px;line-height:1.6}
+            .ejuno-empty-friendly__actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+          </style>
+        {% endif %}
+        <p class="ejuno-collection-empty ejuno-collection-search-empty" data-collection-search-empty hidden>
+          Nothing in this collection matches your search. Try another word, or <a href="/pages/contact">ask us</a> and we&rsquo;ll help.
+        </p>
+        {% liquid
+          assign pinned_product = nil
+          assign show_pinned = false
+          assign filters_active = false
+          if search_query != blank
+            assign filters_active = true
+          endif
+          for f in collection.filters
+            if f.active_values.size > 0
+              assign filters_active = true
+            endif
+            if f.type == 'price_range'
+              if f.min_value.value != blank or f.max_value.value != blank
+                assign filters_active = true
+              endif
+            endif
+          endfor
+
+          if paginate.current_page == 1 and pin_handle != blank
+            if filters_active
+              for product in collection.products
+                if product.handle == pin_handle
+                  assign pinned_product = product
+                  assign show_pinned = true
+                  break
+                endif
+              endfor
+            else
+              assign pinned_candidate = all_products[pin_handle]
+              if pinned_candidate != blank
+                for c in pinned_candidate.collections
+                  if c.id == collection.id
+                    assign pinned_product = pinned_candidate
+                    assign show_pinned = true
+                    break
+                  endif
+                endfor
+              endif
+            endif
+          endif
+        %}
+        {% liquid
+          assign feature_on = feature_first
+          if filters_active
+            assign feature_on = false
+          endif
+        %}
+        {% liquid
+          if show_pinned and pinned_product
+            assign ejuno_pp = pinned_product.price_min | default: pinned_product.price
+            if ejuno_pf_gte >= 0 and ejuno_pp < ejuno_pf_gte
+              assign show_pinned = false
+            endif
+            if ejuno_pf_lte >= 0 and ejuno_pp > ejuno_pf_lte
+              assign show_pinned = false
+            endif
+          endif
+        %}
+        {% if show_pinned and pinned_product %}
+          {% render 'collection-result-card',
+            product: pinned_product,
+            featured: feature_on,
+            eager: true
+          %}
+        {% endif %}
+        {% for product in collection.products %}
+          {% if show_pinned and pinned_product and product.id == pinned_product.id %}
+            {% continue %}
+          {% endif %}
+          {%- liquid
+            assign ejuno_cp = product.price_min | default: product.price
+            assign ejuno_skip = false
+            if ejuno_pf_gte >= 0 and ejuno_cp < ejuno_pf_gte
+              assign ejuno_skip = true
+            endif
+            if ejuno_pf_lte >= 0 and ejuno_cp > ejuno_pf_lte
+              assign ejuno_skip = true
+            endif
+          -%}
+          {% if ejuno_skip %}{% continue %}{% endif %}
+          {% liquid
+            assign card_featured = false
+            assign card_eager = false
+            if feature_on and paginate.current_page == 1 and show_pinned == false and forloop.first
+              assign card_featured = true
+              assign card_eager = true
+            endif
+          %}
+          {% render 'collection-result-card',
+            product: product,
+            featured: card_featured,
+            eager: card_eager
+          %}
+        {% endfor %}
+      </div>
+
+      {% if paginate.pages > 1 and paginate.next and collection.products_count > 0 %}
+        <div class="ejuno-load-more" data-load-more-wrap>
+          <button
+            type="button"
+            class="btn secondary ejuno-load-more__btn"
+            data-href="{{ paginate.next.url }}"
+            data-load-more="{{ section.settings.load_more_label }}"
+            data-loading-more="{{ section.settings.load_more_loading }}"
+          >{{ section.settings.load_more_label }}</button>
+        </div>
+      {% endif %}
+    {% endpaginate %}
+  {% else %}
+    <div class="result-grid" data-collection-grid>
+      {% for block in section.blocks %}
+        {% if block.type == 'card' %}
+          {% liquid
+            if block.settings.image != blank
+              assign img = block.settings.image | image_url: width: 1200
+              assign alt = block.settings.image.alt | default: block.settings.title
+              assign w = block.settings.image.width
+              assign h = block.settings.image.height
+            else
+              assign img = block.settings.fallback_asset | asset_url
+              assign alt = block.settings.title
+              assign w = 1200
+              assign h = 900
+            endif
+          %}
+          <a href="{{ block.settings.url }}" class="result-card{% if block.settings.featured %} featured-result{% endif %}" {{ block.shopify_attributes }}>
+            <img src="{{ img }}" alt="{{ alt | escape }}" width="{{ w }}" height="{{ h }}" loading="lazy">
+            <div class="result-body">
+              <h3>{{ block.settings.title }}</h3>
+              <div class="result-meta">{{ block.settings.meta }}</div>
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<script src="{{ 'ejuno-collection.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+.ejuno-collection-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 0;
+}
+.ejuno-facets {
+  margin: 0;
+  position: relative;
+  z-index: 40;
+}
+.ejuno-facets__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 2px 0 4px;
+}
+
+.ejuno-facets__scroll,
+.ejuno-facets__scroll--desktop {
+  display: none !important;
+}
+
+.ejuno-facets__apply-all--desktop {
+  display: none !important;
+}
+
+.ejuno-facets__row {
+  margin: 20px 0 28px;
+  align-items: center;
+}
+.ejuno-facet-pill {
+  position: relative;
+  list-style: none;
+  z-index: 1;
+}
+.ejuno-facet-pill[open] {
+  z-index: 50;
+}
+.ejuno-facet-pill__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.ejuno-facet-pill__trigger::-webkit-details-marker {
+  display: none;
+}
+.ejuno-facet-pill__trigger::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #6d645d;
+  border-bottom: 1.5px solid #6d645d;
+  transform: rotate(45deg) translateY(-2px);
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+.ejuno-facet-pill[open] .ejuno-facet-pill__trigger::after {
+  transform: rotate(-135deg) translateY(2px);
+}
+.ejuno-facet-pill.is-active .ejuno-facet-pill__trigger {
+  border-color: #c4b5a8;
+  color: #201c19;
+}
+.ejuno-facet-pill__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--berry);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ejuno-facet-pill__panel {
+  position: absolute;
+  z-index: 60;
+  left: 0;
+  top: calc(100% + 8px);
+  min-width: 240px;
+  max-width: min(320px, 90vw);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow2);
+  padding: 12px 14px;
+  max-height: min(320px, calc(100vh - 160px));
+  overflow: auto;
+}
+
+.ejuno-facet-pill__panel--fixed {
+  box-shadow: 0 16px 40px rgba(32, 28, 25, 0.16);
+}
+.ejuno-facet-pill--sort .ejuno-facet-pill__panel {
+  right: 0;
+  left: auto;
+}
+.ejuno-facet-pill__list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.ejuno-facet-pill__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ink);
+  border-radius: 10px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.ejuno-facet-pill__option:hover {
+  background: rgba(155, 80, 104, 0.06);
+  color: var(--berry-dark);
+}
+.ejuno-facet-pill__option input[type='checkbox'],
+.ejuno-facet-pill__option input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1.5px solid #cfc4b8;
+  border-radius: 5px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ejuno-facet-pill__option input[type='radio'] {
+  border-radius: 50%;
+}
+.ejuno-facet-pill__option input[type='checkbox']:checked,
+.ejuno-facet-pill__option input[type='radio']:checked {
+  background: var(--berry);
+  border-color: var(--berry);
+}
+.ejuno-facet-pill__option input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.ejuno-facet-pill__option input[type='radio']:checked::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: #fff;
+}
+.ejuno-facet-pill__option input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ejuno-facet-pill__count {
+  color: var(--muted);
+  margin-left: auto;
+  font-size: 12px;
+}
+.ejuno-facet-pill__price {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.ejuno-facet-pill__price-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.ejuno-facet-pill__price-field input {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+.ejuno-facets__apply-all {
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-size: 13px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 70;
+  align-self: center;
+  margin-top: 0;
+  box-shadow: none;
+}
+.ejuno-facets__active {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -12px 0 20px;
+  font-size: 13px;
+}
+.ejuno-facets__clear {
+  color: var(--berry);
+  text-decoration: underline;
+}
+.ejuno-load-more {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 32px;
+}
+.ejuno-load-more[hidden] {
+  display: none !important;
+}
+.ejuno-collection-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+  padding: 48px 16px;
+}
+.result-card__title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.28;
+  margin: 0;
+}
+.result-card.is-filtered-out,
+.result-card.is-price-filtered-out,
+.result-card.is-page-hidden {
+  display: none !important;
+}
+.ejuno-collection-search-empty[hidden] {
+  display: none !important;
+}
+.ejuno-collection-search-status {
+  margin: 22px 0 -8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ejuno-collection-search-status[hidden] {
+  display: none !important;
+}
+.ejuno-collection-toolbar {
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 35;
+}
+.ejuno-collection-toolbar .result-grid[data-collection-grid] {
+  position: relative;
+  z-index: 1;
+  margin-top: 28px;
+}
+.ejuno-facets__meta {
+  margin-top: 16px;
+}
+.ejuno-facets__row {
+  flex-wrap: nowrap;
+  overflow: visible;
+  margin: 20px 0 0;
+  padding-bottom: 0;
+  gap: 8px;
+}
+.ejuno-facet-pill__trigger {
+  white-space: nowrap;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .ejuno-collection-toolbar.market-search-wrap {
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  .ejuno-collection-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ejuno-collection-toolbar .result-grid[data-collection-grid] {
+    margin-top: 22px;
+  }
+
+  .ejuno-facets__bar {
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .ejuno-facets__apply-all {
+    width: 100%;
+    margin-top: 4px;
+    box-shadow: none;
+  }
+
+  .ejuno-facets__scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .ejuno-facet-pill[open] {
+    z-index: 80;
+  }
+
+  .ejuno-collection-toolbar .result-grid[data-collection-grid] {
+    margin-top: 8px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Result grid",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 6,
+      "max": 36,
+      "step": 6,
+      "default": 12,
+      "label": "Products per page (load more batch size)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_counts",
+      "label": "Show filter option counts",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_search_placeholder",
+      "label": "Auto search placeholder (venues vs services)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_feature_first",
+      "label": "Legacy setting (unused)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_first_product",
+      "label": "Feature first product (wide card on page 1)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "pinned_product_handle",
+      "label": "Pinned first product handle",
+      "default": "villa-califano",
+      "info": "Shown first on page 1 when it appears in the current results (e.g. venues collection)."
+    },
+    {
+      "type": "checkbox",
+      "id": "pin_only_venues",
+      "label": "Pin only on Venues collection",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search venues or locations"
+    },
+    {
+      "type": "text",
+      "id": "search_label",
+      "label": "Search button",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "filter_apply_label",
+      "label": "Filter apply all button",
+      "default": "Apply all"
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Load more button",
+      "default": "Show more"
+    },
+    {
+      "type": "text",
+      "id": "load_more_loading",
+      "label": "Load more loading text",
+      "default": "Loading..."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Fallback card",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "fallback_asset", "label": "Fallback asset", "default": "VEN-IMG-002.webp" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Villa Balbiano" },
+        { "type": "text", "id": "meta", "label": "Meta", "default": "Lake Como Â· Historic Villa" },
+        { "type": "url", "id": "url", "label": "URL" },
+        { "type": "checkbox", "id": "featured", "label": "Featured wide card", "default": false }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Result grid" }]
+}
+{% endschema %}

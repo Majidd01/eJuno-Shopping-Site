@@ -1,0 +1,212 @@
+<section class="section tight ejuno-policy-cookie-details">
+  <div class="container">
+    <div class="ejuno-policy-content__body article-body ejuno-policy-cookie-details__body">
+      <div class="ejuno-policy-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Provider</th>
+              <th>Type</th>
+              <th>Expiration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>secure_customer_sig</td>
+              <td>Used for customer login.</td>
+              <td>ejuno.io</td>
+              <td>Server Cookie</td>
+              <td>11 months, 30 days</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% if section.settings.updatetext != blank %}
+        <div class="ejuno-policy-cookie-details__block">
+          {{ section.settings.updatetext }}
+        </div>
+      {% endif %}
+
+      <div class="ejuno-policy-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Provider</th>
+              <th>Type</th>
+              <th>Expiration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>_shopify_s</td>
+              <td>Shopify analytics.</td>
+              <td>.ejuno.io</td>
+              <td>HTTP Cookie</td>
+              <td>29 minutes</td>
+            </tr>
+            <tr>
+              <td>_shopify_y</td>
+              <td>Shopify analytics.</td>
+              <td>.ejuno.io</td>
+              <td>HTTP Cookie</td>
+              <td>11 months, 30 days</td>
+            </tr>
+            <tr>
+              <td>s7</td>
+              <td>Site usage and behaviour analysis.</td>
+              <td>ejuno.io</td>
+              <td>HTML Storage</td>
+              <td>Persistent</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% if section.settings.updatetextTwo != blank %}
+        <div class="ejuno-policy-cookie-details__block">
+          {{ section.settings.updatetextTwo }}
+        </div>
+      {% endif %}
+
+      <div class="ejuno-policy-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Provider</th>
+              <th>Type</th>
+              <th>Expiration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>_shopify_sa_t</td>
+              <td>Marketing and referrals analytics.</td>
+              <td>.ejuno.io</td>
+              <td>HTTP Cookie</td>
+              <td>29 minutes</td>
+            </tr>
+            <tr>
+              <td>_cmp_a</td>
+              <td>Tracks user interactions with ads.</td>
+              <td>.ejuno.io</td>
+              <td>Server Cookie</td>
+              <td>1 day</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% if section.settings.updatetextThree != blank %}
+        <div class="ejuno-policy-cookie-details__block">
+          {{ section.settings.updatetextThree }}
+        </div>
+      {% endif %}
+
+      <div class="ejuno-policy-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Provider</th>
+              <th>Type</th>
+              <th>Expiration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>localization</td>
+              <td>ejuno.io</td>
+              <td>Server Cookie</td>
+              <td>11 months, 30 days</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% if section.settings.updatetextFour != blank %}
+        <div class="ejuno-policy-cookie-details__block">
+          {{ section.settings.updatetextFour }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+.ejuno-policy-cookie-details {
+  padding-top: 0;
+  padding-bottom: 72px;
+}
+
+.ejuno-policy-cookie-details__body {
+  max-width: 820px;
+  margin: 0;
+}
+
+.ejuno-policy-cookie-details__block {
+  margin: 24px 0 16px;
+}
+
+.ejuno-policy-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 16px 0 24px;
+}
+
+.ejuno-policy-cookie-details table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.45;
+  color: #3f3833;
+}
+
+.ejuno-policy-cookie-details th,
+.ejuno-policy-cookie-details td {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ejuno-policy-cookie-details th {
+  background: rgba(155, 80, 104, 0.06);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.ejuno-policy-cookie-details__block a {
+  color: var(--berry);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .ejuno-policy-cookie-details {
+    padding-bottom: 48px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Cookie policy details",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "richtext", "id": "updatetext", "label": "After essential cookies table" },
+    { "type": "richtext", "id": "updatetextTwo", "label": "After analytics cookies table" },
+    { "type": "richtext", "id": "updatetextThree", "label": "After advertising cookies table" },
+    { "type": "richtext", "id": "updatetextFour", "label": "Final sections (control, updates, contact)" }
+  ],
+  "presets": [{ "name": "Cookie policy details" }]
+}
+{% endschema %}

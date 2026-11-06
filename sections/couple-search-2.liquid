@@ -1,0 +1,28 @@
+<section class="section tight"><div class="container"><div class="utility-panel utility-panel--open"><div class="section-head"><div class="copy"><div class="eyebrow">{{ section.settings.eyebrow }}</div><h2 class="h2" style="font-size:42px">{{ section.settings.heading }}</h2></div></div><ol class="ej-journey"><li class="ej-journey__item"><span class="ej-journey__dot" aria-hidden="true"></span><h3 class="ej-journey__title">Search</h3><p class="ej-journey__text">Enter the couple’s name.</p></li><li class="ej-journey__item"><span class="ej-journey__dot" aria-hidden="true"></span><h3 class="ej-journey__title">Match</h3><p class="ej-journey__text">Pick the right wedding or registry.</p></li><li class="ej-journey__item"><span class="ej-journey__dot" aria-hidden="true"></span><h3 class="ej-journey__title">Open</h3><p class="ej-journey__text">Go straight to their website or registry.</p></li></ol></div></div></section>
+
+{% schema %}
+{
+  "name": "couple-search 2",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "How it works"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find the right couple, then go straight there"
+    }
+  ],
+  "presets": [
+    {
+      "name": "couple-search 2"
+    }
+  ]
+}
+{% endschema %}

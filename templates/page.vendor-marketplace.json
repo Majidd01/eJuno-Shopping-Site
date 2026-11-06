@@ -1,0 +1,32 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero": {
+      "type": "vendors-1",
+      "settings": {
+        "eyebrow": "Vendor marketplace",
+        "heading": "Meet the People Who Make It Happen",
+        "fallback_1": "ejuno-client-marketplace.jpg"
+      }
+    },
+    "marketplace": {
+      "type": "vendor-marketplace",
+      "settings": {
+        "search_placeholder": "Search by name...",
+        "search_button_label": "Search"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "marketplace"
+  ]
+}

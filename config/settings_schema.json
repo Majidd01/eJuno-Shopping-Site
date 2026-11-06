@@ -1,0 +1,27 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "eJuno",
+    "theme_version": "5.0.0",
+    "theme_author": "eJuno",
+    "theme_documentation_url": "https://ejuno.io",
+    "theme_support_url": "https://ejuno.io/pages/contact"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "text",
+        "id": "brand_name",
+        "label": "Brand name",
+        "default": "eJuno"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "Square PNG recommended (32×32 or larger). Shown in browser tabs and bookmarks."
+      }
+    ]
+  }
+]

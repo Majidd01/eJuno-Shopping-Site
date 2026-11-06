@@ -1,0 +1,32 @@
+{%- comment -%} Trello 801: after Confirm dates, bring Continue into view (not the top of the add-ons) and highlight it briefly; same for the Book this add-on modal. {%- endcomment -%}
+<style>
+.ejuno-continue-flash{animation:ejunoContinueFlash 1.2s ease-out 1;}
+@keyframes ejunoContinueFlash{0%{box-shadow:0 0 0 0 rgba(122,63,82,.55);}70%{box-shadow:0 0 0 10px rgba(122,63,82,0);}100%{box-shadow:0 0 0 0 rgba(122,63,82,0);}}
+</style>
+<script>
+(function(){
+  if (window.__ejunoConfirmScroll) return; window.__ejunoConfirmScroll = true;
+  function visible(el){ return !!(el && el.offsetParent && el.getClientRects().length); }
+  function inView(el){ var r = el.getBoundingClientRect(), p = el.closest('.ejuno-dates-modal__panel, .cdp-standalone-body'), top = 0, bot = window.innerHeight;
+    if (p) { var pr = p.getBoundingClientRect(); top = Math.max(top, pr.top); bot = Math.min(bot, pr.bottom); }
+    return r.top >= top && r.bottom <= bot; }
+  function bring(el, flash, onlyIfHidden){
+    if (!visible(el)) return;
+    if (!(onlyIfHidden && inView(el))) { try { el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' }); } catch (e) { el.scrollIntoView(false); } }
+    if (flash) { el.classList.remove('ejuno-continue-flash'); void el.offsetWidth; el.classList.add('ejuno-continue-flash'); setTimeout(function(){ el.classList.remove('ejuno-continue-flash'); }, 1300); }
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target && e.target.closest ? e.target : null; if (!t) return;
+    if (t.closest('#confirm-dates')) {
+      var was = (t.closest('#confirm-dates').textContent || '').trim();
+      if (/continue/i.test(was)) return;
+      [80, 450].forEach(function(ms, i){ setTimeout(function(){
+        var b = document.getElementById('confirm-dates');
+        if (b && /continue/i.test(b.textContent || '')) bring(b, i === 1, false);
+      }, ms); });
+    } else if (t.closest('.cdp-sa-cal-day')) {
+      setTimeout(function(){ var s = document.querySelector('.cdp-standalone-submit'); if (s) bring(s, true, true); }, 120);
+    }
+  }, true); /* capture: read the label before the booking script changes it to Continue */
+})();
+</script>

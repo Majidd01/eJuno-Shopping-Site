@@ -1,0 +1,15 @@
+<article><div class="article-body">{{ article.content | replace: '\n', '' }}</div></article>
+
+{% schema %}
+{
+  "name": "Article content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Article content"
+    }
+  ]
+}
+{% endschema %}
