@@ -157,7 +157,7 @@
         (opts.priceLabel || '') +
         '</strong></div>' +
         '</div>' +
-        '<p class="ejuno-sr-note">Services are for one day only. This date is a preference for guests — it does not reserve the vendor calendar.</p>' +
+        '<p class="ejuno-sr-note">Services are for one day only. This date is a preference for guests — it does not reserve the vendor calendar. You can add the same service again for a different date.</p>' +
         '</div>' +
         '<div class="ejuno-sr-actions">' +
         '<button type="button" class="btn secondary" data-cancel>Cancel</button>' +
