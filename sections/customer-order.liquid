@@ -1,0 +1,16 @@
+
+<section class="section"><div class="container">
+  <h1 class="h2">Order {{ order.name }}</h1>
+  <p>{{ order.created_at | date: '%B %d, %Y' }}</p>
+  <table class="table"><thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead><tbody>
+  {% for line_item in order.line_items %}<tr><td>{{ line_item.title }}</td><td>{{ line_item.quantity }}</td><td>{% render 'ejuno-money', cents: line_item.final_line_price %}</td></tr>{% endfor %}
+  </tbody></table>
+  <p><strong>Total:</strong> {% render 'ejuno-money', cents: order.total_price %}</p>
+</div></section>
+
+{% schema %}
+{
+  "name": "Customer order",
+  "settings": []
+}
+{% endschema %}

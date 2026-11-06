@@ -1,0 +1,27 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "s1": {
+      "type": "couple-search-1",
+      "settings": {
+        "band_fallback": "ejuno-794c-3-5.jpg"
+      }
+    },
+    "s2": {
+      "type": "couple-search-2",
+      "settings": {}
+    }
+  },
+  "order": [
+    "s1",
+    "s2"
+  ]
+}

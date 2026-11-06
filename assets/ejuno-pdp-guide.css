@@ -1,0 +1,228 @@
+.ejuno-pdp-guide__fab {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 10090;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(155, 80, 104, 0.35);
+  border-radius: 999px;
+  background: linear-gradient(145deg, #fff 0%, #faf6f2 100%);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(32, 28, 25, 0.14);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.ejuno-pdp-guide__fab:hover {
+  border-color: var(--berry);
+  box-shadow: 0 12px 32px rgba(155, 80, 104, 0.22);
+  transform: translateY(-1px);
+}
+
+.ejuno-pdp-guide__fab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(155, 80, 104, 0.1);
+  color: var(--berry);
+}
+
+.ejuno-pdp-guide__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10100;
+  background: rgba(22, 18, 15, 0.45);
+  backdrop-filter: blur(3px);
+  display: none;
+  pointer-events: none;
+}
+
+.ejuno-pdp-guide__dialog {
+  position: fixed;
+  z-index: 10110;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(78vh, 640px);
+  display: none;
+  flex-direction: column;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: 0 24px 64px rgba(32, 28, 25, 0.2);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ejuno-pdp-guide__dialog[hidden],
+.ejuno-pdp-guide__backdrop[hidden] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.ejuno-pdp-guide.is-open .ejuno-pdp-guide__backdrop {
+  display: block;
+  pointer-events: auto;
+}
+
+.ejuno-pdp-guide.is-open .ejuno-pdp-guide__dialog {
+  display: flex;
+  pointer-events: auto;
+}
+
+.ejuno-pdp-guide__dialog-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+  overflow: hidden;
+}
+
+.ejuno-pdp-guide__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.ejuno-pdp-guide__kicker {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--berry);
+}
+
+.ejuno-pdp-guide__title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.ejuno-pdp-guide__close {
+  border: 0;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.ejuno-pdp-guide__panels {
+  padding: 16px 20px 20px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ejuno-pdp-guide__steps {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #4d4540;
+}
+
+.ejuno-pdp-guide__steps li {
+  margin-bottom: 10px;
+}
+
+.ejuno-pdp-guide__steps li:last-child {
+  margin-bottom: 0;
+}
+
+.ejuno-pdp-guide__note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(155, 80, 104, 0.06);
+  border: 1px solid rgba(155, 80, 104, 0.12);
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5c534c;
+}
+
+.ejuno-pdp-guide__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ejuno-pdp-guide__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--berry);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ejuno-pdp-guide__cta--secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.ejuno-pdp-guide.is-open .ejuno-pdp-guide__fab {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.92);
+}
+
+@media (max-width: 760px) {
+  body.ejuno-pdp-guide-open {
+    overflow: hidden;
+  }
+
+  .ejuno-pdp-guide__fab {
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    width: 46px;
+    height: 46px;
+  }
+
+  .ejuno-pdp-guide__dialog {
+    left: 16px;
+    right: 16px;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    max-height: min(62vh, 560px);
+  }
+
+  .ejuno-pdp-guide__cta-row .ejuno-pdp-guide__cta {
+    flex: 1 1 100%;
+  }
+}
+
+@media (min-width: 761px) {
+  .ejuno-pdp-guide__dialog {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+}

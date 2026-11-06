@@ -1,0 +1,65 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "page-intro",
+      "settings": {
+        "eyebrow": "Contact Us",
+        "heading": "Tell Us What You Need",
+        "lead": "We&rsquo;re happy to help with your wedding plans, your listing or anything else. Email us at <a href=\"mailto:weddingplanners@ejuno.io\">weddingplanners@ejuno.io</a> or send a message below."
+      }
+    },
+    "form": {
+      "type": "contact-form",
+      "settings": {},
+      "blocks": {
+        "i1": {
+          "type": "info_item",
+          "settings": {
+            "title": "Couples",
+            "text": "Planning guidance and platform support."
+          }
+        },
+        "i2": {
+          "type": "info_item",
+          "settings": {
+            "title": "Vendors",
+            "text": "Partner, listing and marketplace enquiries."
+          }
+        },
+        "i3": {
+          "type": "info_item",
+          "settings": {
+            "title": "General",
+            "text": "Anything else that needs a human answer."
+          }
+        },
+        "i4": {
+          "type": "info_item",
+          "settings": {
+            "title": "Email",
+            "text": "<a href=\"mailto:weddingplanners@ejuno.io\">weddingplanners@ejuno.io</a>"
+          }
+        }
+      },
+      "block_order": [
+        "i1",
+        "i2",
+        "i3",
+        "i4"
+      ]
+    }
+  },
+  "order": [
+    "intro",
+    "form"
+  ]
+}

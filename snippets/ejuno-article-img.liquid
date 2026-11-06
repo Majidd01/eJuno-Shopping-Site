@@ -1,0 +1,7 @@
+{%- comment -%} Photo swap 28 Oct: article image with an optional theme-asset override (map = array of 'handle:asset'). {%- endcomment -%}
+{%- assign eai_asset = '' -%}{%- assign eai_h = article.handle | split: '/' | last -%}
+{%- for pair in map -%}{%- assign kv = pair | strip | split: ':' -%}{%- if kv[0] == eai_h and kv[1] != blank -%}{%- assign eai_asset = kv[1] | strip -%}{%- break -%}{%- endif -%}{%- endfor -%}
+{%- if eai_asset != blank -%}<img src="{{ eai_asset | asset_url }}" alt="{{ article.title | escape }}" width="1600" height="1067" loading="{{ loading }}">
+{%- elsif article.image -%}<img src="{{ article.image | image_url: width: width }}" alt="{{ article.image.alt | default: article.title | escape }}" width="{{ article.image.width }}" height="{{ article.image.height }}" loading="{{ loading }}">
+{%- elsif fallback != blank -%}<img src="{{ fallback | asset_url }}" alt="{{ article.title | escape }}" width="1672" height="941" loading="{{ loading }}">
+{%- endif -%}

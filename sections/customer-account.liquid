@@ -1,0 +1,18 @@
+
+<section class="utility-head"><div class="container"><div class="eyebrow">Account</div><h1 class="h1">Hello {{ customer.first_name }}</h1>
+<p class="lead"><a href="{{ routes.account_logout_url }}">Log out</a></p>
+<div class="utility-panel" style="margin-top:24px">
+  <h2 class="h3">Orders</h2>
+  {% for order in customer.orders %}
+    <p><a href="{{ order.customer_url }}">{{ order.name }}</a> — {{ order.created_at | date: '%b %d, %Y' }} — {% render 'ejuno-money', cents: order.total_price %}</p>
+  {% else %}
+    <p style="color:var(--muted)">No orders yet.</p>
+  {% endfor %}
+</div></div></section>
+
+{% schema %}
+{
+  "name": "Customer account",
+  "settings": []
+}
+{% endschema %}

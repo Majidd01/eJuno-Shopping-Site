@@ -1,0 +1,21 @@
+{% render 'ejuno-vendor-kyc-mount', agreement_html: section.settings.agreementData %}
+
+{% schema %}
+{
+  "name": "Vendor onboarding (KYC)",
+  "tag": "section",
+  "class": "ejuno-section ejuno-kyc-section",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "agreementData",
+      "label": "Vendor agreement (full document)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vendor onboarding (KYC)"
+    }
+  ]
+}
+{% endschema %}

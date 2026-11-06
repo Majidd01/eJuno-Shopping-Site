@@ -1,0 +1,21 @@
+{%- comment -%}
+  Trello 656: keeps theme links to the Inspiration blog working if its handle changes
+  (e.g. 'destinations' -> 'inspiration'). Pass url: '/blogs/destinations...' ; other urls pass through.
+  Usage: {%- render 'ejuno-blog-href', url: link.settings.url -%}
+{%- endcomment -%}
+{%- liquid
+  assign ebh_url = url | default: ''
+  if ebh_url contains '/blogs/destinations' and blogs['destinations'].handle == blank
+    assign ebh_target = ''
+    assign ebh_handles = 'inspiration,journal,news' | split: ','
+    for h in ebh_handles
+      if ebh_target == blank and blogs[h].handle != blank
+        assign ebh_target = blogs[h].url
+      endif
+    endfor
+    if ebh_target != blank
+      assign ebh_url = ebh_url | replace_first: '/blogs/destinations', ebh_target
+    endif
+  endif
+  echo ebh_url
+-%}

@@ -1,0 +1,191 @@
+/* —— Mega menu panels (Explore, Services, Shop) —— */
+
+.header-megamenu .shop-megamenu__panel {
+  padding: 0 var(--gutter, 18px) 28px;
+}
+
+.shop-megamenu__inner {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.shop-megamenu__intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding: 22px 4px 18px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+
+.shop-megamenu__intro .eyebrow {
+  margin: 0;
+}
+
+.shop-megamenu__intro-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.5;
+}
+
+.header-megamenu .shop-megamenu__grid {
+  gap: 10px 14px;
+}
+
+.header-megamenu .shop-megamenu__grid--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: none;
+}
+
+.header-megamenu .shop-megamenu__grid--shop {
+  /* Trello 752: desktop dropdowns show 4 items per row, wrapping. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: none;
+  gap: 12px 14px;
+  align-items: stretch;
+}
+
+.header-megamenu .shop-megamenu__grid--shop > .shop-megamenu__item {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.header-megamenu .shop-megamenu__item {
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(222, 213, 202, 0.65);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  transition:
+    background 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+.header-megamenu .shop-megamenu__item:hover,
+.header-megamenu .shop-megamenu__item:focus-visible {
+  background: #fff;
+  border-color: rgba(155, 80, 104, 0.28);
+  box-shadow: var(--shadow2);
+  transform: translateY(-2px);
+}
+
+.header-megamenu .shop-megamenu__item:hover .shop-megamenu__copy strong,
+.header-megamenu .shop-megamenu__item:focus-visible .shop-megamenu__copy strong {
+  color: var(--berry);
+}
+
+.header-megamenu .shop-megamenu__icon--svg {
+  width: 42px;
+  height: 42px;
+}
+
+.header-megamenu .shop-megamenu__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff 0%, #f8f2ee 100%);
+  border: 1px solid rgba(222, 213, 202, 0.9);
+  box-shadow: 0 4px 14px rgba(155, 80, 104, 0.08);
+}
+
+.header-megamenu .shop-megamenu__icon img {
+  width: 24px;
+  height: 24px;
+}
+
+.header-megamenu .shop-megamenu__icon--svg svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.header-megamenu .shop-megamenu__icon--svg {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff 0%, #f8f2ee 100%);
+  border: 1px solid rgba(222, 213, 202, 0.9);
+  box-shadow: 0 4px 14px rgba(155, 80, 104, 0.08);
+}
+
+.header-megamenu .shop-megamenu__copy strong {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+}
+
+.header-megamenu .shop-megamenu__copy span {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+
+.header-megamenu,
+.shop-megamenu {
+  background: linear-gradient(180deg, #f3ece4 0%, var(--paper) 42%, var(--paper) 100%);
+}
+
+@media (max-width: 1100px) {
+  .header-megamenu .shop-megamenu__grid--4,
+  .header-megamenu .shop-megamenu__grid--shop {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .header-megamenu .shop-megamenu__grid--4,
+  .header-megamenu .shop-megamenu__grid--shop {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-megamenu__intro {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* All Services card: distinguished plum treatment (2026-11-02) */
+.header-megamenu .shop-megamenu__item.shop-megamenu__item--all {
+  background: linear-gradient(145deg, #7a3f52 0%, #6a3446 100%);
+  border-color: #6a3446;
+  box-shadow: 0 6px 18px rgba(106, 52, 70, 0.22);
+}
+.header-megamenu .shop-megamenu__item.shop-megamenu__item--all:hover,
+.header-megamenu .shop-megamenu__item.shop-megamenu__item--all:focus-visible {
+  background: linear-gradient(145deg, #6a3446 0%, #5a2b3b 100%);
+  border-color: #5a2b3b;
+  box-shadow: 0 10px 24px rgba(90, 43, 59, 0.3);
+}
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__copy strong,
+.header-megamenu .shop-megamenu__item--all:hover .shop-megamenu__copy strong,
+.header-megamenu .shop-megamenu__item--all:focus-visible .shop-megamenu__copy strong { color: #fff; }
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__copy span { color: rgba(255, 255, 255, 0.88); }
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__icon,
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__icon--svg {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+  color: #fff;
+}
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__icon--svg svg { color: #fff; stroke: currentColor; }
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__icon--svg svg [stroke]:not([stroke="none"]) { stroke: #fff; }
+.header-megamenu .shop-megamenu__item--all .shop-megamenu__icon--svg svg [fill]:not([fill="none"]) { fill: #fff; }
+.mobile-nav__sublink.mobile-nav__sublink--all {
+  background: #7a3f52;
+  color: #fff !important;
+  border-radius: 10px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
+.mobile-nav__sublink.mobile-nav__sublink--all:hover,
+.mobile-nav__sublink.mobile-nav__sublink--all:focus-visible { background: #6a3446; color: #fff !important; }

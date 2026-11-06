@@ -1,0 +1,59 @@
+<div class="container market-search-wrap"><div class="market-search"><input placeholder="Search services or categories"><a class="btn primary" data-action="Use the current eJuno service discovery / filter behaviour.">Search</a></div><div class="filters"><span class="chip">Planning</span><span class="chip">Photography</span><span class="chip">Floristry</span><span class="chip">Music</span><span class="chip">Food</span><span class="chip">Styling</span></div><div class="result-grid"><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'SVC-IMG-002.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Floristry"><div class="result-body"><h3>Floristry</h3><div class="result-meta">Ceremony, reception and full floral styling</div><div class="tagline"><span class="tag">Flowers</span><span class="tag">Styling</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'SVC-IMG-003.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Stationery"><div class="result-body"><h3>Stationery</h3><div class="result-meta">Invites, menus, place cards and paper goods</div><div class="tagline"><span class="tag">Paper</span><span class="tag">Design</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'SVC-IMG-004.webp' | asset_url }}" width="1672" height="941" loading="lazy" alt="Planning"><div class="result-body"><h3>Planning</h3><div class="result-meta">Destination planning and coordination</div><div class="tagline"><span class="tag">Planner</span><span class="tag">Coordination</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'SVC-IMG-005.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Reception Styling"><div class="result-body"><h3>Reception Styling</h3><div class="result-meta">Tablescapes, rentals and styling execution</div><div class="tagline"><span class="tag">Reception</span><span class="tag">Decor</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-004.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Photography"><div class="result-body"><h3>Photography</h3><div class="result-meta">Still and moving image specialists</div><div class="tagline"><span class="tag">Photography</span></div></div></a><a href="{{ routes.collections_url }}/venues" class="result-card"><img src="{{ 'VEN-IMG-006.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="Music & Entertainment"><div class="result-body"><h3>Music & Entertainment</h3><div class="result-meta">Bands, DJs and live performers</div><div class="tagline"><span class="tag">Music</span></div></div></a></div></div>
+
+{% schema %}
+{
+  "name": "Services content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Services content"
+    }
+  ]
+}
+{% endschema %}

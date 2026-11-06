@@ -1,0 +1,671 @@
+/* Vendor onboarding (KYC) — V5 theme */
+.ejuno-kyc-page {
+  background: var(--paper);
+  min-height: 60vh;
+  padding: 32px 0 64px;
+}
+
+.ejuno-kyc-page__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.ejuno-kyc-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 40vh;
+}
+
+.ejuno-kyc-loader__text {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.ejuno-kyc-head {
+  font-family: var(--serif);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 400;
+  text-align: center;
+  color: var(--ink);
+  margin: 24px auto;
+  max-width: 640px;
+  line-height: 1.35;
+}
+
+.ejuno-kyc-notification {
+  position: fixed;
+  top: 96px;
+  right: 20px;
+  padding: 14px 18px;
+  background: var(--berry);
+  color: #fff;
+  font-size: 14px;
+  border-radius: 12px;
+  display: none;
+  z-index: 1000;
+  box-shadow: var(--shadow2);
+}
+
+.ejuno-kyc-notification.error {
+  background: var(--ink);
+}
+
+.ejuno-kyc-contract {
+  padding: 0;
+}
+
+.ejuno-kyc-page .content-area {
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.ejuno-kyc-page .list__items__data {
+  flex: 0 0 220px;
+  width: 220px;
+  position: sticky;
+  top: 96px;
+  align-self: flex-start;
+  z-index: 2;
+}
+
+.ejuno-kyc-steps-label {
+  margin-bottom: 10px;
+}
+
+.ejuno-kyc-steps {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.ejuno-kyc-page .check__list_items li,
+.ejuno-kyc-page ul.ejuno-kyc-steps > li {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px !important;
+  padding: 12px 14px !important;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  flex: 0 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 0;
+}
+
+.ejuno-kyc-page .check__list_items li:last-child,
+.ejuno-kyc-page ul.ejuno-kyc-steps > li:last-child {
+  margin-bottom: 0 !important;
+}
+
+.ejuno-kyc-page .check__list_items li + li {
+  margin-top: 0 !important;
+}
+
+.ejuno-kyc-page .check__list_items li.done {
+  border-color: rgba(155, 80, 104, 0.35);
+  background: rgba(155, 80, 104, 0.08);
+  color: var(--berry);
+  z-index: 1;
+}
+
+.ejuno-kyc-page .check__list_items li input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex-shrink: 0;
+  border: 1.5px solid #b6aa9f;
+  border-radius: 4px;
+  background: #fff;
+  position: relative;
+  opacity: 1 !important;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.ejuno-kyc-page .check__list_items li.done input[type="checkbox"],
+.ejuno-kyc-page .check__list_items li input[type="checkbox"]:checked {
+  border-color: var(--berry);
+  background: var(--berry);
+}
+
+.ejuno-kyc-page .check__list_items li input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.ejuno-kyc-page .check__list_items label {
+  cursor: default;
+  flex: 1;
+  min-width: 0;
+}
+
+.ejuno-kyc-agreement-wrap {
+  flex: none;
+  width: 100%;
+  min-width: 0;
+  max-height: min(70vh, 720px);
+  overflow: auto;
+  padding: 28px 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow2);
+}
+
+.ejuno-kyc-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ejuno-kyc-changes {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(155, 80, 104, 0.25);
+  background: #fffafb;
+  box-sizing: border-box;
+}
+
+.ejuno-kyc-files {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 28px 26px 32px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--shadow2);
+  box-sizing: border-box;
+}
+
+.ejuno-kyc-agreement h1,
+.ejuno-kyc-agreement h2,
+.ejuno-kyc-agreement h3,
+.ejuno-kyc-agreement h4 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--ink);
+  margin: 1.2em 0 0.5em;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.ejuno-kyc-agreement h1:first-child {
+  margin-top: 0;
+}
+
+.ejuno-kyc-agreement h1 {
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+.ejuno-kyc-agreement h2 {
+  font-size: clamp(22px, 2.4vw, 28px);
+}
+
+.ejuno-kyc-agreement h3,
+.ejuno-kyc-agreement h4 {
+  font-size: clamp(18px, 2vw, 22px);
+}
+
+.ejuno-kyc-agreement p,
+.ejuno-kyc-agreement li {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.ejuno-kyc-files__head {
+  margin-bottom: 22px;
+}
+
+.ejuno-kyc-files__title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--ink);
+  margin: 6px 0 8px;
+  line-height: 1.2;
+}
+
+.ejuno-kyc-files__lead {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.ejuno-kyc-upload-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+.ejuno-kyc-upload-row .ejuno-kyc-upload {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ejuno-kyc-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 2px dashed rgba(155, 80, 104, 0.35);
+  background: rgba(155, 80, 104, 0.04);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.ejuno-kyc-upload:hover {
+  border-color: var(--berry);
+  background: rgba(155, 80, 104, 0.08);
+}
+
+.ejuno-kyc-upload__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ejuno-kyc-upload__hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ejuno-kyc-upload input[type="file"] {
+  display: none;
+}
+
+.ejuno-kyc-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.ejuno-kyc-previews .image-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.ejuno-kyc-previews .image-preview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.ejuno-kyc-previews .remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.75);
+  color: #fff;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ejuno-kyc-signature {
+  margin-bottom: 18px;
+}
+
+.ejuno-kyc-signature__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ejuno-kyc-signature__input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  font-family: var(--sans);
+  font-size: 15px;
+  color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ejuno-kyc-signature__input:focus {
+  outline: none;
+  border-color: var(--berry);
+  box-shadow: 0 0 0 3px rgba(155, 80, 104, 0.12);
+}
+
+.ejuno-kyc-signature__input:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink);
+  box-shadow: 0 0 0 1000px #fff inset;
+}
+
+.ejuno-kyc-terms {
+  margin: 0 0 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.ejuno-kyc-terms__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  text-transform: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* Hide native checkbox — custom box only (fixes double checkbox) */
+.ejuno-kyc-terms__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ejuno-kyc-terms .custom-checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 2px solid var(--berry);
+  border-radius: 5px;
+  background: #fff;
+  position: relative;
+  transition: box-shadow 0.15s ease;
+}
+
+.ejuno-kyc-terms__label:hover .custom-checkbox {
+  box-shadow: 0 0 0 3px rgba(155, 80, 104, 0.12);
+}
+
+.ejuno-kyc-terms .custom-checkbox::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  background: var(--berry);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.ejuno-kyc-terms__input:checked + .custom-checkbox::after {
+  opacity: 1;
+}
+
+.ejuno-kyc-terms__input:disabled + .custom-checkbox {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ejuno-kyc-terms__text a {
+  color: var(--berry);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ejuno-kyc-submit-wrap {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 8px;
+}
+
+.ejuno-kyc-submit {
+  min-width: min(100%, 280px);
+  width: auto;
+  max-width: 100%;
+  border-radius: 999px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.ejuno-kyc-submit.is-ready {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ejuno-kyc-page .folder {
+  --folder-W: 72px;
+  --folder-H: 56px;
+  display: none;
+}
+
+.three-body {
+  --uib-size: 35px;
+  --uib-speed: 0.8s;
+  --uib-color: var(--berry);
+  position: relative;
+  display: inline-block;
+  height: var(--uib-size);
+  width: var(--uib-size);
+  animation: ejuno-kyc-spin calc(var(--uib-speed) * 2.5) infinite linear;
+}
+
+.three-body__dot {
+  position: absolute;
+  height: 100%;
+  width: 30%;
+}
+
+.three-body__dot::after {
+  content: "";
+  display: block;
+  width: 100%;
+  padding-bottom: 100%;
+  background: var(--berry);
+  border-radius: 50%;
+}
+
+@keyframes ejuno-kyc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 900px) {
+  .ejuno-kyc-page .content-area {
+    flex-direction: column;
+  }
+
+  .ejuno-kyc-page .list__items__data {
+    position: static;
+    width: 100%;
+    flex: none;
+  }
+
+  .ejuno-kyc-agreement-wrap {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* Admin requested changes — re-upload flow */
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .content-area {
+  display: none;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-changes {
+  display: block;
+  margin: 0;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(236, 229, 221, 0.45);
+  box-shadow: var(--shadow2);
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-changes .h3 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 4vw, 28px);
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-changes__body {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-files {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin: 0;
+  padding: 28px 28px 32px;
+  box-sizing: border-box;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-files__head {
+  margin-bottom: 20px;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-upload-row {
+  margin-bottom: 22px;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-previews:empty {
+  display: none;
+  margin: 0;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-previews:not(:empty) {
+  margin-bottom: 16px;
+}
+
+.ejuno-kyc-signature-change {
+  margin: 4px 0 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.ejuno-kyc-signature-change__label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ejuno-kyc-signature-change__hint {
+  margin: 10px 0 0 36px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-signature:not(.is-signature-edit-open) {
+  display: none;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-signature.is-signature-edit-open {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-submit-wrap {
+  justify-content: stretch;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-submit {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  min-height: 52px;
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
+@media (max-width: 560px) {
+  .ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-files,
+  .ejuno-kyc-contract.ejuno-kyc--changes-mode .ejuno-kyc-changes {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Align Final step card (and requested changes) with the agreement text column, right of the 'Your steps' sidebar (220px + 28px gap) */
+@media (min-width: 901px) {
+  .ejuno-kyc-page .ejuno-kyc-contract:not(.ejuno-kyc--changes-mode) > .ejuno-kyc-files,
+  .ejuno-kyc-page .ejuno-kyc-contract:not(.ejuno-kyc--changes-mode) > .ejuno-kyc-changes {
+    margin-left: 248px;
+    width: calc(100% - 248px);
+    max-width: none;
+  }
+}

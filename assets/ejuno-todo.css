@@ -1,0 +1,157 @@
+/* eJuno To Do #676-#684 (Website UX/UI review, Parts 4-5). Loaded after ejuno-675.css. */
+
+/* ---- Shared: three-point journey line (Plan phases, Partner journey, Find a Wedding) ---- */
+.ej-journey{list-style:none;margin:34px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:relative;gap:0 24px}
+.ej-journey::before{content:"";position:absolute;left:calc(100%/6);right:calc(100%/6);top:9px;height:1px;background:var(--line,#e3d9cf)}
+.ej-journey__item{position:relative;text-align:center;padding:0 6px}
+.ej-journey__dot{display:block;width:19px;height:19px;margin:0 auto 16px;border-radius:50%;background:var(--canvas,#f6f1eb);border:1.5px solid var(--berry,#9b5068);box-sizing:border-box;position:relative;z-index:1}
+.ej-journey__item:first-child .ej-journey__dot{background:var(--berry,#9b5068)}
+.ej-journey__label{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--berry,#9b5068);margin-bottom:6px}
+.ej-journey__title{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.2;margin:0 0 6px;color:var(--ink,#201c19)}
+.ej-journey__text{margin:0 auto;max-width:280px;color:var(--muted,#6f655d);font-size:15px;line-height:1.55}
+@media (max-width:759px){
+  .ej-journey{grid-template-columns:1fr;gap:22px;padding-left:34px}
+  .ej-journey::before{left:9px;right:auto;top:6px;bottom:6px;width:1px;height:auto}
+  .ej-journey__item{text-align:left;padding:0}
+  .ej-journey__dot{position:absolute;left:-34px;top:2px;margin:0}
+  .ej-journey__text{margin:0;max-width:none}
+}
+
+/* ---- Shared: plain icon columns (Wedding Website, Why eJuno) ---- */
+.ej-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 40px;margin-top:30px}
+.ej-cols__item{padding:0;background:none;border:0;box-shadow:none}
+.ej-cols__icon{display:inline-flex;width:42px;height:42px;align-items:center;justify-content:center;border-radius:50%;background:rgba(155,80,104,.09);color:var(--berry,#9b5068);margin-bottom:14px}
+.ej-cols__item h3{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.2;margin:0 0 8px}
+.ej-cols__item p{margin:0;color:var(--muted,#6f655d);font-size:15px;line-height:1.6}
+@media (max-width:759px){.ej-cols{grid-template-columns:1fr;gap:24px}}
+
+/* ---- #679 Plan Your Wedding ---- */
+.plan-intro.plan-intro--photo{text-align:left;padding:64px 0 40px}
+.plan-intro--photo .plan-intro__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:48px;align-items:center}
+.plan-intro--photo .lead{margin:16px 0 0;max-width:520px}
+.plan-intro__photo{margin:0;border-radius:22px;overflow:hidden;aspect-ratio:16/10;background:#eee5db}
+.plan-intro__photo img{width:100%;height:100%;object-fit:cover;display:block}
+@media (max-width:899px){.plan-intro--photo .plan-intro__grid{grid-template-columns:1fr;gap:26px}.plan-intro.plan-intro--photo{padding:40px 0 24px}}
+
+.plan-map.plan-map--open{background:none;border:0;box-shadow:none;padding:0}
+.plan-map--open .plan-map__block{background:none;padding:0}
+.plan-map--open .plan-map__block--phases{padding-bottom:12px}
+.plan-map--open .plan-map__divider{margin:56px 0 48px;height:1px;background:var(--line,#e3d9cf)}
+.plan-rows{display:grid;gap:48px;margin-top:36px}
+.plan-row{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:center}
+.plan-row:nth-child(even) .plan-row__media{order:2}
+.plan-row__media{display:block;border-radius:20px;overflow:hidden;aspect-ratio:16/10;background:#eee5db}
+.plan-row__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.plan-row__media:hover img{transform:scale(1.03)}
+.plan-row__copy h3{font-family:var(--serif);font-weight:400;font-size:clamp(26px,2.6vw,34px);margin:0 0 10px}
+.plan-row__copy h3 a{color:inherit;text-decoration:none}
+.plan-row__copy p{margin:0 0 16px;color:var(--muted,#6f655d);font-size:16px;line-height:1.6;max-width:440px}
+.plan-row__link{color:var(--berry,#9b5068);text-decoration:none;font-weight:500;border-bottom:1px solid rgba(155,80,104,.35);padding-bottom:2px}
+.plan-row__link:hover{border-bottom-color:currentColor}
+@media (max-width:759px){.plan-row{grid-template-columns:1fr;gap:16px}.plan-row:nth-child(even) .plan-row__media{order:0}.plan-rows{gap:36px}}
+
+.plan-cta.plan-cta--plum{background:#5e2a3d;color:#fff}
+.plan-cta--plum .plan-cta__heading,.plan-cta--plum .plan-cta__heading-line{color:#fff}
+.plan-cta--plum .plan-cta__heading-accent{color:#f3d9e1}
+.plan-cta--plum .plan-cta__text{color:rgba(255,255,255,.85)}
+.plan-cta--plum .btn.primary{background:#fff;color:#5e2a3d;border-color:#fff}
+.plan-cta--plum .btn.primary:hover{background:#f6f1eb}
+.plan-cta--plum .ej-app-note{display:none}
+
+/* ---- #677 designer notes off, Showcase grid gap ---- */
+.ej-app-note{display:none !important}
+.portfolio-grid{align-items:stretch}
+.portfolio-grid > img{height:100% !important;min-height:420px}
+.portfolio-stack{grid-template-rows:1fr 1fr}
+.portfolio-stack img{height:203px !important;min-height:0}
+@media (max-width:759px){.portfolio-grid > img{min-height:0;height:300px !important}.portfolio-stack img{height:220px !important}}
+
+/* ---- #681/#683 Registry: one big photo + list ---- */
+.registry-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:52px;align-items:center}
+.registry-split__photo{margin:0;border-radius:22px;overflow:hidden;aspect-ratio:4/3;background:#eee5db}
+.registry-split__photo img{width:100%;height:100%;object-fit:cover;display:block}
+.registry-list{list-style:none;margin:0;padding:0}
+.registry-list li{padding:18px 0;border-top:1px solid var(--line,#e3d9cf)}
+.registry-list li:last-child{border-bottom:1px solid var(--line,#e3d9cf)}
+.registry-list .eyebrow{margin-bottom:4px}
+.registry-list strong{display:block;font-family:var(--serif);font-weight:400;font-size:22px;margin-bottom:4px}
+.registry-list p{margin:0;color:var(--muted,#6f655d);font-size:15px;line-height:1.55}
+.registry-fund{margin-top:24px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.registry-fund__amount{font-family:var(--serif);font-size:30px;color:var(--ink,#201c19);line-height:1}
+.registry-fund__label{color:var(--muted,#6f655d);font-size:15px}
+.registry-fund .btn{margin-left:auto}
+@media (max-width:899px){.registry-split{grid-template-columns:1fr;gap:26px}.registry-fund .btn{margin-left:0}}
+
+/* ---- #682/#684 Contact: plain left column + photo, form keeps its card ---- */
+.contact-layout .contact-info{background:none !important;border:0 !important;box-shadow:none !important;padding:0 !important}
+.contact-info__photo{margin:0 0 26px;border-radius:20px;overflow:hidden;aspect-ratio:16/10;background:#eee5db}
+.contact-info__photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---- #684 Find a Wedding photo band ---- */
+.ejuno-couple-search .utility-head.has-photo{position:relative;isolation:isolate;padding:96px 0 84px;overflow:hidden}
+.ejuno-couple-search .utility-head.has-photo .cs-band{position:absolute;inset:0;z-index:-1}
+.ejuno-couple-search .utility-head.has-photo .cs-band img{width:100%;height:100%;object-fit:cover;display:block}
+.ejuno-couple-search .utility-head.has-photo .cs-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(246,241,235,.80) 0%,rgba(246,241,235,.88) 60%,rgba(246,241,235,.97) 100%)}
+@media (max-width:759px){.ejuno-couple-search .utility-head.has-photo{padding:64px 0 52px}}
+
+/* ---- #678.7 Venues: warmer edit of the venue hero photo ---- */
+.market-hero--venue img,.venues-hero img{filter:sepia(.16) saturate(1.12) brightness(1.02) hue-rotate(-4deg)}
+
+/* ---- #677.5 Inspiration: more stories ---- */
+.ej-more-stories{padding-top:8px}
+.ej-more-stories .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.ej-more-stories__all{color:var(--berry,#9b5068);text-decoration:none;white-space:nowrap;font-weight:500}
+.utility-panel.utility-panel--open{background:none;border:0;box-shadow:none;padding-left:0;padding-right:0}
+
+/* Trello 677: policy mailto links - one plum, underlined style (beats <strong> and article-body colours). */
+.ejuno-policy-content a[href^="mailto:" i],.ejuno-policy-content a[href^="mailto:" i] *,
+.policy-cookie-details a[href^="mailto:" i],.policy-cookie-details a[href^="mailto:" i] *,
+.shopify-policy__container a[href^="mailto:" i],.shopify-policy__container a[href^="mailto:" i] *,
+[class*="template-page-"][class*="policy"] main a[href^="mailto:" i],[class*="template-page-"][class*="policy"] main a[href^="mailto:" i] *,
+.template-page-terms-of-service main a[href^="mailto:" i],.template-page-terms-of-service main a[href^="mailto:" i] *{color:var(--berry,#9b5068) !important;font-weight:inherit !important;text-decoration:underline !important;text-decoration-color:currentColor !important;text-underline-offset:2px}
+.ejuno-policy-content a[href^="mailto:" i] strong,.ejuno-policy-content a[href^="mailto:" i] b{font-weight:400 !important}
+
+/* ===== #669 reopen: one button system, one radius, heading scale ===== */
+:root{--ej-radius:16px}
+/* Primary = berry filled everywhere (incl. plum CTA band) */
+.btn.primary,.plan-cta--plum .btn.primary{background:#9b5068;color:#fff;border-color:#9b5068}
+.btn.primary:hover,.plan-cta--plum .btn.primary:hover{background:#7e3d55;border-color:#7e3d55;color:#fff}
+.plan-cta--plum .btn.primary{box-shadow:0 0 0 1px rgba(255,255,255,.35)}
+/* Secondary / ghost stay visibly secondary: outlined, never filled berry */
+.btn.secondary,.btn.ghost{border-color:rgba(32,28,25,.35)}
+.plan-cta--plum .btn.secondary,.plan-cta--plum .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
+/* Same button size on mobile */
+@media (max-width:760px){
+  .dashboard .btn,.check-shell .btn,.product-demo .btn,.plan-editorial .btn{min-height:48px;padding:0 24px;font-size:16px}
+}
+/* One corner radius for cards and images */
+.journal-card,.plan-row__media,.region-card,.result-card,.contact-info,.contact-info__photo,.contact-form,.timeline,.browser,.budget-card,.checklist,.tools-photo,.utility-panel,.website-mock,.website-photo,.home-hero-live__filters,.wedding_form_wrapper,.plan-intro__photo,.registry-split__photo,.dashboard,.ejuno-cart-page__empty,.plan-map,.full-banner,.product-demo,.search-box,.cs-band,.plan-editorial img,.plan-row__media img,.plan-intro__photo img,.registry-split__photo img,.contact-info__photo img,.header-menu-toggle{border-radius:var(--ej-radius)!important}
+/* Heading scale: H1 clearly largest */
+.plan-cta__heading{font-size:clamp(28px,3vw,38px)!important}
+@media (min-width:990px){.h2,h2.h2{font-size:clamp(28px,2.6vw,36px)!important}.home-hero-live__heading{font-size:clamp(36px,3.85vw,49.28px)!important}}
+
+/* ===== Trello 670 reopen 3 ===== */
+/* Notes under Open Checklist / Open Guest List */
+.ej-app-note.ej-app-note--keep{display:block!important}
+.ej-app-cta{display:inline-flex;flex-direction:column;align-items:flex-end;text-align:right;max-width:260px}
+.ej-app-cta .ej-app-note--keep{margin-top:8px;font-size:12px;line-height:1.45}
+/* No horizontal overflow on mobile home */
+@media (max-width:760px){
+  .home-hero-live__chips{flex-wrap:wrap!important;justify-content:center!important;overflow:visible!important;max-width:100%!important}
+  .home-hero-live__chip{flex:0 0 auto}
+  .region-row{display:grid!important;grid-template-columns:1fr;gap:14px;overflow:visible!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important;width:auto!important;scroll-snap-type:none}
+  .region-row>.region-card{width:auto!important;min-width:0!important;max-width:none!important;flex:none!important}
+}
+/* Plan Your Wedding: one photo + plain tool list */
+.plan-tools-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center;margin-top:36px}
+.plan-tools-split__photo{margin:0;border-radius:var(--ej-radius,16px);overflow:hidden;aspect-ratio:4/5;background:#eee5db}
+.plan-tools-split__photo img{width:100%;height:100%;object-fit:cover;display:block}
+.plan-tools-list{list-style:none;margin:0;padding:0}
+.plan-tools-list__item{padding:20px 0;border-top:1px solid var(--line,#e2d9cf)}
+.plan-tools-list__item:last-child{border-bottom:1px solid var(--line,#e2d9cf)}
+.plan-tools-list__name{font-family:var(--serif);font-weight:400;font-size:clamp(22px,2vw,26px);margin:0 0 6px}
+.plan-tools-list__name a{color:inherit;text-decoration:none}
+.plan-tools-list__text{margin:0 0 10px;color:var(--muted,#6f655d);font-size:15px;line-height:1.55}
+.plan-tools-list__link{color:var(--berry,#9b5068);text-decoration:none;font-weight:500;border-bottom:1px solid rgba(155,80,104,.35);padding-bottom:2px}
+.plan-tools-list__link:hover{border-bottom-color:currentColor}
+@media (max-width:759px){.plan-tools-split{grid-template-columns:1fr;gap:24px}.plan-tools-split__photo{aspect-ratio:4/3}}

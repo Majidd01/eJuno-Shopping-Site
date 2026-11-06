@@ -1,0 +1,39 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "intro": {
+      "type": "page-intro",
+      "settings": {
+        "layout_class": "utility-head",
+        "eyebrow": "Legal",
+        "heading": "Shipping & Delivery Policy",
+        "lead": "Shipping options, rates, and delivery details for eJuno orders."
+      }
+    },
+    "policy_nav": {
+      "type": "policy-nav",
+      "settings": {
+        "active_policy": "shipping"
+      }
+    },
+    "content": {
+      "type": "policy-content",
+      "settings": {
+        "content": "<p><strong>Effective Date:</strong> November 22, 2024</p><p>This Shipping & Delivery Policy is an<br/>integral part of our <strong>Terms of Service</strong> (\"Terms\") and should be read in conjunction with them. For more details, please review our Terms here:[<a href=\"https://ejuno.io/pages/terms-of-service\" title=\"https://ejuno.io/pages/terms-of-service\">terms-of-service</a>].</p><p>This policy outlines the shipping and delivery options available when purchasing products from us. By placing an order, you agree to the terms outlined below.</p><p><strong>1. Shipping Options</strong></p><p>We offer a variety of shipping methods to accommodate your needs. In certain instances, third-party suppliers may manage our inventory and handle product shipments.</p><p><strong>Free Shipping</strong></p><p>Free standard shipping is available on<br/>qualifying orders above a specific threshold. The threshold varies depending on the item(s) and destination.</p><p><strong>Shipping Rates</strong></p><p>For orders not eligible for free shipping,<br/>shipping fees are calculated based on the selected shipping option, order<br/>weight, and delivery location. Applicable rates will be displayed during checkout.</p><p>Once your order is placed, we will provide additional shipping details and updates as required.</p><p><strong>Important Notes:</strong></p><ul><li>All delivery dates and times provided are estimates and are subject to change due to unforeseen circumstances.</li><li>Shipping fees are non-refundable unless otherwise specified.</li></ul><p><strong>For EU and UK Customers:</strong></p><p>This policy does not affect your statutory rights. Unless otherwise stated, delivery times will not exceed 30 days from the date of order acceptance. For more information, please refer to our Terms of Service.</p><p><strong>2. International Shipping</strong></p><p>We offer worldwide shipping. However, free standard shipping does not apply to international orders.</p><p><strong>Customs, Duties, and Taxes:</strong></p><p>International shipments may be subject to additional customs duties, taxes, or fees, which are determined by the destination country’s regulations. These charges are beyond our control and are the responsibility of the recipient. Please ensure compliance with the import laws of your destination country.</p><p><strong>3. Delivery Delays</strong></p><p>In the event of a delivery delay, we will notify you promptly and provide a revised estimated delivery date.</p><p><strong>For EU and UK Customers:</strong></p><p>This does not affect your statutory rights. For further details, please refer to our Terms of Service.</p><p><strong>4. Returns and Refunds</strong></p><p>If you have any questions regarding returns, refunds, or exchanges, please review our <strong>Return Policy</strong> here: [<a href=\"https://ejuno.io/pages/privacy-policy\" title=\"https://ejuno.io/pages/privacy-policy\">privacy policy</a>].</p><p><strong>5. How to Contact Us</strong></p><p>For any questions or concerns regarding this Shipping & Delivery Policy, please contact us via one of the following methods:</p><p><strong>Phone(Toll-Free):</strong><a href=\"tel:+971 4 580 8269\" title=\"tel:+971 4 580 8269\">+971 4 580 8269</a></p><p><strong>Email:</strong> <a href=\"mailto:support@ejuno.io\" title=\"mailto:support@ejuno.io\">support@ejuno.io</a><br/></p><p><strong>Online Contact Form:</strong><a href=\"https://ejuno.io/\" title=\"https://ejuno.io/\">ejuno.io</a></p>"
+      }
+    }
+  },
+  "order": [
+    "intro",
+    "policy_nav",
+    "content"
+  ]
+}

@@ -1,0 +1,202 @@
+{% comment %} Hidden / API-driven product booking DOM (live eJuno parity). {% endcomment %}
+{% liquid
+  assign ejuno_service_pdp = ejuno_service_pdp | default: false
+%}
+<div class="ejuno-booking-bridge visually-hidden" aria-hidden="true">
+  <div class="productView-bottom" style="display:none;"></div>
+  <form class="productView-form product-form" style="display:none;"></form>
+</div>
+
+<div class="ejuno-api-spans">
+  <span id="avgRating"></span>
+  <span id="roomdetails" class="ejuno-roomdetails"></span>
+  <span id="md" style="display:none;"><b>Booking Notice Period (in Days):</b><span id="minimumDays"></span></span>
+  <span id="venueLocation" style="display:none;"><b data-ejuno-location-label>{% if ejuno_service_pdp %}Areas Served{% else %}Location{% endif %}: </b><span id="venueLocationValue"></span></span>
+  <span id="da" style="display:none;"><b>Initial Deposit:</b><span id="depositPackage"></span><br><small>(This is the minimum deposit required to reserve this booking.)</small></span>
+  <span id="fdaw" style="display:none;"><b>Final Delivery After Wedding:</b><span id="finalDeliveryValue"></span></span>
+  <span id="perNightPrice" style="display:none;"><b id="perNightPriceLabel">Price per Night:</b><span id="perNightPriceValue"></span></span>
+  <span id="ejunoVendorName" class="ejuno-booking-vendor-row" style="display:none;"><b>Vendor Name: </b><span id="ejunoVendorNameValue">{% if product.vendor != blank %}{{ product.vendor | escape }}{% endif %}</span></span>
+  <span id="dw" style="display:none;"><b>Standard Delivery:</b><span id="deliveryDate"></span></span>
+  <span id="pd"><b>Description: </b><span id="variant-description"></span></span>
+  <span id="ph" style="display:none;"><b>Available Hours: </b><span id="startendTime"></span></span>
+</div>
+
+<div id="highlights-section" class="ejuno-highlights" style="display:none;">
+  <h3 class="h3 ejuno-highlights__title">Property Highlights</h3>
+  <div id="highlights-grid" class="ejuno-highlights__grid"></div>
+</div>
+
+<div id="loader" class="loader" style="display:none;"></div>
+<div class="loader-wrapper"><div class="full-loader" style="display:none;"></div></div>
+<div id="ejuno-booking-step-loader" class="ejuno-booking-step-loader" hidden aria-live="polite" aria-busy="false">
+  <div class="ejuno-booking-step-loader__panel">
+    <div class="ejuno-booking-step-loader__spinner" aria-hidden="true"></div>
+    <p class="ejuno-booking-step-loader__text" id="ejuno-booking-step-loader-text">Loading…</p>
+  </div>
+</div>
+
+<div class="products_details_calender ejuno-booking-calendar-root" aria-hidden="true">
+  <ul><li id="reservations_exists"></li></ul>
+  <div id="selected-date-div" class="ejuno-selected-date-div" style="display:none;"></div>
+
+  <div class="cdp-calendar-addons-row">
+    <div class="calendar-container" style="display:none" id="calendarcontainerid">
+      <div class="ejuno-cal-mode ejuno-cal-mode--service-only" role="tablist" aria-label="Date selection mode">
+        <button type="button" class="ejuno-cal-mode__btn is-active" data-cal-mode="specific" role="tab" aria-selected="true">Specific dates</button>
+        <button type="button" class="ejuno-cal-mode__btn" data-cal-mode="flexible" role="tab" aria-selected="false" hidden aria-hidden="true">Flexible dates</button>
+      </div>
+
+      <div class="ejuno-cal-specific" data-cal-panel="specific">
+        <div class="calendar-header">
+          <button type="button" id="prev-month" aria-label="Previous month">Previous</button>
+          <div id="month-year-dropdown">
+            <select id="month-select" aria-label="Month"></select>
+            <select id="year-select" aria-label="Year"></select>
+          </div>
+          <button type="button" id="next-month" aria-label="Next month">Next</button>
+        </div>
+        <div class="ejuno-cal-months" id="ejuno-cal-months">
+          <div class="ejuno-cal-month" data-cal-month="0">
+            <p class="ejuno-cal-month__title" id="month-year"></p>
+            <div class="calendar" id="calendar"></div>
+          </div>
+          <div class="ejuno-cal-month" data-cal-month="1">
+            <p class="ejuno-cal-month__title" id="month-year-next"></p>
+            <div class="calendar" id="calendar-next"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ejuno-cal-flexible" data-cal-panel="flexible" hidden>
+        <p class="ejuno-cal-flexible__lead">How long do you want to stay?</p>
+        <div class="ejuno-cal-flexible__stays" role="group" aria-label="Stay length">
+          <button type="button" class="ejuno-cal-chip" data-flex-stay="weekend">Weekend</button>
+          <button type="button" class="ejuno-cal-chip is-active" data-flex-stay="week">Week</button>
+          <button type="button" class="ejuno-cal-chip" data-flex-stay="fortnight">2 weeks</button>
+        </div>
+        <p class="ejuno-cal-flexible__lead">Go anytime</p>
+        <div class="ejuno-cal-flexible__months" id="ejuno-flex-months" role="group" aria-label="Preferred months"></div>
+        <p class="ejuno-cal-flexible__hint" data-flex-hint>Select one month, then confirm.</p>
+      </div>
+
+      <div id="selected-dates-container" class="ejuno-selected-dates-summary" hidden aria-live="polite"></div>
+      <div id="hourModal" style="display:none;">
+        <div class="modal-content">
+          <h3>Select an Hour</h3>
+          <div id="hourSelection"></div>
+          <button type="button" onclick="document.getElementById('hourModal').style.display = 'none';">Close</button>
+        </div>
+      </div>
+    </div>
+    <div class="cdp-addons-panel" id="cdp-addons-panel" aria-live="polite">
+      <div class="cdp-addons-header">
+        <h3 class="cdp-addons-title">Add-ons</h3>
+        <p class="cdp-addons-subtitle" id="cdp-addons-subtitle">Personalise your booking with optional add-ons.</p>
+      </div>
+      <div class="cdp-addons-list" id="cdp-addons-list"></div>
+      <div class="cdp-addons-total" id="cdp-addons-total" style="display:none;">
+        <span>Add-ons selected</span>
+        <strong id="cdp-addons-total-value">{{ 0 | money }}</strong>
+      </div>
+    </div>
+    <div class="ejuno-dates-footer">
+      <div class="ejuno-dates-actions">
+        <button type="button" id="clear-dates-btn" class="ejuno-dates-clear" hidden>Remove dates</button>
+        <button type="button" id="confirm-dates" class="ejuno-dates-confirm" disabled>Confirm dates</button>
+      </div>
+      <div id="confirmation-message" class="confirmation-message"></div>
+    </div>
+    <style>.ejuno-dates-modal .ejuno-dates-footer{margin-top:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,.08);}</style><script>(function(){function p(){var b=document.getElementById('ejuno-dates-modal-body'),f=document.querySelector('.ejuno-dates-footer');if(b&&f&&b.lastElementChild!==f)b.appendChild(f);}function go(){p();var b=document.getElementById('ejuno-dates-modal-body');if(b)new MutationObserver(p).observe(b,{childList:true});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();})();</script>
+  </div>
+</div>
+
+<div class="registry-button" style="display:none;">
+  <button type="button" class="btn btn-registry" id="add-to-plan">Add to wedding plan</button>
+  <button type="button" class="btn btn-registry" id="registry-btn">Add to Registry</button>
+</div>
+<select id="plan-dropdown" class="ejuno-plan-dropdown" hidden></select>
+
+<div id="confirm-modal" class="custom-modal hidden" aria-hidden="true">
+  <div class="custom-modal-content">
+    <button type="button" class="cdp-modal-close" id="confirm-close" aria-label="Close">&times;</button>
+    <p>Are you sure you want to add this item to the selected plan?</p>
+    <button type="button" id="confirm-yes">Yes</button>
+    <button type="button" id="confirm-no">No</button>
+  </div>
+</div>
+
+<div id="create-plan-modal" class="custom-modal hidden" aria-hidden="true">
+  <div class="modal-box">
+    <button type="button" class="cdp-modal-close" id="close-create-plan" aria-label="Close">&times;</button>
+    <h3>Create New Wedding Plan</h3>
+    <label for="new-plan-title">Title</label>
+    <input type="text" id="new-plan-title" maxlength="30" placeholder="Enter plan title">
+    <label for="new-plan-description">Description</label>
+    <textarea id="new-plan-description" maxlength="70" placeholder="Enter plan description"></textarea>
+    <div class="ejuno-plan-modal-actions">
+      <button type="button" id="cancel-create-plan">Cancel</button>
+      <button type="button" id="submit-create-plan">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="book-me-button" style="display:none" id="book-me-container">
+  <button type="button" class="btn btn-registry" id="book-me-button">Request availability</button>
+</div>
+<div id="booking-inline-message" style="display:none;"></div>
+
+<div id="stripeModal" class="stripe-modal">
+  <div class="stripe-modal-content">
+    <span class="stripe-close cdp-modal-close" id="closeStripeModal" aria-label="Close">&times;</span>
+    <div class="stripe-modal-head">
+      <p class="stripe-modal-kicker">Secure checkout</p>
+      <h3 class="stripe-modal-title" id="stripe-modal-title">Complete your deposit</h3>
+    </div>
+    <div id="stripe-modal-loader" class="stripe-modal-loader" aria-live="polite">
+      <span class="stripe-modal-loader__spinner" aria-hidden="true"></span>
+      <span class="stripe-modal-loader__text">Preparing payment…</span>
+    </div>
+    <div id="payment-summary" class="payment-summary" style="display:none;"></div>
+    <form id="payment-form" class="stripe-payment-form">
+      <div class="row mb-3">
+        <div class="col-md-6 mb-3 mb-md-0"><input type="text" id="first-name" placeholder="First Name" required></div>
+        <div class="col-md-6"><input type="text" id="last-name" placeholder="Last Name" required></div>
+      </div>
+      <div class="mb-3"><input type="email" id="customer_email" placeholder="Email" required></div>
+      <div id="express-checkout-element"></div>
+      <div id="wallet-divider"></div>
+      <div id="payment-element"></div>
+      <div id="payment-errors" role="alert"></div>
+      <button type="submit" id="submit">Pay</button>
+    </form>
+  </div>
+</div>
+
+<input type="hidden" value="{{ customer.id }}" id="shopfiy-customer-id">
+<input type="hidden" value="{{ customer.email }}" id="shopfiy-customer-email">
+<input type="hidden" value="{{ customer.first_name }}" id="shopfiy-customer-name">
+<input type="hidden" value="{{ customer.first_name }}" id="shopify-customer-first-name">
+<input type="hidden" value="{{ customer.last_name }}" id="shopify-customer-last-name">
+
+<div class="ejuno-dates-modal" id="ejuno-dates-modal" hidden>
+  <div class="ejuno-dates-modal__backdrop" data-ejuno-dates-close></div>
+  <div class="ejuno-dates-modal__panel" role="dialog" aria-modal="true" aria-labelledby="ejuno-dates-title">
+    <button type="button" class="ejuno-dates-modal__close" data-ejuno-dates-close aria-label="Close">&times;</button>
+    <h3 class="ejuno-dates-modal__title" id="ejuno-dates-title">Select dates</h3>
+    <p class="ejuno-dates-modal__status" id="ejuno-dates-status" aria-live="polite" hidden></p>
+    <style>
+      .ejuno-dates-modal .ejuno-dates-modal__title { margin-bottom: 6px; }
+      .ejuno-dates-modal__status { margin: 0 0 16px; font-family: var(--sans); font-size: 14px; line-height: 1.45; color: var(--ink); }
+      .ejuno-dates-modal__status strong { font-weight: 600; }
+      .ejuno-dates-modal__status[hidden] { display: none; }
+    </style>
+    <div class="ejuno-dates-modal__body" id="ejuno-dates-modal-body"></div>
+  </div>
+</div>
+{% render 'ejuno-reservation-summary' %}
+{%- comment -%} Trello 779: stay (check-in/out) mode from guestAccommodation {%- endcomment -%}
+{% render 'ejuno-stay-mode' %}
+{%- comment -%} Trello 791: payment review before Send Request {%- endcomment -%}
+{% render 'ejuno-payment-review' %}
+{%- comment -%} Trello 801: keep Continue in view after Confirm dates {%- endcomment -%}
+{% render 'ejuno-confirm-scroll' %}

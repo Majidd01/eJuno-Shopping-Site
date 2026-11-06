@@ -1,0 +1,18 @@
+{%- liquid
+  assign mm_venue_url = venue_url | default: '/collections/venue'
+  assign mm_accom_url = accommodation_url | default: '/collections/accommodation'
+  assign mm_villa_url = villa_url | default: '/collections/villa'
+  assign mm_types = types | default: 'Villa:@villa,Hotel:hotel,Resort:resort,Estate:estate,Other:other'
+  assign mm_type_defs = mm_types | split: ','
+  assign mm_accom_handle = mm_accom_url | split: '/' | last
+  assign mm_tags = '|'
+  if collections[mm_accom_handle] != blank
+    for t in collections[mm_accom_handle].all_tags
+      assign th = t | handleize
+      assign mm_tags = mm_tags | append: th | append: '|'
+    endfor
+  endif
+-%}
+<a class="mobile-nav__sublink" href="{{ mm_venue_url }}">Wedding Venues</a>
+<a class="mobile-nav__sublink" href="{{ mm_accom_url }}">Accommodation</a>
+{%- comment -%} Trello 657: property-type links removed from the menu; tabs live on the Accommodation page. {%- endcomment -%}

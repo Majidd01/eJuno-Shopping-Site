@@ -1,0 +1,43 @@
+/* eJuno UI consistency layer (client review, Oct 2026).
+   Loaded after ejuno.css / ejuno-responsive.css. Keep this file small; see the UI guide. */
+
+/* Review p16: one type scale, H1 always the largest heading on the page. */
+.h1.h1 { font-size: clamp(40px, 4.2vw, 60px); line-height: 1.08; }
+.h2.h2 { font-size: clamp(30px, 2.9vw, 44px); line-height: 1.12; }
+@media (max-width: 760px) {
+  .h1.h1 { font-size: 36px; }
+  .h2.h2 { font-size: 28px; }
+  .tool-link h3 { font-size: 26px; }
+}
+
+/* Review p16: one corner radius for cards (20px). Buttons stay pills, fields 12px. */
+.plan-tool,
+.gift-card,
+.quote-card,
+.browser,
+.website-mock,
+.market-search { border-radius: 20px; }
+
+/* Review p18: gentle fade-in as sections come into view (only below the fold; never the hero/search). */
+html.ej-motion .ej-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+html.ej-motion .ej-reveal.is-inview {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.ej-motion .ej-reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* Review p8: say that planning buttons open the eJuno app. */
+.ej-app-note {
+  display: block;
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #5a524b;
+}
+.ej-app-note--light { color: rgba(255,255,255,.88); }

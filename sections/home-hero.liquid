@@ -1,0 +1,778 @@
+{% liquid
+  assign hero_alt = section.settings.image_alt
+  if section.settings.image != blank
+    assign hero_alt = section.settings.image.alt | default: section.settings.image_alt
+  endif
+  # Trello 656: venue filter bar. Uses the picked collection, else the store's 'venues' collection.
+  assign hh_venues_url = '/collections/venues'
+  if section.settings.venues_collection != blank
+    assign hh_venues_url = section.settings.venues_collection.url
+  elsif collections['venues'] != blank
+    assign hh_venues_url = collections['venues'].url
+  endif
+  assign hh_locations = section.settings.filter_locations | newline_to_br | split: '<br />'
+  assign hh_guests = section.settings.filter_guests | newline_to_br | split: '<br />'
+  assign hh_budgets = section.settings.filter_budgets | split: ','
+%}
+<section class="home-hero-live">
+  <div class="home-hero-live__media">
+    {%- comment -%} Review p3: separate mobile crop of the hero photo. {%- endcomment -%}
+    {%- if section.settings.image_mobile != blank -%}
+      {%- capture hh_mobile_src -%}{{ section.settings.image_mobile | image_url: width: 900 }} 900w, {{ section.settings.image_mobile | image_url: width: 1300 }} 1300w{%- endcapture -%}
+    {%- else -%}
+      {%- capture hh_mobile_src -%}{{ 'HOME-HERO-001-mobile.jpg' | asset_url }} 928w{%- endcapture -%}
+    {%- endif -%}
+    <picture class="home-hero-live__picture">
+    <source media="(max-width: 760px)" srcset="{{ hh_mobile_src }}" sizes="100vw">
+    {% if section.settings.image != blank %}
+      {{
+        section.settings.image
+        | image_url: width: 4000
+        | image_tag:
+          widths: '750, 1100, 1500, 1780, 2000, 2400, 3000, 3400, 3840, 4000',
+          sizes: '100vw',
+          loading: 'eager',
+          fetchpriority: 'high',
+          decoding: 'async',
+          alt: hero_alt,
+          class: 'home-hero-live__img',
+          width: section.settings.image.width,
+          height: section.settings.image.height
+      }}
+    {% else %}
+      {%- comment -%} Theme-asset fallback with Retina/large-screen srcset (design master was 1672px). {%- endcomment -%}
+      <img
+        class="home-hero-live__img"
+        src="{{ 'HOME-HERO-001-w2500.jpg' | asset_url }}"
+        srcset="
+          {{ 'HOME-HERO-001-w1672.jpg' | asset_url }} 1672w,
+          {{ 'HOME-HERO-001-w2500.jpg' | asset_url }} 2500w,
+          {{ 'HOME-HERO-001-w3344.jpg' | asset_url }} 3344w,
+          {{ 'HOME-HERO-001-w4000.jpg' | asset_url }} 4000w
+        "
+        sizes="100vw"
+        width="4000"
+        height="2251"
+        alt="{{ hero_alt | escape }}"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      >
+    {% endif %}
+    </picture>
+  </div>
+  <div class="home-hero-live__content">
+    {% if section.settings.eyebrow != blank %}
+      <div class="home-hero-live__eyebrow">{{ section.settings.eyebrow }}</div>
+    {% endif %}
+    {% if section.settings.heading != blank %}
+      <h1 class="home-hero-live__heading">{{ section.settings.heading }}</h1>
+    {% endif %}
+    {% if section.settings.text != blank %}
+      <p class="home-hero-live__text">{{ section.settings.text }}</p>
+    {% endif %}
+    {% if section.settings.show_search %}
+      <form class="home-hero-live__search" action="{{ routes.search_url }}" method="get" role="search">
+        <input type="hidden" name="type" value="product">
+        <span class="home-hero-live__search-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <input
+          type="search"
+          name="q"
+          data-home-hero-search-input
+          placeholder="{{ section.settings.search_placeholder }}"
+          aria-label="{{ section.settings.search_placeholder }}"
+          autocomplete="off"
+        >
+        <button
+          type="submit"
+          class="home-hero-live__search-btn"
+          data-home-hero-search-submit
+          aria-label="{{ section.settings.search_button_label }}"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
+    {% endif %}
+    {% if section.settings.show_filters %}
+      <form
+        class="home-hero-live__filters"
+        action="{{ hh_venues_url }}"
+        method="get"
+        data-home-hero-filters
+        data-venues-url="{{ hh_venues_url }}"
+        aria-label="{{ section.settings.filters_button_label | escape }}"
+      >
+        <label class="hh-field">
+          <span class="hh-field__label">Location</span>
+          <select name="q" data-hh-location data-hh-loc-mode="{% if section.settings.location_use_filter %}filter{% else %}q{% endif %}">
+            <option value="">Anywhere</option>
+            {%- for loc in hh_locations -%}
+              {%- assign loc_s = loc | strip -%}
+              {%- if loc_s != blank -%}<option value="{{ loc_s | escape }}">{% if loc_s == 'Italian Lakes' %}Lake Como{% else %}{{ loc_s }}{% endif %}</option>{%- endif -%}
+            {%- endfor -%}
+          </select>
+        </label>
+        <label class="hh-field">
+          <span class="hh-field__label">Date</span>
+          {%- comment -%} Hotfix 28 Oct: was <input type="month">. On iPhone Safari an empty month input shows no
+            text (placeholder is ignored) and, with the field's reset styles, collapsed so taps did nothing.
+            A select of the next 24 months uses the same native picker as Location/Guests/Budget on every
+            device; the value stays YYYY-MM so the search URL (?date=) is unchanged. {%- endcomment -%}
+          {%- assign hh_y = 'now' | date: '%Y' | plus: 0 -%}
+          {%- assign hh_m = 'now' | date: '%m' | plus: 0 -%}
+          {%- assign hh_months = 'January,February,March,April,May,June,July,August,September,October,November,December' | split: ',' -%}
+          <select name="date" aria-label="Wedding month" data-hh-date>
+            <option value="">Any date</option>
+            {%- for i in (0..23) -%}
+              {%- assign hh_idx = hh_m | minus: 1 | plus: i -%}
+              {%- assign hh_mo = hh_idx | modulo: 12 -%}
+              {%- assign hh_yy = hh_idx | divided_by: 12 | plus: hh_y -%}
+              {%- assign hh_mo1 = hh_mo | plus: 1 -%}
+              <option value="{{ hh_yy }}-{% if hh_mo1 < 10 %}0{% endif %}{{ hh_mo1 }}">{{ hh_months[hh_mo] }} {{ hh_yy }}</option>
+            {%- endfor -%}
+          </select>
+        </label>
+        <label class="hh-field">
+          <span class="hh-field__label">Guests</span>
+          <select data-hh-guests>
+            <option value="">Any size</option>
+            {%- for g in hh_guests -%}
+              {%- assign g_parts = g | strip | split: '|' -%}
+              {%- if g_parts.size == 2 -%}<option value="{{ g_parts[1] | strip | handleize }}">{{ g_parts[0] | strip }}</option>{%- endif -%}
+            {%- endfor -%}
+          </select>
+        </label>
+        <label class="hh-field">
+          <span class="hh-field__label">Budget</span>
+          {%- comment -%} Trello 739: fixed budget slabs. Value is "min-max" in whole euros (blank side = open);
+            the submit script maps it to filter.v.price.gte / filter.v.price.lte. {%- endcomment -%}
+          <select data-hh-budget aria-label="Budget">
+            <option value="">Any budget</option>
+            <option value="-30000">&lt; &euro;30.000</option>
+            <option value="30001-60000">&euro;30.001-&euro;60.000</option>
+            <option value="60001-100000">&euro;60.001-&euro;100.000</option>
+            <option value="100001-150000">&euro;100.001-&euro;150.000</option>
+            <option value="150001-200000">&euro;150.001-&euro;200.000</option>
+            <option value="200000-">&gt; &euro;200.000</option>
+          </select>
+        </label>
+        {%- assign hh_btn = section.settings.filters_button_label | default: 'Search' -%}{%- if hh_btn == 'Find' or hh_btn == 'Find venues' or hh_btn == 'Search' -%}{%- assign hh_btn = 'Find a Venue' -%}{%- endif -%}{%- comment -%} Trello 740 {%- endcomment -%}
+        <button type="submit" class="home-hero-live__filters-btn">{{ hh_btn }}</button>
+      </form>
+    {% endif %}
+    {%- if section.settings.show_region_chips and hh_locations.size > 0 -%}
+      {%- comment -%} Review p3: quick region buttons under the search. {%- endcomment -%}
+      <nav class="home-hero-live__chips" aria-label="{{ section.settings.chips_label | escape }}">
+        {%- for loc in hh_locations -%}
+          {%- assign loc_s = loc | strip -%}
+          {%- if loc_s != blank -%}
+            <a class="home-hero-live__chip" href="{{ hh_venues_url }}?{% if section.settings.location_use_filter %}filter.p.m.custom.location{% else %}loc{% endif %}={{ loc_s | url_param_escape }}">{% if loc_s == 'Italian Lakes' %}Lake Como{% else %}{{ loc_s }}{% endif %}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </nav>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+.home-hero-live {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1672 / 941;
+  width: 100%;
+  overflow: hidden;
+  background: var(--canvas, #f6f1eb);
+}
+.home-hero-live__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.home-hero-live__media img,
+.home-hero-live__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+.home-hero-live__content {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 12.5%;
+  transform: translateX(-50%);
+  width: min(980px, calc(100% - 40px));
+  text-align: center;
+  color: #201c19;
+  background: transparent;
+  pointer-events: none;
+}
+.home-hero-live__content form {
+  pointer-events: auto;
+}
+.home-hero-live__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #201c19;
+  margin: 0 0 10px;
+  background: none;
+}
+.home-hero-live__heading {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(26px, 3.2vw, 48px);
+  line-height: 1.08;
+  margin: 0;
+  color: #201c19;
+  background: none;
+  white-space: nowrap;
+}
+.home-hero-live__text {
+  margin: 12px auto 0;
+  width: max-content;
+  max-width: 100%;
+  font-size: clamp(13px, 1.15vw, 17px);
+  line-height: 1.4;
+  color: #3f3833;
+  background: none;
+  white-space: nowrap;
+}
+.home-hero-live__search {
+  margin: 18px auto 0;
+  width: min(520px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 7px 7px 18px;
+  box-shadow: 0 10px 30px rgba(20,16,12,.18);
+}
+.home-hero-live__search-icon {
+  color: #8a8178;
+  display: inline-flex;
+  flex: none;
+}
+.home-hero-live__search input {
+  flex: 1;
+  border: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+  outline: none;
+  box-shadow: none;
+  font-size: 15px;
+  color: #201c19;
+  caret-color: #201c19;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.home-hero-live__search input:focus,
+.home-hero-live__search input:focus-visible,
+.home-hero-live__search input:active {
+  outline: none;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none;
+}
+.home-hero-live__search input::placeholder {
+  color: #9a9188;
+}
+.home-hero-live__search input::selection {
+  background: rgba(155, 80, 104, 0.18);
+  color: #201c19;
+}
+/* Kill browser autofill / history highlight (blue-lavender fill) */
+.home-hero-live__search input:-webkit-autofill,
+.home-hero-live__search input:-webkit-autofill:hover,
+.home-hero-live__search input:-webkit-autofill:focus,
+.home-hero-live__search input:-webkit-autofill:active {
+  -webkit-text-fill-color: #201c19 !important;
+  caret-color: #201c19;
+  transition: background-color 99999s ease-out 0s;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  background-color: transparent !important;
+}
+.home-hero-live__search input::-webkit-search-decoration,
+.home-hero-live__search input::-webkit-search-cancel-button,
+.home-hero-live__search input::-webkit-search-results-button,
+.home-hero-live__search input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.home-hero-live__search-btn {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #9b5068;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: none;
+}
+.home-hero-live__search-btn:hover:not(:disabled) {
+  background: #7e3d55;
+}
+
+.home-hero-live__search-btn:disabled {
+  background: #9b5068;
+  color: #fff;
+  cursor: pointer;
+  opacity: 1;
+}
+/* Trello 656: venue filter bar */
+.home-hero-live__filters {
+  /* Trello 713: more air between the hero text and the search bar */
+  margin: 32px auto 0;
+  width: min(860px, 100%);
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr auto;
+  align-items: stretch;
+  background: #fff;
+  border-radius: 20px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(20,16,12,.18);
+  text-align: left;
+  box-sizing: border-box;
+}
+.hh-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 14px;
+  min-width: 0;
+  border-right: 1px solid #ece5dd;
+  cursor: pointer;
+}
+.hh-field:nth-last-child(2) { border-right: 0; }
+.hh-field__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #6f655c;
+}
+.hh-field select,
+.hh-field input {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: #201c19;
+  padding: 0;
+  min-height: 24px;
+  width: 100%;
+  min-width: 0;
+  outline: none;
+  cursor: pointer;
+}
+.hh-field:focus-within { background: #f6f1eb; border-radius: 12px; }
+.home-hero-live__filters-btn {
+  border: 0;
+  border-radius: 999px;
+  background: #9b5068;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0 24px;
+  min-height: 48px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.home-hero-live__filters-btn:hover { background: #7e3d55; }
+.home-hero-live__picture { display: contents; }
+.home-hero-live__chips {
+  pointer-events: auto;
+  margin: 12px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.home-hero-live__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.88);
+  color: #201c19;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(20,16,12,.12);
+}
+.home-hero-live__chip:hover { background: #fff; color: #7e3d55; }
+@media (max-width: 900px) {
+  .home-hero-live__heading {
+    font-size: clamp(22px, 4vw, 34px);
+  }
+  .home-hero-live__text {
+    white-space: normal;
+    max-width: 34ch;
+  }
+}
+@media (max-width: 760px) {
+  .home-hero-live {
+    aspect-ratio: 1.2;
+    min-height: 560px;
+  }
+  .home-hero-live__content {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 76px 0 20px;
+  }
+  .home-hero-live__heading {
+    white-space: normal;
+    font-size: 32px;
+  }
+  .home-hero-live__text {
+    font-size: 14px;
+    white-space: normal;
+  }
+  /* Trello 659: white text over a soft dark gradient so the copy reads on the photo */
+  .home-hero-live__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(20,16,12,.62) 0%, rgba(20,16,12,.38) 34%, rgba(20,16,12,0) 58%);
+  }
+  .home-hero-live__eyebrow,
+  .home-hero-live__heading,
+  .home-hero-live__text {
+    color: #fff;
+    text-shadow: 0 1px 10px rgba(0,0,0,.28);
+  }
+  .home-hero-live__search {
+    margin-top: auto;
+    margin-bottom: 0;
+    width: 100%;
+    max-width: none;
+    padding-left: 14px;
+    gap: 8px;
+  }
+  .home-hero-live__search input {
+    font-size: 14px;
+    text-overflow: ellipsis;
+  }
+  .home-hero-live { min-height: 640px; }
+  .home-hero-live__chips {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    width: 100%;
+    margin-top: 10px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .home-hero-live__chips::-webkit-scrollbar { display: none; }
+  .home-hero-live__chip { flex: none; min-height: 36px; }
+  .home-hero-live__filters {
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    border-radius: 16px;
+  }
+  .hh-field { border-right: 0; padding: 8px 12px; }
+  .hh-field select, .hh-field input { font-size: 16px; min-height: 28px; }
+  .home-hero-live__filters-btn { grid-column: 1 / -1; min-height: 48px; margin-top: 4px; }
+}
+/* Trello 809b: custom dropdown replaces the native select popup so it closes deterministically */
+.hh-dd { position: relative; width: 100%; }
+.hh-field select.hh-dd__native { position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0; pointer-events: none; overflow: hidden; clip: rect(0 0 0 0); }
+.hh-dd__btn { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; border: 0; background: transparent; font: inherit; font-size: 14px; color: #201c19; padding: 0; min-height: 24px; cursor: pointer; text-align: left; outline: none; }
+.hh-dd__btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hh-dd__btn::after { content: ""; flex: none; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.hh-dd__list { position: absolute; z-index: 30; top: calc(100% + 10px); left: -14px; min-width: calc(100% + 28px); max-height: 280px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; background: #fff; border-radius: 12px; box-shadow: 0 12px 30px rgba(20,16,12,.2); box-sizing: border-box; }
+.hh-dd__list[hidden] { display: none; }
+.hh-dd__opt { padding: 8px 10px; border-radius: 8px; font-size: 14px; color: #201c19; white-space: nowrap; cursor: pointer; }
+.hh-dd__opt:hover, .hh-dd__opt.is-active { background: #f6f1eb; }
+.hh-dd__opt[aria-selected="true"] { font-weight: 600; }
+@media (max-width: 749px) { .hh-dd__btn, .hh-dd__opt { font-size: 16px; min-height: 28px; } .hh-dd__list { left: -12px; } }
+{% endstylesheet %}
+
+<script>
+  (function () {
+    function initHomeHeroSearch(root) {
+      var form = root.querySelector('.home-hero-live__search');
+      if (!form || form.dataset.bound === '1') return;
+      form.dataset.bound = '1';
+      var input = form.querySelector('[data-home-hero-search-input]');
+      var submit = form.querySelector('[data-home-hero-search-submit]');
+      if (!input || !submit) return;
+
+      // Trello 659: the arrow always works. With a query it searches; empty, it opens all venues.
+      function syncSubmit() {
+        submit.disabled = false;
+        submit.removeAttribute('aria-disabled');
+      }
+
+      form.addEventListener('submit', function (e) {
+        var q = input.value.trim();
+        if (!q) {
+          e.preventDefault();
+          window.location.href = {{ hh_venues_url | json }};
+          return;
+        }
+        input.value = q;
+      });
+      syncSubmit();
+    }
+
+    // Trello 656: guests -> collection tag path, budget -> Shopify price filter, location -> collection keyword search.
+    function initHomeHeroFilters(root) {
+      var form = root.querySelector('[data-home-hero-filters]');
+      if (!form || form.dataset.bound === '1') return;
+      form.dataset.bound = '1';
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var base = (form.getAttribute('data-venues-url') || '/collections/venues').replace(/\/$/, '');
+        var guests = form.querySelector('[data-hh-guests]').value;
+        var params = new URLSearchParams();
+        var loc = form.querySelector('[data-hh-location]').value;
+        var date = form.querySelector('[data-hh-date]').value;
+        var budget = form.querySelector('[data-hh-budget]').value;
+        // Trello 739: "min-max" slab -> price filter (e.g. "-30000" => lte 30000, "200000-" => gte 200000).
+        if (budget) {
+          var bp = budget.split('-');
+          if (bp[0]) params.set('filter.v.price.gte', bp[0]);
+          if (bp[1]) params.set('filter.v.price.lte', bp[1]);
+        }
+        var locSel = form.querySelector('[data-hh-location]');
+        if (loc) params.set(locSel.getAttribute('data-hh-loc-mode') === 'filter' ? 'filter.p.m.custom.location' : 'loc', loc);
+        if (date) params.set('date', date);
+        var qs = params.toString();
+        window.location.assign(base + (guests ? '/' + encodeURIComponent(guests) : '') + (qs ? '?' + qs : ''));
+      });
+    }
+
+    // Trello 809: close the filter dropdowns (Budget, Location, Date, Guests) when the user moves on:
+    // another tab/window, Escape, an anchor/section jump, the hero scrolled out of view, back/forward.
+    function closeHeroDropdowns(except) {
+      document.querySelectorAll('[data-home-hero-filters] select').forEach(function (sel) {
+        if (sel === except) return;
+        sel.classList.remove('is-open');
+        if (document.activeElement === sel) {
+          sel.blur();
+          sel.disabled = true;
+          sel.disabled = false;
+        }
+      });
+    }
+    function initHeroDropdownClose() {
+      if (window.__hhDropdownClose) return;
+      window.__hhDropdownClose = true;
+      var close = function () { closeHeroDropdowns(); };
+      document.addEventListener('visibilitychange', function () { if (document.hidden) close(); });
+      window.addEventListener('blur', close);
+      window.addEventListener('pagehide', close);
+      window.addEventListener('pageshow', close);
+      window.addEventListener('hashchange', close);
+      window.addEventListener('popstate', close);
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+      document.addEventListener('focusin', function (e) {
+        var t = e.target;
+        closeHeroDropdowns(t && t.tagName === 'SELECT' ? t : null);
+      });
+      document.addEventListener('pointerdown', function (e) {
+        var t = e.target && e.target.closest ? e.target.closest('[data-home-hero-filters] select') : null;
+        closeHeroDropdowns(t);
+      }, true);
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[href], [role="tab"], [data-tab]') : null;
+        if (a) close();
+      }, true);
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          ticking = false;
+          var a = document.activeElement;
+          if (!a || a.tagName !== 'SELECT' || !a.closest('[data-home-hero-filters]')) return;
+          var r = a.getBoundingClientRect();
+          if (r.bottom < 0 || r.top > window.innerHeight) close();
+        });
+      }, { passive: true });
+    }
+
+    // Trello 809b: a native <select> popup can stay painted over the header mega menu (it keeps focus while
+    // the pointer hovers the nav), so the hero filters use a small button + listbox instead. The hidden
+    // native selects keep their values, so the submit handler above is unchanged.
+    var hhOpen = null;
+    function hhClose(focusBtn) {
+      if (!hhOpen) return;
+      var d = hhOpen; hhOpen = null;
+      d.list.hidden = true; d.btn.setAttribute('aria-expanded', 'false');
+      if (focusBtn) d.btn.focus();
+    }
+    window.__hhCloseDropdowns = function () { hhClose(false); };
+    function enhanceSelect(sel) {
+      if (sel.dataset.hhDd === '1') return;
+      sel.dataset.hhDd = '1';
+      var uid = 'hhdd' + Math.random().toString(36).slice(2, 8);
+      var wrap = document.createElement('div'); wrap.className = 'hh-dd';
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'hh-dd__btn';
+      btn.setAttribute('aria-haspopup', 'listbox'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', uid);
+      var lbl = sel.closest('.hh-field') && sel.closest('.hh-field').querySelector('.hh-field__label');
+      btn.setAttribute('aria-label', sel.getAttribute('aria-label') || (lbl ? lbl.textContent.trim() : ''));
+      var txt = document.createElement('span'); btn.appendChild(txt);
+      var list = document.createElement('ul');
+      list.className = 'hh-dd__list'; list.id = uid; list.setAttribute('role', 'listbox'); list.hidden = true; list.tabIndex = -1;
+      var opts = [].map.call(sel.options, function (o, i) {
+        var li = document.createElement('li');
+        li.className = 'hh-dd__opt'; li.setAttribute('role', 'option'); li.id = uid + '-' + i;
+        li.textContent = o.textContent; li.dataset.value = o.value;
+        list.appendChild(li); return li;
+      });
+      sel.classList.add('hh-dd__native'); sel.tabIndex = -1; sel.setAttribute('aria-hidden', 'true');
+      sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(btn); wrap.appendChild(list); wrap.appendChild(sel);
+      var d = { btn: btn, list: list, sel: sel, active: 0 };
+      function sync() {
+        var i = Math.max(sel.selectedIndex, 0);
+        txt.textContent = sel.options[i] ? sel.options[i].textContent : '';
+        opts.forEach(function (li, j) { li.setAttribute('aria-selected', j === i ? 'true' : 'false'); });
+      }
+      function setActive(i) {
+        d.active = Math.max(0, Math.min(opts.length - 1, i));
+        opts.forEach(function (li, j) { li.classList.toggle('is-active', j === d.active); });
+        btn.setAttribute('aria-activedescendant', opts[d.active].id);
+        var li = opts[d.active], t = li.offsetTop, b = t + li.offsetHeight;
+        if (t < list.scrollTop) list.scrollTop = t; else if (b > list.scrollTop + list.clientHeight) list.scrollTop = b - list.clientHeight;
+      }
+      function open() {
+        if (hhOpen === d) return;
+        hhClose(false); closeHeroDropdowns();
+        hhOpen = d; list.hidden = false; btn.setAttribute('aria-expanded', 'true');
+        setActive(Math.max(sel.selectedIndex, 0));
+      }
+      function choose(i) {
+        if (sel.selectedIndex !== i) { sel.selectedIndex = i; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        sync(); hhClose(true);
+      }
+      btn.addEventListener('click', function (e) { e.preventDefault(); if (hhOpen === d) hhClose(false); else open(); });
+      list.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      list.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        var li = e.target.closest('.hh-dd__opt'); if (li) choose(opts.indexOf(li));
+      });
+      list.addEventListener('mousemove', function (e) { var li = e.target.closest('.hh-dd__opt'); if (li) setActive(opts.indexOf(li)); });
+      btn.addEventListener('keydown', function (e) {
+        var k = e.key, isOpen = hhOpen === d;
+        if (k === 'ArrowDown' || k === 'ArrowUp') { e.preventDefault(); if (!isOpen) open(); else setActive(d.active + (k === 'ArrowDown' ? 1 : -1)); }
+        else if (k === 'Home' || k === 'End') { if (isOpen) { e.preventDefault(); setActive(k === 'Home' ? 0 : opts.length - 1); } }
+        else if (k === 'Enter' || k === ' ') { e.preventDefault(); if (isOpen) choose(d.active); else open(); }
+        else if (k === 'Escape') { if (isOpen) { e.preventDefault(); hhClose(true); } }
+        else if (k === 'Tab') { hhClose(false); }
+      });
+      sel.addEventListener('change', sync);
+      sync();
+    }
+    function initHeroDropdowns(root) {
+      root.querySelectorAll('[data-home-hero-filters] select').forEach(enhanceSelect);
+      if (window.__hhDdGlobal) return;
+      window.__hhDdGlobal = true;
+      var close = function () { hhClose(false); };
+      document.addEventListener('pointerdown', function (e) { if (hhOpen && !hhOpen.btn.parentNode.contains(e.target)) close(); }, true);
+      document.addEventListener('focusin', function (e) { if (hhOpen && !hhOpen.btn.parentNode.contains(e.target)) close(); });
+      // Header / nav / mega menu / drawers / cookie banner: close as soon as the pointer or focus gets there.
+      var overlaySel = 'header, .header, [class*="header"], nav, [class*="mega"], [class*="menu"], [class*="drawer"], [role="dialog"], details[open], [class*="cookie"], #shopify-pc__banner';
+      function inOverlay(t) { return t && t.closest && !t.closest('.home-hero-live') && t.closest(overlaySel); }
+      ['pointerover', 'mouseover', 'focusin', 'touchstart'].forEach(function (ev) {
+        document.addEventListener(ev, function (e) { if (inOverlay(e.target)) { close(); closeHeroDropdowns(); } }, { capture: true, passive: true });
+      });
+      document.addEventListener('toggle', function (e) { if (e.target.open) { close(); closeHeroDropdowns(); } }, true);
+      if (window.MutationObserver) {
+        new MutationObserver(function (muts) {
+          if (!hhOpen) return;
+          for (var i = 0; i < muts.length; i++) {
+            var t = muts[i].target;
+            var a = muts[i].attributeName, v = t.nodeType === 1 ? t.getAttribute(a) : null;
+            var opened = (a === 'aria-expanded' && v === 'true') || (a === 'open' && v !== null) || (a === 'hidden' && v === null) || (a === 'aria-hidden' && v === 'false');
+            if (opened && inOverlay(t)) { close(); return; }
+          }
+        }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['open', 'aria-expanded', 'aria-hidden', 'hidden'] });
+      }
+      ['blur', 'pagehide', 'pageshow', 'hashchange', 'popstate', 'resize'].forEach(function (ev) { window.addEventListener(ev, close); });
+      document.addEventListener('visibilitychange', function () { if (document.hidden) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+      window.addEventListener('scroll', function () {
+        if (!hhOpen) return;
+        var r = hhOpen.btn.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) close();
+      }, { passive: true });
+    }
+
+    function boot() {
+      document.querySelectorAll('.home-hero-live').forEach(initHomeHeroSearch);
+      document.querySelectorAll('.home-hero-live').forEach(initHomeHeroFilters);
+      initHeroDropdownClose();
+      document.querySelectorAll('.home-hero-live').forEach(initHeroDropdowns);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+    document.addEventListener('shopify:section:load', boot);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Home hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero image",
+      "info": "Upload a master at least 3500px wide (ideally 4000px+) so the hero stays sharp on Mac Retina, iPhone, and large displays."
+    },
+    { "type": "image_picker", "id": "image_mobile", "label": "Mobile hero image", "info": "Optional portrait crop for phones. Falls back to a theme crop of the main photo." },
+    { "type": "text", "id": "image_alt", "label": "Image alt", "default": "Couple entering their wedding through open floral doors" },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Step inside" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Enter the Wedding You Imagined" },
+    { "type": "textarea", "id": "text", "label": "Supporting text", "default": "Discover extraordinary venues and trusted wedding professionals across Italy." },
+    { "type": "checkbox", "id": "show_search", "label": "Show search", "default": true },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Search venues or vendors" },
+    { "type": "text", "id": "search_button_label", "label": "Search button label", "default": "Search" },
+    { "type": "header", "content": "Venue filters" },
+    { "type": "checkbox", "id": "show_filters", "label": "Show venue filters", "default": true },
+    { "type": "collection", "id": "venues_collection", "label": "Venues collection", "info": "Blank uses the collection with handle 'venues'." },
+    { "type": "textarea", "id": "filter_locations", "label": "Locations (one per line)", "info": "Matched against venue names and tags on the results page.", "default": "Italian Lakes\nTuscany\nAmalfi Coast\nPuglia\nSicily" },
+    { "type": "textarea", "id": "filter_guests", "label": "Guest options (label|product tag)", "info": "One per line. The tag must match the venue product tag.", "default": "Under 20|<20 guests\n21–50|21-50 guests\n51–100|51-100 guests\n101–150|101-150 guests\n151–200|151-200 guests\n201–250|201-250 guests" },
+    { "type": "text", "id": "filter_budgets", "label": "Budget caps (comma-separated)", "info": "Whole amounts in store currency. Uses the price filter.", "default": "30000,60000,100000,150000,200000" },
+    { "type": "text", "id": "filters_button_label", "label": "Filters button label", "default": "Find venues" },
+    { "type": "checkbox", "id": "location_use_filter", "label": "Location uses the venue location filter", "info": "Turn on once custom.location is filled on venues and enabled in Search & Discovery. Off = keyword search.", "default": false },
+    { "type": "checkbox", "id": "show_region_chips", "label": "Show quick region buttons", "default": true },
+    { "type": "text", "id": "chips_label", "label": "Region buttons label (screen readers)", "default": "Popular regions" }
+  ],
+  "presets": [{ "name": "Home hero" }]
+}
+{% endschema %}

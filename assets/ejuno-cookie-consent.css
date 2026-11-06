@@ -1,0 +1,139 @@
+/* Use eJuno bar only — Shopify banner is synced via Customer Privacy API */
+#shopify-pc__banner,
+.shopify-pc__banner__dialog,
+#shopify-privacy-banner,
+shopify-privacy-banner,
+shopify-cookie-banner {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* V5 cookie bar — bottom of viewport */
+.footbar-fixed,
+.footbar-fixed-left,
+.footbar-fixed-right {
+  display: none !important;
+}
+
+.ejuno-cookie {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10100;
+  padding: 12px var(--gutter, 24px) calc(12px + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+  transform: translateY(110%);
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s ease;
+}
+
+.ejuno-cookie:not([hidden]) {
+  display: block;
+}
+
+.ejuno-cookie.is-visible {
+  pointer-events: auto;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.ejuno-cookie__inner {
+  width: min(var(--max, 1280px), 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(222, 213, 202, 0.85);
+  background: rgba(255, 253, 249, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 36px rgba(38, 28, 20, 0.12);
+}
+
+.ejuno-cookie__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 62ch;
+}
+
+.ejuno-cookie__link {
+  color: var(--berry);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ejuno-cookie__link:hover {
+  text-decoration: underline;
+}
+
+.ejuno-cookie__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ejuno-cookie__btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ejuno-cookie__btn--ghost {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+}
+
+.ejuno-cookie__btn--ghost:hover {
+  border-color: rgba(155, 80, 104, 0.45);
+  color: var(--berry);
+}
+
+.ejuno-cookie__btn--primary {
+  border: 1px solid var(--berry);
+  background: var(--berry);
+  color: #fff;
+}
+
+.ejuno-cookie__btn--primary:hover {
+  background: var(--berry-dark);
+  border-color: var(--berry-dark);
+}
+
+body.ejuno-cookie-visible {
+  padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 720px) {
+  .ejuno-cookie__inner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .ejuno-cookie__actions {
+    justify-content: center;
+  }
+
+  .ejuno-cookie__btn {
+    flex: 1;
+    min-width: 0;
+  }
+}

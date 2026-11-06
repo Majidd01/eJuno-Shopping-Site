@@ -1,0 +1,21 @@
+<section class="utility-head"><div class="container"><div class="eyebrow">Contact Us</div><h1 class="h1">Tell Us What You Need</h1><p class="lead">We are happy to help with your wedding plans, your listing or anything else. Email us at <a href="mailto:weddingplanners@ejuno.io">weddingplanners@ejuno.io</a></p></div></section><section class="section tight"><div class="container contact-layout"><aside class="contact-info"><figure class="contact-info__photo"><img src="{{ 'ejuno-contact-photo.jpg' | asset_url }}" alt="A calm wedding planning moment" width="960" height="600" loading="lazy"></figure><div class="eyebrow">We can help with</div><h2 class="h2" style="margin-top:8px">A clearer next step</h2><p>Venue discovery, planning tools, vendor questions, partner enquiries and general support.</p><div style="margin-top:26px"><strong>Couples</strong><p style="color:var(--muted)">Planning guidance and platform support.</p><strong>Vendors</strong><p style="color:var(--muted)">Partner, listing and marketplace enquiries.</p><strong>General</strong><p style="color:var(--muted)">Anything else that needs a human answer.</p></div></aside>{% form 'contact', class: 'contact-form' %}
+  {%- comment -%} Trello 713: after a successful send, replace the form with a clear success message. {%- endcomment -%}
+  {% if form.posted_successfully? %}
+    <div class="contact-success" role="status" tabindex="-1" id="ContactSuccess" style="padding:36px 32px;border:1px solid rgba(42,36,32,.12);border-radius:18px;background:#fffdf9;text-align:center">
+      <div class="eyebrow">Enquiry sent</div>
+      <h2 class="h2" style="margin:10px 0 12px">Your enquiry has been sent successfully.</h2>
+      <p style="color:var(--muted);margin:0 0 20px">We&rsquo;ll be in touch soon.</p>
+      <a class="btn secondary" href="{{ request.path }}">Send another enquiry</a>
+    </div>
+  {% else %}
+  {{ form.errors | default_errors }}
+  <div class="form-grid">
+    <div class="field"><label class="visually-hidden" for="ContactFirstName">First name</label><input id="ContactFirstName" type="text" name="contact[first_name]" placeholder="First name" required></div>
+    <div class="field"><label class="visually-hidden" for="ContactLastName">Last name</label><input id="ContactLastName" type="text" name="contact[last_name]" placeholder="Last name"></div>
+    <div class="field"><label class="visually-hidden" for="ContactEmail">Email</label><input id="ContactEmail" type="email" name="contact[email]" placeholder="Email" required autocomplete="email"></div>
+    <div class="field"><label class="visually-hidden" for="ContactType">Enquiry type</label><select id="ContactType" name="contact[enquiry_type]"><option>I'm planning a wedding</option><option>I'm a vendor</option><option>General enquiry</option></select></div>
+    <div class="field" style="grid-column:1/-1"><label class="visually-hidden" for="ContactBody">Message</label><textarea id="ContactBody" name="contact[body]" placeholder="Tell us what you need" required></textarea></div>
+  </div>
+  <div style="margin-top:16px"><button class="btn primary" type="submit">Send Enquiry</button></div>
+{% endif %}
+{% endform %}</div></section>

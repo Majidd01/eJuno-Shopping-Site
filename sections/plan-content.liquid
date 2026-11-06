@@ -1,0 +1,59 @@
+<section class="section tight"><div class="container"><div class="plan-map"><div class="plan-steps"><div class="plan-step"><small>01 · Shape the day</small><h3>Venue & Vision</h3><p>Place, style, season and scale.</p></div><div class="plan-step"><small>02 · Organise it</small><h3>People & Money</h3><p>Guests, budget, checklist and seating.</p></div><div class="plan-step"><small>03 · Share it</small><h3>Website & Registry</h3><p>Give guests a clear home for the wedding.</p></div></div><div class="plan-tools"><a class="plan-tool" href="/pages/wedding-website"><h3>Wedding Website</h3><p>Details, communication and RSVP journey.</p></a><a class="plan-tool" href="/pages/registry"><h3>Registry</h3><p>Add your favourite venues and wedding services to your registry and share it with guests so they can contribute to your special day.</p></a><a class="plan-tool" href="/pages/guest-list"><h3>Guest List</h3><p>Households, RSVPs, dietary needs and travel plans.</p></a><a class="plan-tool" href="/pages/budget"><h3>Budget</h3><p>Plan, track and understand the spend.</p></a><a class="plan-tool" href="/pages/wedding-check-list"><h3>Checklist</h3><p>Know what matters now and what comes later.</p></a></div></div></div></section><section class="section"><div class="container plan-editorial"><img src="{{ 'PLAN-IMG-001.webp' | asset_url }}" width="1672" height="941" loading="lazy"><div><div class="eyebrow">Planning philosophy</div><h2 class="h2">Less noise. Better decisions.</h2><p class="lead">Plan at your own pace and keep every decision in one calm, clear place. When you are ready, start with the venue.</p><a href="{{ routes.collections_url }}/venues" class="btn secondary">Explore Venues</a></div></div></section>
+
+{% schema %}
+{
+  "name": "Plan content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Plan content"
+    }
+  ]
+}
+{% endschema %}

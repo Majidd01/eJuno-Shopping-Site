@@ -1,0 +1,45 @@
+<section class="section tight"><div class="container plan-editorial"><img src="{% if section.settings.image_1 != blank %}{{ section.settings.image_1 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_1 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy" style="height:390px"><div><div class="eyebrow">{{ section.settings.eyebrow }}</div><h2 class="h2">{{ section.settings.heading }}</h2><p class="lead">{{ section.settings.lead }}</p></div></div></section>
+
+{% schema %}
+{
+  "name": "guest-list 3",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (GST-IMG-001.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "GST-IMG-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Why this matters"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The guest list feeds the rest of the day"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "Seating and communication depend on knowing who is coming. Dietary needs go to your caterer and travel plans to whoever arranges transfers and stays, so each has its own column. Keeping it all in one place makes every next decision easier."
+    }
+  ],
+  "presets": [
+    {
+      "name": "guest-list 3"
+    }
+  ]
+}
+{% endschema %}

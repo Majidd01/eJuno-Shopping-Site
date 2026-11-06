@@ -1,0 +1,84 @@
+<section class="section tight">
+  <div class="container contact-layout">
+    <aside class="contact-info">
+      {%- if section.settings.photo != blank or section.settings.photo_fallback != blank -%}
+        <figure class="contact-info__photo"><img src="{%- if section.settings.photo != blank -%}{{ section.settings.photo | image_url: width: 1400 }}{%- else -%}{{ section.settings.photo_fallback | asset_url }}{%- endif -%}" alt="{{ section.settings.photo_alt | escape }}" width="1400" height="875" loading="lazy"></figure>
+      {%- endif -%}
+      <div class="eyebrow">{{ section.settings.info_eyebrow }}</div>
+      <h2 class="h2" style="margin-top:8px">{{ section.settings.info_heading }}</h2>
+      <p>{{ section.settings.info_text }}</p>
+      <div style="margin-top:26px">
+        {% for block in section.blocks %}
+          {% if block.type == 'info_item' %}
+            <strong {{ block.shopify_attributes }}>{{ block.settings.title }}</strong>
+            <p style="color:var(--muted)">{{ block.settings.text }}</p>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </aside>
+    {% form 'contact', class: 'contact-form' %}
+      {%- comment -%} Trello 713: after a successful send, show a clear thank-you instead of the form again. {%- endcomment -%}
+      {% if form.posted_successfully? %}
+        <div class="contact-success" role="status" tabindex="-1" id="ContactSuccess" style="padding:36px 32px;border:1px solid rgba(42,36,32,.12);border-radius:18px;background:#fffdf9;text-align:center">
+          <div class="eyebrow">Enquiry sent</div>
+          <h2 class="h2" style="margin:10px 0 12px">{{ section.settings.success_message }}</h2>
+          <p style="color:var(--muted);margin:0 0 20px">We&rsquo;ll be in touch soon.</p>
+          <a class="btn secondary" href="{{ request.path }}">Send another enquiry</a>
+        </div>
+        <script>document.addEventListener('DOMContentLoaded',function(){var s=document.getElementById('ContactSuccess');if(s){s.scrollIntoView({block:'center'});s.focus({preventScroll:true});}});</script>
+      {% else %}
+      {{ form.errors | default_errors }}
+      <div class="form-grid">
+        <div class="field"><label class="visually-hidden" for="ContactFirstName">First name</label><input id="ContactFirstName" type="text" name="contact[first_name]" placeholder="{{ section.settings.ph_first }}" required></div>
+        <div class="field"><label class="visually-hidden" for="ContactLastName">Last name</label><input id="ContactLastName" type="text" name="contact[last_name]" placeholder="{{ section.settings.ph_last }}"></div>
+        <div class="field"><label class="visually-hidden" for="ContactEmail">Email</label><input id="ContactEmail" type="email" name="contact[email]" placeholder="{{ section.settings.ph_email }}" required autocomplete="email"></div>
+        <div class="field"><label class="visually-hidden" for="ContactType">Enquiry type</label><select id="ContactType" name="contact[enquiry_type]"><option>I'm planning a wedding</option><option>I'm a vendor</option><option>General enquiry</option></select></div>
+        <div class="field" style="grid-column:1/-1"><label class="visually-hidden" for="ContactBody">Message</label><textarea id="ContactBody" name="contact[body]" placeholder="{{ section.settings.ph_message }}" required></textarea></div>
+      </div>
+      <div style="margin-top:16px"><button class="btn primary" type="submit">{{ section.settings.submit_label }}</button></div>
+      {% endif %}
+    {% endform %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contact form",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "image_picker", "id": "photo", "label": "Photo above the left column", "info": "Trello 684: a calm photo (desk, notebook and a view, or the eJuno team)." },
+    { "type": "text", "id": "photo_fallback", "label": "Fallback theme asset", "default": "ejuno-contact-photo.jpg" },
+    { "type": "text", "id": "photo_alt", "label": "Photo alt text", "default": "A calm wedding planning moment" },
+    { "type": "text", "id": "info_eyebrow", "label": "Info eyebrow", "default": "We can help with" },
+    { "type": "text", "id": "info_heading", "label": "Info heading", "default": "A clearer next step" },
+    { "type": "textarea", "id": "info_text", "label": "Info text", "default": "Venue discovery, planning tools, vendor questions, partner enquiries and general support." },
+    { "type": "text", "id": "ph_first", "label": "First name placeholder", "default": "First name" },
+    { "type": "text", "id": "ph_last", "label": "Last name placeholder", "default": "Last name" },
+    { "type": "text", "id": "ph_email", "label": "Email placeholder", "default": "Email" },
+    { "type": "text", "id": "ph_message", "label": "Message placeholder", "default": "Tell us what you need" },
+    { "type": "text", "id": "submit_label", "label": "Submit label", "default": "Send Enquiry" },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Your enquiry has been sent successfully." }
+  ],
+  "blocks": [
+    {
+      "type": "info_item",
+      "name": "Info item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Couples" },
+        { "type": "textarea", "id": "text", "label": "Text", "default": "Planning guidance and platform support." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact form",
+      "blocks": [
+        { "type": "info_item", "settings": { "title": "Couples", "text": "Planning guidance and platform support." } },
+        { "type": "info_item", "settings": { "title": "Vendors", "text": "Partner, listing and marketplace enquiries." } },
+        { "type": "info_item", "settings": { "title": "General", "text": "Anything else that needs a human answer." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

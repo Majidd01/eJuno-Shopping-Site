@@ -1,0 +1,97 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hub": {
+      "type": "services-categories",
+      "settings": {
+        "heading": "Wedding Services",
+        "subheading": "Planners, photographers, florists, chefs and musicians who know Italy."
+      },
+      "blocks": {
+        "c1": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "gastronomy-bar",
+            "title": "Gastronomy & Bar",
+            "description": "Catering, mixology, bar services, and gourmet experiences for your event.",
+            "fallback_asset": "ejuno-photo-03.jpg"
+          }
+        },
+        "c2": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "design-artistry",
+            "title": "Design & Artistry",
+            "description": "Floral design, decor, staging, and creative wedding artistry.",
+            "fallback_asset": "ejuno-photo-04.jpg"
+          }
+        },
+        "c3": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "photo-film",
+            "title": "Photo & Film",
+            "description": "Professional photography and videography to capture every moment.",
+            "fallback_asset": "ejuno-photo-05.jpg"
+          }
+        },
+        "c4": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "entertainment-1",
+            "title": "Entertainment",
+            "description": "Live bands, DJs, performers, and interactive entertainment.",
+            "fallback_asset": "ejuno-client-entertainment.jpg"
+          }
+        },
+        "c5": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "enhancements",
+            "title": "Enhancements",
+            "description": "Special effects, lighting, staging, and unique wedding enhancements.",
+            "fallback_asset": "ejuno-cat-enhancements.jpg"
+          }
+        },
+        "c6": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "beauty-fashion",
+            "title": "Beauty & Fashion",
+            "description": "Makeup, hairstyling, bridal styling, and fashion services.",
+            "fallback_asset": "ejuno-photo-08.jpg"
+          }
+        },
+        "c7": {
+          "type": "category",
+          "settings": {
+            "collection_handle": "transport",
+            "title": "Transport",
+            "description": "Boat, helicopter and airport transfers, chauffeurs, coaches and car rental.",
+            "fallback_asset": "ejuno-photo-07.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7"
+      ]
+    }
+  },
+  "order": [
+    "hub"
+  ]
+}

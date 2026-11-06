@@ -1,0 +1,811 @@
+﻿@charset "UTF-8";
+#vendorForm.ejuno-vendor-form { scroll-margin-top: 96px; }
+html { scroll-behavior: smooth; }
+        /* /////////////////////weddding form */
+        :root {
+            --clr-pink: var(--berry);
+            --clr-purple: #8c368c;
+            --clr-white: #fff;
+            --clr-black: #000000;
+            --clr-grey-black: rgba(84, 84, 84, 1);
+            --clr-light-grey: rgba(255, 255, 255, 0.48);
+            --clr-light-black: rgba(0, 0, 0, 0.55);
+            --grey-bg: #e0e0e0;
+
+            --fontFamily: sans-serif;
+        }
+        .wedding_form_containernew {
+            background: linear-gradient(135deg, #f8f4ff 0%, #ede2fc 100%);
+            background-image: url("https://cdn.shopify.com/s/files/1/0814/3061/0213/files/form_bg.png?v=1730405549");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .wedding_form_containernew::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(224, 47, 138, 0.05) 0%, rgba(140, 54, 140, 0.05) 100%);
+            pointer-events: none;
+        }
+        .wedding_form_wrapper {
+            background-color: var(--clr-white);
+            border-radius: 25px;
+            padding: 40px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .wedding_form_wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--berry), var(--berry-dark));
+        }
+
+        .wedding_form_content h2 {
+            text-align: center;
+            font: 600 32px / 35px var(--fontFamily);
+            color: var(--clr-black);
+        }
+        .wedding_form_content h2 span {
+            font: 800 32px / 40px var(--fontFamily);
+            background: var(--berry);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .wedding_form_content p {
+            text-align: center;
+            margin: 0px 0 30px 0;
+            font: 500 17px / 18px var(--fontFamily);
+            color: var(--clr-black);
+        }
+
+        .value-prop {
+            font: 600 18px / 20px var(--fontFamily);
+            color: var(--berry-dark);
+            margin: 15px 0 10px 0 !important;
+        }
+
+        .required {
+            color: var(--berry);
+            font-weight: bold;
+        }
+
+        .policy-link {
+            color: var(--berry);
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .policy-link:hover {
+            color: var(--berry-dark);
+            text-decoration: none;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .form-group div {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-group div:last-child {
+            margin-right: 0;
+        }
+        .form-group label {
+            font: 700 16px / 24px var(--fontFamily);
+            color: var(--clr-black);
+            margin-top:8px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-group input,
+        .form-group select {
+            font: 500 16px / 16px var(--fontFamily);
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+            color: var(--clr-black);
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--berry);
+            background-color: var(--clr-white);
+            box-shadow: 0 0 0 3px rgba(224, 47, 138, 0.1);
+            outline: none;
+        }
+        
+        #vendorForm .btn,
+        #vendorForm button.btn {
+            width: 100%;
+            background: var(--berry);
+            color: var(--clr-white);
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font: 600 16px / 18px var(--fontFamily);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(224, 47, 138, 0.3);
+        }
+        #vendorForm .btn:hover,
+        #vendorForm button.btn:hover {
+           background: var(--berry);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(224, 47, 138, 0.4);
+            color: white;
+        }
+       .policy{
+         font-size:12px;
+         line-height:13px;
+         max-width:500px;
+       }
+       p.polic{
+         text-align: left;
+         margin: 0;
+         font-size: 13px;
+       }
+        @media screen and (max-width: 786px) {
+              .form-group.phone-group {
+                flex-direction: row !important;
+                align-items: flex-start;
+              }
+
+              .form-group.phone-group div:first-child {
+                flex: 0 0 90px; 
+                margin-right: 8px;
+              }
+
+              .form-group.phone-group div:last-child {
+                flex: 1;
+              }
+            .wedding_form_content h2 {
+                font: 600 25px / 30px var(--fontFamily);
+            }
+            .wedding_form_content h2 span {
+                font: 800 25px /35px var(--fontFamily);
+            }
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group div {
+                margin-right: 0;
+                {% comment %} margin-bottom: 15px; {% endcomment %}
+            }
+            .form-group input,
+            .form-group select {
+                font: 500 13px / 15px var(--fontFamily);
+                padding: 8px;
+            }
+            #vendorForm .btn,
+            #vendorForm button.btn {
+                font: 500 15px / 16px var(--fontFamily);
+                padding: 12px 25px;
+            }
+        }
+        .ejuno-vendor-form,
+        .ejuno-vendor-form * {
+          box-sizing: border-box;
+      }
+
+      .flex {
+          display: flex;
+      }
+      .flex_center {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      .containernew {
+          width: 100%;
+          max-width: 1200px;
+          margin-left: auto;
+          margin-right: auto;
+          padding-left: 15px;
+          padding-right: 15px;
+        margin-top:20px;
+
+      }
+
+      @media (max-width: 1440px) {
+          .containernew {
+              max-width: 1140px;
+          }
+      }
+
+      @media (max-width: 1024px) {
+          .containernew {
+              max-width: 960px;
+          }
+      }
+
+      @media (max-width: 768px) {
+          .containernew {
+              max-width: 720px;
+          }
+      }
+
+      @media (max-width: 500px) {
+          .containernew {
+              max-width: 100%;
+              padding-left: 10px;
+              padding-right: 10px;
+          }
+      }
+        .containernew {
+            max-width: 1140px;
+        }
+      .form-group-new{
+        flex-direction:column;
+      }
+
+      .icon-animated {
+    	width: 80px;
+    	height: 80px;
+    	position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .icon-animated .tick svg {
+    	position: absolute;
+    	left: 22px;
+    	right: 0;
+    	top: 12px;
+    	bottom: 0;
+    	fill: #fff;
+    	width: 25px;
+        height: 52px;
+    }
+
+    .icon-animated-tick .circle {
+      	width: 80px;
+    	height: 80px;
+    	fill: var(--berry);
+    	animation-fill-mode: forwards;
+        animation-name: circle-pulse;
+        animation-duration: 4s;
+        animation-iteration-count: 1;
+    }
+
+    .tick-leg1 {
+    	fill: var(--berry);
+    	animation-fill-mode: forwards;
+        animation-name: tick-swipe1;
+        animation-duration: 1s;
+        animation-iteration-count: 1;
+        transform: scaleX(0);
+        transform-origin: left bottom;
+    	opacity: 0;
+    }
+
+    .tick-leg2 {
+    	fill: var(--berry);
+    	animation-fill-mode: forwards;
+        animation-name: tick-swipe2;
+        animation-duration: 2s;
+        animation-iteration-count: 1;
+        transform: scaleY(0);
+        transform-origin: right bottom;
+    	opacity: 0;
+    }
+
+
+    @keyframes tick-swipe1 {
+        0% {
+    		opacity: 0;
+        }
+        10% {
+    		opacity: 0.5;
+        }
+        20% {
+    		opacity: 1;
+        }
+
+
+        100% {
+    		opacity: 1;
+        	transform: scaleX(1);
+        }
+    }
+
+    @keyframes tick-swipe2 {
+    	40% {
+    		opacity: 0;
+    	}
+        47% {
+        	transform: scaleY(0.15);
+    		opacity: 1;
+        }
+        100% {
+        	transform: scaleY(1);
+    		opacity: 1;
+        }
+    }
+
+    @keyframes circle-pulse {
+        0%, 25%, 75%, 100% {
+        	transform: scale(1);
+        }
+        50% {
+        	transform: scale(1.05);
+        }
+    }
+
+    .tick {
+    	width: 100%;
+    	height: 100%;
+    	transform: rotate(45deg) scale(0.8);
+    	position: absolute;
+    	left: 0;
+    	top: 0;
+    	bottom: 0;
+        right: 0;
+    }
+
+    .tick-holder {
+    	transform: scale(0.6);
+    }
+    .wedding_form_content-new{
+          display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+     .btn-submit.loading {
+      background-color: #ddd; /* Change color to indicate loading state */
+      cursor: not-allowed;
+    }
+    .btn-submit.loading::after {
+
+      display: inline-block;
+      margin-left: 10px;
+      animation: spinner 1s linear infinite;
+    }
+
+    @keyframes spinner {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .checkbox-container {
+            margin: 10px 0px;
+          }
+        .checkbox-container label{
+          display: flex;
+          align-items: center;
+         gap:3px;
+
+        }
+          .checkbox-container .input[type="checkbox"] {
+          display: none;
+        }
+
+
+          /* Style for the custom checkbox */
+        .custom-checkbox {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 2px solid var(--berry);
+          border-radius: 4px;
+          position: relative;
+          cursor: pointer;
+          margin-right: 8px;
+          background-color: var(--clr-white);
+          transition: all 0.3s ease;
+        }
+
+        .custom-checkbox:hover {
+          border-color: var(--berry-dark);
+          box-shadow: 0 0 0 2px rgba(224, 47, 138, 0.1);
+        }
+
+          /* Style for the custom checkmark */
+        .custom-checkbox::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 10px;
+          background-color: var(--berry);
+          border-radius: 2px;
+          opacity: 0;
+        }
+
+          /* Show the checkmark when checkbox is checked */
+        .checkbox-container .input[type="checkbox"]:checked + .custom-checkbox::after {
+          opacity: 1;
+        }
+
+       #vendorForm .btn:disabled,
+       #vendorForm button.btn:disabled {
+          background:lightgray;
+        }
+
+       .wedding_form_wrapper .tagify{
+         width: 100%;
+         border-radius: 8px;
+         border: 1px solid #000;
+         min-height:40px;
+       }
+
+       .wedding_form_wrapper .tagify__tag__removeBtn{
+         display:block;
+         color:#b20e0e;
+       }
+
+       .wedding_form_wrapper .tagify__input{
+         display:block;
+       }
+
+       .wedding_form_wrapper  .tagify--empty .tagify__input::before {
+           transition: .2s ease-out;
+           opacity: 1;
+           transform: none;
+           display: inline-block;
+           width: auto;
+       }
+
+       .wedding_form_wrapper .tagify__input::before {
+           content: attr(data-placeholder);
+           width: 100%;
+           height: 100%;
+           margin: auto 0;
+           z-index: 1;
+           color: var(--placeholder-color);
+           white-space: nowrap;
+           text-overflow: ellipsis;
+           overflow: hidden;
+           pointer-events: none;
+           opacity: 0;
+           position: absolute;
+       }
+
+      .wedding_form_wrapper .tagify__input::after {
+         content: attr(data-suggest);
+         display: inline-block;
+         vertical-align: middle;
+         position: absolute;
+         min-width: calc(100% - 1.5em);
+         text-overflow: ellipsis;
+         overflow: hidden;
+         white-space: pre;
+         color: var(--tag-text-color);
+         opacity: .3;
+         pointer-events: none;
+         max-width: 100px;
+     }
+
+       .btn-loader {
+        display: inline-block;
+        vertical-align: -0.26em;
+      }
+
+      /* Inline field error styles */
+      .field-error {
+        color: #e53e3e;
+        font-size: 1.02rem;
+        margin-top: 4px;
+        display: none;
+        font-weight: 500;
+      }
+
+      .field-error.visible {
+        display: block;
+      }
+
+      .input-error {
+        border-color: #e53e3e !important;
+        box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1) !important;
+      }
+
+      /* General form error below submit button */
+      .form-error {
+        color: #e53e3e;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 10px;
+        display: none;
+      }
+
+      .form-error.visible {
+        display: block;
+      }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+  /* Fix Chrome autofill white text issue */
+  .wedding_form_wrapper input:-webkit-autofill,
+  .wedding_form_wrapper input:-webkit-autofill:hover,
+  .wedding_form_wrapper input:-webkit-autofill:focus,
+  .wedding_form_wrapper textarea:-webkit-autofill,
+  .wedding_form_wrapper select:-webkit-autofill {
+      -webkit-text-fill-color: #000 !important; /* your desired text color */
+      transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Optional: fix background as well */
+  .wedding_form_wrapper input:-webkit-autofill {
+      box-shadow: 0 0 0px 1000px #fafafa inset !important;
+  }
+
+/* V5 theme alignment */
+.ejuno-vendor-form.wedding_form_containernew {
+  background: var(--canvas);
+  background-image: none;
+  padding: 36px 20px 56px;
+}
+
+.ejuno-vendor-form.wedding_form_containernew::before {
+  display: none;
+}
+
+.ejuno-vendor-form .wedding_form_wrapper {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  box-shadow: var(--shadow2);
+  max-width: 680px;
+  width: 100%;
+  padding: 32px 36px 32px;
+  margin-top: 0;
+}
+
+.ejuno-vendor-form .wedding_form_wrapper.containernew {
+  margin-top: 0;
+  padding-left: 36px;
+  padding-right: 36px;
+}
+
+.ejuno-vendor-form .wedding_form_wrapper::before {
+  display: none;
+}
+
+.ejuno-vendor-form .wedding_form_content {
+  width: 100%;
+  max-width: 100%;
+}
+
+.ejuno-vendor-form .wedding_form_content p {
+  margin: 0;
+}
+
+.ejuno-vendor-form .ejuno-vendor-form__eyebrow {
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--olive);
+}
+
+.ejuno-vendor-form .wedding_form_content h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(28px, 3.5vw, 36px);
+  line-height: 1.08;
+  margin: 0 0 10px;
+}
+
+.ejuno-vendor-form .wedding_form_content h2 span {
+  color: var(--berry);
+  -webkit-text-fill-color: var(--berry);
+  background: none;
+  font-family: var(--serif);
+  font-weight: 400;
+}
+
+.ejuno-vendor-form .value-prop {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.45;
+  margin: 0 0 6px !important;
+}
+
+.ejuno-vendor-form .ejuno-vendor-form__note {
+  text-align: center;
+  margin: 0 auto 18px !important;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+.ejuno-vendor-form .ejuno-vendor-form__lang {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--olive);
+  letter-spacing: 0.02em;
+}
+
+.ejuno-vendor-form .form-group {
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ejuno-vendor-form .form-group.form-group-new {
+  margin-bottom: 14px;
+}
+
+.ejuno-vendor-form .form-group label {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.ejuno-vendor-form .form-group input,
+.ejuno-vendor-form .form-group select {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px 16px;
+  min-height: 54px;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+/* Review p11: one form style across the site (matches the Contact form: 54px fields, 12px corners). */
+.ejuno-vendor-form .ejuno-cc-flag__btn {
+  min-height: 54px;
+  border-radius: 12px;
+  border-color: var(--line);
+  background: #fff;
+  font-family: var(--sans);
+  font-size: 16px;
+}
+
+.ejuno-vendor-form .form-group input::placeholder {
+  color: #a89f97;
+}
+
+.ejuno-vendor-form .form-group input:focus,
+.ejuno-vendor-form .form-group select:focus {
+  border-color: var(--berry);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(155, 80, 104, 0.12);
+}
+
+.ejuno-vendor-form .required {
+  color: var(--berry);
+  font-weight: 600;
+}
+
+.ejuno-vendor-form .field-error {
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.ejuno-vendor-form .checkbox-container {
+  margin: 2px 0 14px;
+}
+
+.ejuno-vendor-form .checkbox-container label {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  gap: 10px;
+}
+
+.ejuno-vendor-form .custom-checkbox {
+  border-color: var(--line);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ejuno-vendor-form .policy-link {
+  color: var(--berry);
+  font-weight: 500;
+}
+
+.ejuno-vendor-form .wedding_form_wrapper .tagify {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  min-height: 42px;
+  padding: 4px 8px;
+}
+
+#vendorForm .wedding_form_wrapper button.btn.btn-submit {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 999px;
+  background: var(--berry);
+  box-shadow: var(--shadow2);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  margin-top: 4px;
+}
+
+#vendorForm .wedding_form_wrapper button.btn.btn-submit:hover {
+  background: var(--berry-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(126, 61, 85, 0.22);
+}
+
+@media (max-width: 760px) {
+  .ejuno-vendor-form .wedding_form_wrapper,
+  .ejuno-vendor-form .wedding_form_wrapper.containernew {
+    padding: 24px 20px 22px;
+    border-radius: 22px;
+  }
+
+  .ejuno-vendor-form .ejuno-vendor-form__note {
+    margin-bottom: 16px !important;
+  }
+
+  .ejuno-vendor-form .form-group {
+    margin-bottom: 12px;
+  }
+}
+
+#vendorForm .spinner-border {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 8px;
+  vertical-align: -0.12em;
+  border: 2px solid #fff;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ejuno-vendor-form-spin 0.75s linear infinite;
+}
+
+#vendorForm .btn-loader .spinner-border {
+  display: inline-block;
+}
+
+@keyframes ejuno-vendor-form-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Trello 798 (5 Nov): Submit stays visibly disabled until the privacy/terms box is ticked */
+#vendorForm button.btn.btn-submit:disabled, #vendorForm button.btn.btn-submit[aria-disabled="true"],
+.ejuno-showcase-form button.btn.btn-submit:disabled, .ejuno-showcase-form button.btn.btn-submit[aria-disabled="true"] {
+  background: #d9d3cd !important; border-color: #d9d3cd !important; color: #8a817a !important;
+  cursor: not-allowed !important; opacity: 1 !important; box-shadow: none !important; transform: none !important; pointer-events: auto;
+}

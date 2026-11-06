@@ -1,0 +1,61 @@
+<div id="showcaseWorkForm" class="ejuno-showcase-form wedding_form_containernew flex_center">
+  <div class="wedding_form_wrapper containernew flex_center">
+    <div class="wedding_form_content">
+      <h2 class="ejuno-showcase-form__title"><span>Submit Your Work</span></h2>
+      <p class="ejuno-showcase-form__lead">Submit your portfolio piece to be considered for editorial features on eJuno.</p>
+      <form novalidate>
+        <div class="form-group form-group-new" id="applicant-group">
+          <label for="applicant-name">Applicant name <span class="required">*</span></label>
+          <input type="text" id="applicant-name" placeholder="Enter applicant name" required>
+          <div class="error-message" id="applicant-error">Applicant name is required.</div>
+        </div>
+        <div class="form-group form-group-new" id="business-group">
+          <label for="business-name">Business name <span class="required">*</span></label>
+          <input type="text" id="business-name" placeholder="Enter business name" required>
+          <div class="error-message" id="business-error">Business name is required.</div>
+        </div>
+        <div class="form-group form-group-new" id="email-group">
+          <label for="email">Email address <span class="required">*</span></label>
+          <input type="email" id="email" placeholder="Enter your email address" required>
+          <div class="error-message" id="email-error">Please enter a valid email address.</div>
+        </div>
+        <div class="form-group form-group-new" id="title-group">
+          <label for="content-title">Work title <span class="required">*</span></label>
+          <input type="text" id="content-title" placeholder="Enter title" required>
+          <div class="error-message">Title is required.</div>
+        </div>
+        <div class="form-group form-group-new" id="photos-group">
+          <label for="photos">
+            Photos <span class="required">*</span>
+            <span class="ejuno-showcase-form__hint">Minimum 1, maximum 3 images (5MB each)</span>
+          </label>
+          <input type="file" id="photos" accept="image/*" multiple required>
+          <div class="photos-preview" id="photos-preview"></div>
+          <div class="photos-counter" id="photos-counter">0 / 3 selected</div>
+          <button type="button" class="add-more-btn btn ghost" id="add-more-btn">Add more +</button>
+          <div class="error-message" id="photos-error">Images are required.</div>
+        </div>
+        <div class="form-group form-group-new" id="description-group">
+          <label for="content-description">Content description <span class="required">*</span></label>
+          <div id="editor-container"></div>
+          <div id="image-url-display"></div>
+          <textarea id="content-description" style="display:none;" required></textarea>
+          <div class="error-message" id="description-error">Content description is required.</div>
+        </div>
+        <div class="checkbox-container" id="terms-group">
+          <label>
+            <input type="checkbox" id="termcheck" class="input">
+            <span class="custom-checkbox"></span>
+            {%- comment -%} Trello 713: couples accept the Privacy Policy here, not the vendor T&amp;C. {%- endcomment -%}
+            I accept eJuno's
+            <a href="/pages/privacy-policy?view=privacy-policy" class="policy-link" target="_blank" rel="noopener">Privacy Policy</a>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-submit primary" disabled aria-disabled="true">
+          <span class="spinner-border" role="status" aria-hidden="true"></span>
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

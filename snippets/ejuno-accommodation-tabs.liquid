@@ -1,0 +1,54 @@
+{%- comment -%}
+  Trello 657: Accommodation property-type tabs. Shown on the Accommodation and Villas collections.
+  Villa links to the Villas collection (Villa + Honeymoon Villas merged). Other types use Shopify tag URLs
+  (/collections/accommodation/<tag>) so paging, sorting and filters stay server-side.
+  A type tab only shows when at least one accommodation listing carries that tag.
+{%- endcomment -%}
+{%- liquid
+  assign at_accom = collections[accom_handle]
+  assign at_accom_url = '/collections/' | append: accom_handle
+  assign at_villa_url = '/collections/' | append: villa_handle
+  # Trello 762: vendor accommodation categories - Villa, Hotel, Resort, Estate, Other. Types other than Villa show only when a listing carries the tag.
+  assign at_defs = 'Villa:@villa,Hotel:hotel,Resort:resort,Estate:estate,Other:other' | split: ','
+  assign at_tags = '|'
+  if at_accom != blank
+    for t in at_accom.all_tags
+      assign th = t | handleize
+      assign at_tags = at_tags | append: th | append: '|'
+    endfor
+  endif
+  assign at_active = ''
+  if collection.handle == villa_handle
+    assign at_active = 'villa'
+  elsif collection.handle == accom_handle and current_tags.size > 0
+    assign at_active = current_tags | first | handleize
+  endif
+-%}
+<nav class="ejuno-accom-tabs" aria-label="Accommodation type">
+  <a class="ejuno-accom-tab{% if at_active == blank %} is-active{% endif %}" href="{{ at_accom_url }}"{% if at_active == blank %} aria-current="page"{% endif %}>All</a>
+  {%- for def in at_defs -%}
+    {%- assign parts = def | split: ':' -%}
+    {%- assign t = parts[1] | strip -%}
+    {%- if t == '@villa' -%}
+      {%- comment -%} Trello 657 (reopen): Villa filters the Accommodation listings by the villa tag like the other tabs. {%- endcomment -%}
+      {%- assign t = 'villa' -%}
+      {%- assign t_url = at_accom_url | append: '/villa' -%}{%- assign show = true -%}
+    {%- else -%}
+      {%- assign t = t | handleize -%}
+      {%- assign needle = '|' | append: t | append: '|' -%}
+      {%- assign t_url = at_accom_url | append: '/' | append: t -%}
+      {%- assign show = false -%}
+      {%- if at_tags contains needle -%}{%- assign show = true -%}{%- endif -%}
+    {%- endif -%}
+    {%- if show -%}
+      <a class="ejuno-accom-tab{% if at_active == t %} is-active{% endif %}" href="{{ t_url }}"{% if at_active == t %} aria-current="page"{% endif %}>{{ parts[0] | strip }}</a>
+    {%- endif -%}
+  {%- endfor -%}
+</nav>
+<style>
+  .ejuno-accom-tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 0 22px;padding:2px 0 4px}
+  .ejuno-accom-tabs::-webkit-scrollbar{display:none}
+  .ejuno-accom-tab{flex:0 0 auto;padding:10px 18px;border:1px solid var(--line,#e5ddd3);border-radius:999px;background:rgba(255,255,255,.72);font-size:14px;color:#5c534c;text-decoration:none;white-space:nowrap}
+  .ejuno-accom-tab:hover{border-color:var(--berry,#9b5068);color:var(--berry,#9b5068)}
+  .ejuno-accom-tab.is-active{background:var(--berry,#9b5068);border-color:var(--berry,#9b5068);color:#fff}
+</style>

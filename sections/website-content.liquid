@@ -1,0 +1,59 @@
+<section class="section tight"><div class="container"><div class="product-demo"><div class="browser"><div class="browser-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="browser-canvas website-preview"><div class="website-photo"><img src="{{ 'WEB-IMG-001.webp' | asset_url }}" width="1672" height="941" loading="lazy"></div><div class="website-mock"><div class="eyebrow">Sofia & Daniel</div><h3>We’re getting married</h3><div class="website-nav"><span>Our Story</span><span>Travel</span><span>Registry</span><span>RSVP</span></div><p style="color:var(--muted)">A calm place for the details your guests actually need.</p><a class="btn primary" href="https://ejuno-staging.web.app/couple-dashboard">Create Your Website</a></div></div></div></div></div></section><section class="section"><div class="container"><div class="section-head"><div class="copy"><div class="eyebrow">Everything your guests need</div><h2 class="h2">One place for the guest experience</h2></div></div><div class="tools-grid"><div class="tool-link"><span class="num">A</span><div><h3>Essential Details</h3><p>Put the location, timings and useful information where guests can actually find it.</p></div></div><div class="tool-link"><span class="num">B</span><div><h3>Your Story</h3><p>Make it personal without making it cluttered.</p></div></div><div class="tool-link"><span class="num">C</span><div><h3>RSVP Journey</h3><p>Let guests RSVP online and keep every response with the rest of your planning.</p></div></div></div></div></section>
+
+{% schema %}
+{
+  "name": "Website content",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "editor_note",
+      "label": "Editor note",
+      "default": "Content below keeps the approved prototype structure."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Content item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Item"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Content item"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add supporting content."
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 24,
+  "presets": [
+    {
+      "name": "Website content"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,68 @@
+{% render 'ejuno-couple-search-hero',
+  eyebrow: section.settings.eyebrow,
+  heading: section.settings.heading,
+  lead: section.settings.lead,
+  search_placeholder: section.settings.search_placeholder,
+  search_button_label: section.settings.search_button_label,
+  api_base: section.settings.api_base,
+  website_base: section.settings.website_base,
+  band_image: section.settings.band_image,
+  band_fallback: section.settings.band_fallback,
+  band_overlay: section.settings.band_overlay
+%}
+
+{% schema %}
+{
+  "name": "Couple search hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "image_picker", "id": "band_image", "label": "Photo band behind the title", "info": "Trello 684: soft photo of guests arriving, or an invitation on a table." },
+    { "type": "text", "id": "band_fallback", "label": "Fallback theme asset", "default": "ART-IMG-002.webp" },
+    { "type": "range", "id": "band_overlay", "label": "Photo band overlay strength", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 70 },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Find a Wedding"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Find a Wedding"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Lead",
+      "default": "Type a name to find their wedding website and registry."
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Enter couple name"
+    },
+    {
+      "type": "text",
+      "id": "search_button_label",
+      "label": "Search button",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "api_base",
+      "label": "Couples search API",
+      "default": "https://ejuno-dev.skylinxtech.co/api/couples/public"
+    },
+    {
+      "type": "text",
+      "id": "website_base",
+      "label": "Wedding website base URL",
+      "default": "https://ejuno-staging.web.app/wedding-planning/"
+    }
+  ],
+  "presets": [{ "name": "Couple search hero" }]
+}
+{% endschema %}

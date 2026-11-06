@@ -1,0 +1,26 @@
+{% if blog.articles_count > 0 %}
+{% paginate blog.articles by 12 %}
+<section class="editorial-hero"><div class="container editorial-layout">
+{% assign feature = blog.articles.first %}
+<a href="{{ feature.url }}" class="feature-story">
+{% if feature.image %}<img src="{{ feature.image | image_url: width: 1600 }}" alt="{{ feature.image.alt | default: feature.title | escape }}" width="{{ feature.image.width }}" height="{{ feature.image.height }}" loading="eager">{% else %}<img src="{{ 'JNL-IMG-001.webp' | asset_url }}" alt="{{ feature.title | escape }}" width="1672" height="941" loading="eager">{% endif %}
+<div class="feature-copy"><div class="eyebrow">Featured story</div><h1>{{ feature.title }}</h1><p>{{ feature.excerpt_or_content | strip_html | remove_first: 'Introduction:' | strip | truncatewords: 20 }}</p></div></a>
+<div class="side-stories">
+{% for article in blog.articles offset: 1 limit: 2 %}
+<a href="{{ article.url }}" class="story">{% if article.image %}<img src="{{ article.image | image_url: width: 900 }}" alt="{{ article.image.alt | default: article.title | escape }}" width="{{ article.image.width }}" height="{{ article.image.height }}" loading="lazy">{% endif %}<div class="body"><div class="eyebrow">{% if article.tags.size > 0 %}{{ article.tags.first }}{% else %}Story{% endif %}</div><h3>{{ article.title }}</h3></div></a>
+{% endfor %}
+</div></div></section>
+{% if blog.articles_count > 3 %}<section class="section"><div class="container"><div class="section-head"><div class="copy"><div class="eyebrow">Latest stories</div><h2 class="h2">Inspiration with a point of view</h2></div></div><div class="journal-row">{% for article in blog.articles offset: 3 limit: 3 %}<a href="{{ article.url }}" class="journal-card">{% if article.image %}<img src="{{ article.image | image_url: width: 900 }}" alt="{{ article.image.alt | default: article.title | escape }}" width="{{ article.image.width }}" height="{{ article.image.height }}" loading="lazy">{% endif %}<div class="body"><div class="eyebrow">{% if article.tags.size > 0 %}{{ article.tags.first }}{% else %}Story{% endif %}</div><h3>{{ article.title }}</h3><p>{{ article.excerpt_or_content | strip_html | remove_first: 'Introduction:' | strip | truncatewords: 15 }}</p></div></a>{% endfor %}</div></div></section>{% endif %}
+{% endpaginate %}
+{% else %}
+<section class="editorial-hero"><div class="container editorial-layout"><a href="{{ blog.url | default: '/blogs/destinations' }}" class="feature-story"><img src="{{ 'JNL-IMG-001.webp' | asset_url }}" width="1672" height="941" loading="eager"><div class="feature-copy"><div class="eyebrow">Featured story</div><h1>The Best Months to Get Married in Italy</h1><p>Season, place and atmosphere — how they work together.</p></div></a><div class="side-stories"><a href="/blogs/destinations" class="story"><img src="{{ 'JNL-IMG-002.webp' | asset_url }}" width="1122" height="1402" loading="lazy"><div class="body"><div class="eyebrow">Design</div><h3>The reception details guests remember most</h3></div></a><a href="/blogs/destinations" class="story"><img src="{{ 'JNL-IMG-003.webp' | asset_url }}" width="1122" height="1402" loading="lazy"><div class="body"><div class="eyebrow">Planning</div><h3>Small paper details with a bigger effect</h3></div></a></div></div></section><section class="section"><div class="container"><div class="section-head"><div class="copy"><div class="eyebrow">Latest stories</div><h2 class="h2">Inspiration with a point of view</h2></div></div><div class="journal-row"><a href="/blogs/destinations" class="journal-card"><img src="{{ 'JNL-IMG-004.webp' | asset_url }}" width="1672" height="941" loading="lazy" alt="How lighting changes the whole celebration"><div class="body"><div class="eyebrow">Atmosphere</div><h3>How lighting changes the whole celebration</h3><p>Read the story and take the useful ideas into your own planning.</p></div></a><a href="/blogs/destinations" class="journal-card"><img src="{{ 'HOME-IMG-003.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="A modern guide to Tuscany wedding weekends"><div class="body"><div class="eyebrow">Destinations</div><h3>A modern guide to Tuscany wedding weekends</h3><p>Read the story and take the useful ideas into your own planning.</p></div></a><a href="/blogs/destinations" class="journal-card"><img src="{{ 'HOME-IMG-008.webp' | asset_url }}" width="1122" height="1402" loading="lazy" alt="The details that make guests feel looked after"><div class="body"><div class="eyebrow">Guest experience</div><h3>The details that make guests feel looked after</h3><p>Read the story and take the useful ideas into your own planning.</p></div></a></div></div></section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Blog",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": []
+}
+{% endschema %}

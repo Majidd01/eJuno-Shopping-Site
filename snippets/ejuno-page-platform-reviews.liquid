@@ -1,0 +1,26 @@
+<section class="review-hero">
+  <div class="container review-hero__inner">
+    <div class="review-copy">
+      <div class="eyebrow">Reviews</div>
+      <h1 class="h1">Reviews From Couples and Professionals</h1>
+      <p class="lead">We’re gathering reviews from couples and professionals who plan with eJuno. They’ll appear here as soon as they’re published.</p>
+      <a href="/pages/contact" class="btn primary">Talk to eJuno</a>
+    </div>
+    <figure class="review-hero__media">
+      <img src="{{ 'ejuno-photo-11.jpg' | asset_url }}" width="1200" height="801" loading="lazy" alt="Wedding guests celebrating at a long banquet table in an Italian castle courtyard">
+    </figure>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="container">
+    <div class="metrics" id="platform-reviews-metrics" aria-live="polite">
+      <div class="metric"><strong data-metric="avg">—</strong><span>Average experience</span></div>
+      <div class="metric"><strong data-metric="recommend">—</strong><span>Would recommend</span></div>
+      <div class="metric"><strong data-metric="focus">Italy</strong><span>Destination expertise</span></div>
+      <div class="metric"><strong data-metric="count">—</strong><span>Published reviews</span></div>
+    </div>
+  </div>
+</section>
+
+{% render 'ejuno-platform-reviews-slider' %}

@@ -1,0 +1,215 @@
+{% liquid
+  assign active = section.settings.active_policy | default: 'terms'
+  assign handle = page.handle | default: ''
+  assign path_norm = request.path | split: '?' | first | split: '#' | first
+
+  case handle
+    when 'cookie-policy'
+      assign active = 'cookie'
+    when 'return-and-refund-policy'
+      assign active = 'return'
+    when 'terms-of-service', 'terms-and-conditions'
+      assign active = 'terms'
+    when 'shipping-delivery-policy'
+      assign active = 'shipping'
+    when 'privacy-policy'
+      assign active = 'privacy'
+  endcase
+
+  if handle == blank
+    if path_norm == '/pages/cookie-policy' or path_norm contains '/pages/cookie-policy/'
+      assign active = 'cookie'
+    elsif path_norm == '/pages/return-and-refund-policy' or path_norm contains '/pages/return-and-refund-policy/'
+      assign active = 'return'
+    elsif path_norm == '/pages/shipping-delivery-policy' or path_norm contains '/pages/shipping-delivery-policy/'
+      assign active = 'shipping'
+    elsif path_norm == '/pages/privacy-policy' or path_norm == '/policies/privacy-policy' or path_norm contains '/pages/privacy-policy/'
+      assign active = 'privacy'
+    elsif path_norm == '/pages/terms-of-service' or path_norm contains '/pages/terms-of-service/' or path_norm contains '/pages/terms-and-conditions'
+      assign active = 'terms'
+    endif
+  endif
+%}
+<section class="section tight ejuno-policy-nav">
+  <div class="container">
+    <nav class="ejuno-policy-nav__list" aria-label="Policies">
+      <a
+        href="/pages/cookie-policy"
+        class="{% if active == 'cookie' %}is-active{% endif %}"
+        {% if active == 'cookie' %}aria-current="page"{% endif %}
+      >Cookie Policy</a>
+      <a
+        href="/pages/return-and-refund-policy"
+        class="{% if active == 'return' %}is-active{% endif %}"
+        {% if active == 'return' %}aria-current="page"{% endif %}
+      >Return and Refund Policy</a>
+      <a
+        href="/pages/terms-of-service"
+        class="{% if active == 'terms' %}is-active{% endif %}"
+        {% if active == 'terms' %}aria-current="page"{% endif %}
+      >Terms of Service</a>
+      <a
+        href="/pages/shipping-delivery-policy"
+        class="{% if active == 'shipping' %}is-active{% endif %}"
+        {% if active == 'shipping' %}aria-current="page"{% endif %}
+      >Shipping &amp; Delivery Policy</a>
+      <a
+        href="/pages/privacy-policy?view=privacy-policy"
+        class="{% if active == 'privacy' %}is-active{% endif %}"
+        {% if active == 'privacy' %}aria-current="page"{% endif %}
+      >Privacy Policy</a>
+    </nav>
+  </div>
+</section>
+
+{% stylesheet %}
+.ejuno-policy-nav {
+  padding-top: 0;
+  padding-bottom: 8px;
+}
+
+.ejuno-policy-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ejuno-policy-nav__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ejuno-policy-nav__list a:not(.is-active):hover {
+    background: var(--berry);
+    border-color: var(--berry);
+    color: #fff;
+  }
+}
+
+.ejuno-policy-nav__list a.is-active {
+  background: var(--berry);
+  border-color: var(--berry);
+  color: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ejuno-policy-nav__list a.is-active:hover {
+    background: var(--berry);
+    border-color: var(--berry);
+    color: #fff;
+  }
+}
+
+@media (hover: none) {
+  .ejuno-policy-nav__list a:not(.is-active):active {
+    background: #fff;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+}
+
+@media (max-width: 760px) {
+  .ejuno-policy-nav {
+    padding-bottom: 4px;
+  }
+
+  .ejuno-policy-nav .container {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .ejuno-policy-nav__list {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    gap: 8px;
+    padding: 2px var(--gutter, 18px) 8px;
+    scrollbar-width: none;
+  }
+
+  .ejuno-policy-nav__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ejuno-policy-nav__list a {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    min-height: 32px;
+    padding: 0 11px;
+    font-size: 11px;
+    line-height: 1.25;
+    text-align: center;
+    max-width: 168px;
+    white-space: normal;
+  }
+}
+{% endstylesheet %}
+
+<script>
+  (function () {
+    function syncPolicyNavActive() {
+      document.querySelectorAll('.ejuno-policy-nav__list').forEach(function (nav) {
+        var path = (window.location.pathname || '').replace(/\/+$/, '') || '/';
+        nav.querySelectorAll('a[href]').forEach(function (link) {
+          var href = link.getAttribute('href') || '';
+          try {
+            href = new URL(href, window.location.origin).pathname.replace(/\/+$/, '') || '/';
+          } catch (e) {
+            href = href.split('?')[0].split('#')[0].replace(/\/+$/, '') || '/';
+          }
+          var on = href === path;
+          link.classList.toggle('is-active', on);
+          if (on) link.setAttribute('aria-current', 'page');
+          else link.removeAttribute('aria-current');
+        });
+      });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', syncPolicyNavActive);
+    } else {
+      syncPolicyNavActive();
+    }
+    document.addEventListener('shopify:section:load', syncPolicyNavActive);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Policy nav",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "active_policy",
+      "label": "Active policy fallback",
+      "info": "Usually auto-detected from the page URL.",
+      "options": [
+        { "value": "cookie", "label": "Cookie Policy" },
+        { "value": "return", "label": "Return and Refund Policy" },
+        { "value": "terms", "label": "Terms of Service" },
+        { "value": "shipping", "label": "Shipping & Delivery Policy" },
+        { "value": "privacy", "label": "Privacy Policy" }
+      ],
+      "default": "terms"
+    }
+  ],
+  "presets": [{ "name": "Policy nav" }]
+}
+{% endschema %}

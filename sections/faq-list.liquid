@@ -1,0 +1,148 @@
+<section class="section tight">
+  <div class="container">
+    <div class="utility-panel ejuno-faq" data-ejuno-faq>
+      {% liquid
+        assign tab_blocks = section.blocks | where: 'type', 'tab'
+        assign faq_blocks = section.blocks | where: 'type', 'faq'
+      %}
+
+      {% if tab_blocks.size > 0 %}
+        <div class="ejuno-faq-tabs" role="tablist" aria-label="FAQ categories">
+          {% for tab in tab_blocks %}
+            {% assign tab_key = tab.settings.key | default: tab.settings.label | handleize %}
+            <button
+              type="button"
+              class="ejuno-faq-tab{% if forloop.first %} is-active{% endif %}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-faq-tab="{{ tab_key }}"
+              {{ tab.shopify_attributes }}
+            >
+              {{ tab.settings.label }}
+            </button>
+          {% endfor %}
+        </div>
+
+        {% for tab in tab_blocks %}
+          {% assign tab_key = tab.settings.key | default: tab.settings.label | handleize %}
+          <div
+            class="ejuno-faq-panel{% unless forloop.first %} is-hidden{% endunless %}"
+            data-faq-panel="{{ tab_key }}"
+            role="tabpanel"
+            {% unless forloop.first %}hidden{% endunless %}
+          >
+            {% assign panel_has_items = false %}
+            {% for block in faq_blocks %}
+              {% assign block_key = block.settings.tab_key | handleize %}
+              {% if block_key == tab_key %}
+                {% assign panel_has_items = true %}
+                <div class="faq-item" {{ block.shopify_attributes }}>
+                  <button type="button" class="faq-q" aria-expanded="false">
+                    <span class="faq-q__text">{{ block.settings.question }}</span>
+                    <span class="faq-q__icon" aria-hidden="true"></span>
+                  </button>
+                  <div class="faq-a" hidden>
+                    <div class="faq-a__inner">{{ block.settings.answer }}</div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+            {% unless panel_has_items %}
+              <p class="ejuno-faq-empty">No questions in this category yet.</p>
+            {% endunless %}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% for block in faq_blocks %}
+          <div class="faq-item" {{ block.shopify_attributes }}>
+            <button type="button" class="faq-q" aria-expanded="false">
+              <span class="faq-q__text">{{ block.settings.question }}</span>
+              <span class="faq-q__icon" aria-hidden="true"></span>
+            </button>
+            <div class="faq-a" hidden>
+              <div class="faq-a__inner">{{ block.settings.answer }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% if section.settings.cta_label != blank %}
+        <div class="faq-cta">
+          <a class="btn primary" href="{{ section.settings.cta_url | default: '/pages/contact' }}">{{ section.settings.cta_label }}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "FAQ list",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Contact eJuno"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "CTA URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Category tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab label",
+          "default": "Technical Queries"
+        },
+        {
+          "type": "text",
+          "id": "key",
+          "label": "Tab key (match FAQ tab key)",
+          "default": "Technicalfaqs",
+          "info": "Must match the Tab key on FAQ blocks for this category."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "FAQ",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_key",
+          "label": "Tab key",
+          "default": "Technicalfaqs",
+          "info": "Leave blank if not using category tabs."
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How does eJuno help couples today?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>eJuno brings together venue discovery, wedding services, planning tools, inspiration and support.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ list"
+    }
+  ]
+}
+{% endschema %}

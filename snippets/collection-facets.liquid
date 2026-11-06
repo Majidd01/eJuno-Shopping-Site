@@ -1,0 +1,347 @@
+{% comment %}
+  Storefront filters — pills, panels, mobile sheet, active chips.
+{% endcomment %}
+{% liquid
+  assign filters_active = false
+  assign active_filter_count = 0
+  for f in collection.filters
+    assign fl = f.label | downcase
+    assign fp = f.param_name | default: '' | downcase
+    if fl == 'availability' or fl == 'out of stock' or fl contains 'availability' or fp contains 'availability'
+      continue
+    endif
+    if f.type == 'price_range'
+      if f.min_value.value != blank or f.max_value.value != blank
+        assign filters_active = true
+        assign active_filter_count = active_filter_count | plus: 1
+      endif
+    else
+      assign active_filter_count = active_filter_count | plus: f.active_values.size
+      if f.active_values.size > 0
+        assign filters_active = true
+      endif
+    endif
+  endfor
+
+  assign user_sort_active = false
+  if request.query_parameters.sort_by != blank
+    assign user_sort_active = true
+  endif
+%}
+
+{% if collection.filters.size > 0 or collection.sort_options.size > 0 %}
+  <facet-filters
+    class="ejuno-facets"
+    data-facets
+    data-active-count="{{ active_filter_count }}"
+    data-default-sort="{{ collection.default_sort_by | escape }}"
+  >
+    <div class="ejuno-facets__bar">
+      <button
+        type="button"
+        class="ejuno-facets__filter-trigger"
+        data-facets-mobile-open
+        aria-expanded="false"
+        aria-controls="EjunoFacetsMobileSheet"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 5h16l-6 7.5V19l-4 2v-8.5L4 5z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+        </svg>
+        <span>Filter</span>
+        <span
+          class="ejuno-facets__mobile-count"
+          data-facet-mobile-count
+          {% if active_filter_count == 0 %}data-count="0"{% endif %}
+        >
+          {% if active_filter_count > 0 %}{{ active_filter_count }}{% endif %}
+        </span>
+      </button>
+
+      <div class="ejuno-facets__scroll ejuno-facets__scroll--desktop" hidden>
+        {% render 'collection-facets-row',
+          show_counts: show_counts,
+          apply_label: apply_label,
+          context: 'desktop'
+        %}
+      </div>
+    </div>
+
+    <div class="ejuno-facets__mobile-backdrop" data-facets-mobile-backdrop hidden></div>
+    <div
+      class="ejuno-facets__mobile-sheet"
+      id="EjunoFacetsMobileSheet"
+      data-facets-mobile-sheet
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="EjunoFacetsMobileTitle"
+    >
+      <div class="ejuno-facets__mobile-sheet-head">
+        <h3 id="EjunoFacetsMobileTitle">Filters</h3>
+        <button type="button" class="ejuno-facets__mobile-close" data-facets-mobile-close aria-label="Close filters">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.85" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="ejuno-facets__mobile-sheet-body" data-facets-mobile-body>
+        {% render 'collection-facets-row',
+          show_counts: show_counts,
+          apply_label: apply_label,
+          context: 'mobile'
+        %}
+      </div>
+      <div class="ejuno-facets__mobile-sheet-foot">
+        <button type="button" class="btn secondary" data-facets-mobile-clear>Clear all</button>
+        <button type="submit" class="btn primary ejuno-facets__apply-all" data-facets-apply>
+          <span data-facets-apply-label>{{ apply_label | default: 'Apply all' }}</span>
+        </button>
+      </div>
+    </div>
+
+    {% if filters_active %}
+      <div class="ejuno-facets__meta">
+{%- liquid
+  assign ejuno_pf_gte = -1
+  assign ejuno_pf_lte = -1
+  for ejf in collection.filters
+    if ejf.type == 'price_range'
+      if ejf.min_value.value != blank
+        assign ejuno_pf_gte = ejf.min_value.value | times: 1
+      endif
+      if ejf.max_value.value != blank
+        assign ejuno_pf_lte = ejf.max_value.value | times: 1
+      endif
+    endif
+  endfor
+-%}
+        {%- comment -%}
+          QA 19 Oct: Shopify's price filter returns a product when ANY variant is in range
+          (e.g. "venue * addson": $1,200 standard + $14,400 premium matches >= $5,000), but
+          cards show and filter on the "Starting from" price (price_min), so the grid hides it.
+          Count only products whose starting price is in range. A plain loop over
+          collection.products stops at 50 products, so walk up to 250 with paginate.
+        {%- endcomment -%}
+        {%- assign ejuno_rc = collection.products_count -%}
+        {%- if ejuno_pf_gte >= 0 or ejuno_pf_lte >= 0 -%}
+          {%- assign ejuno_rc_done = false -%}
+          {%- paginate collection.products by 250 -%}
+            {%- if paginate.current_page == 1 -%}
+              {%- liquid
+                assign ejuno_rc_done = true
+                for ejp in collection.products
+                  assign ejpp = ejp.price_min | default: ejp.price
+                  if ejuno_pf_gte >= 0 and ejpp < ejuno_pf_gte
+                    assign ejuno_rc = ejuno_rc | minus: 1
+                  elsif ejuno_pf_lte >= 0 and ejpp > ejuno_pf_lte
+                    assign ejuno_rc = ejuno_rc | minus: 1
+                  endif
+                endfor
+              -%}
+            {%- endif -%}
+          {%- endpaginate -%}
+          {%- unless ejuno_rc_done -%}
+            {%- liquid
+              for ejp in collection.products
+                assign ejpp = ejp.price_min | default: ejp.price
+                if ejuno_pf_gte >= 0 and ejpp < ejuno_pf_gte
+                  assign ejuno_rc = ejuno_rc | minus: 1
+                elsif ejuno_pf_lte >= 0 and ejpp > ejuno_pf_lte
+                  assign ejuno_rc = ejuno_rc | minus: 1
+                endif
+              endfor
+            -%}
+          {%- endunless -%}
+        {%- endif -%}
+        <p class="ejuno-facets__results" data-results-count-wrap data-server-count="{{ ejuno_rc }}">
+          <strong data-results-count>{{ ejuno_rc }}</strong>
+          <span data-results-label>{% if ejuno_rc == 1 %}result{% else %}results{% endif %}</span>
+        </p>
+        <div class="ejuno-facets__chips" data-facet-chips>
+          {% for filter in collection.filters %}
+            {% assign fl = filter.label | downcase %}
+            {% assign fp = filter.param_name | default: '' | downcase %}
+            {% if fl == 'availability' or fl == 'out of stock' or fl contains 'availability' or fp contains 'availability' %}
+              {% continue %}
+            {% endif %}
+            {% for value in filter.active_values %}
+              <a href="{{ value.url_to_remove }}" class="ejuno-facet-chip">
+                <span class="ejuno-facet-chip__label">{{ filter.label }}: {{ value.label }}</span>
+                <span class="ejuno-facet-chip__remove" aria-hidden="true">&times;</span>
+              </a>
+            {% endfor %}
+            {% if filter.type == 'price_range' %}
+              {% if filter.min_value.value != blank or filter.max_value.value != blank %}
+                <a href="{{ filter.url_to_remove }}" class="ejuno-facet-chip" data-price-chip aria-label="Remove price filter">
+                  <span class="ejuno-facet-chip__label">
+                    {%- comment -%} Trello 693 (reopen 28 Oct): whole euros, no decimals, e.g. €1 – €200. Trello 693: show the applied range as "Price: min – max". {%- endcomment -%}
+                    {%- comment -%} Trello 732: minimum first, then maximum, each labelled. {%- endcomment -%}
+                    Price:
+                    {% if filter.min_value.value != blank and filter.max_value.value != blank -%}
+                      Min {% render 'ejuno-money-listing', cents: filter.min_value.value %}, Max {% render 'ejuno-money-listing', cents: filter.max_value.value %}
+                    {%- elsif filter.min_value.value != blank -%}
+                      Min {% render 'ejuno-money-listing', cents: filter.min_value.value %}
+                    {%- else -%}
+                      Max {% render 'ejuno-money-listing', cents: filter.max_value.value %}
+                    {%- endif %}
+                  </span>
+                  <span class="ejuno-facet-chip__remove" aria-hidden="true">&times;</span>
+                </a>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <a href="{{ collection.url }}" class="ejuno-facets__clear">Clear all</a>
+      </div>
+    {% endif %}
+    {%- comment -%}
+      Trello 693: when Search & Discovery doesn't expose a price_range filter, the pill row uses the
+      fallback Price inputs (filter.v.price.gte/lte in the URL). Liquid has no access to query params,
+      so nothing showed the applied range and the inputs came back empty. Show the chip, a results
+      count and the values from the URL here; ejuno-collection.js still narrows the cards by price.
+    {%- endcomment -%}
+    <script>
+      (function () {
+        var root = document.currentScript && document.currentScript.closest('facet-filters');
+        if (!root) return;
+        var params = new URLSearchParams(window.location.search);
+        function num(k) { var v = params.get(k); if (v == null || String(v).trim() === '') return NaN; return (function (v) { v = String(v == null ? '' : v).replace(/[^0-9.,-]/g, ''); if (/^-?\d{1,3}([.,]\d{3})+$/.test(v)) v = v.replace(/[.,]/g, ''); else v = v.replace(/\.(?=.*[.,])/g, '').replace(',', '.'); return parseFloat(v); })(v); } /* Trello 657 v2: tolerant of 60.001 / 60,001 */
+        var gte = num('filter.v.price.gte'), lte = num('filter.v.price.lte');
+        var hasG = isFinite(gte), hasL = isFinite(lte);
+        if (!hasG && !hasL) return;
+        root.querySelectorAll('[data-facet-price-fallback]').forEach(function (pill) {
+          pill.classList.add('is-active');
+          var mn = pill.querySelector('[data-facet-price="min"]'), mx = pill.querySelector('[data-facet-price="max"]');
+          if (mn && hasG && !mn.value) mn.value = String(gte);
+          if (mx && hasL && !mx.value) mx.value = String(lte);
+        });
+        if (root.querySelector('[data-price-chip]')) return;
+        var cur = (window.Shopify && Shopify.currency && Shopify.currency.active) || '{{ cart.currency.iso_code | default: shop.currency }}';
+        function fmt(n) { try { var s = (function (n) { var c = Math.round(Number(n) * 100), w = Math.floor(c / 100), r = c % 100; return String(w).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + (r ? ',' + (r < 10 ? '0' : '') + r : ''); })(n); /* Trello 657 v2: euro style */ return (cur === 'EUR' ? '\u20ac' : cur + ' ') + s; } catch (e) { return String(n); } }
+        var label = 'Price: ' + (hasG && hasL ? 'Min ' + fmt(gte) + ', Max ' + fmt(lte) : (hasG ? 'Min ' + fmt(gte) : 'Max ' + fmt(lte)));
+        var rm = new URLSearchParams(window.location.search);
+        rm.delete('filter.v.price.gte'); rm.delete('filter.v.price.lte'); rm.delete('page');
+        var rmUrl = window.location.pathname + (rm.toString() ? '?' + rm.toString() : '');
+        var meta = root.querySelector('.ejuno-facets__meta');
+        if (!meta) {
+          meta = document.createElement('div');
+          meta.className = 'ejuno-facets__meta';
+          meta.innerHTML = '<p class="ejuno-facets__results" data-results-count-wrap><strong data-results-count></strong> <span data-results-label>results</span></p><div class="ejuno-facets__chips" data-facet-chips></div><a href="{{ collection.url }}" class="ejuno-facets__clear">Clear all</a>';
+          root.appendChild(meta);
+        }
+        var chips = meta.querySelector('[data-facet-chips]');
+        var a = document.createElement('a');
+        a.href = rmUrl; a.className = 'ejuno-facet-chip'; a.setAttribute('data-price-chip', ''); a.setAttribute('aria-label', 'Remove price filter');
+        a.innerHTML = '<span class="ejuno-facet-chip__label"></span><span class="ejuno-facet-chip__remove" aria-hidden="true">&times;</span>';
+        a.firstChild.textContent = label;
+        chips.appendChild(a);
+        var n = parseInt(root.getAttribute('data-active-count') || '0', 10) + 1;
+        root.setAttribute('data-active-count', String(n));
+        var badge = root.querySelector('[data-facet-mobile-count]');
+        if (badge) { badge.textContent = String(n); badge.removeAttribute('data-count'); }
+        function sync() {
+          if (typeof window.ejunoEnforcePriceFilterFromUrl === 'function') { window.ejunoEnforcePriceFilterFromUrl(); return; }
+          var numEl = meta.querySelector('[data-results-count]');
+          if (numEl && !numEl.textContent.trim()) {
+            var c = 0;
+            document.querySelectorAll('[data-collection-grid] .result-card[data-price-cents]').forEach(function (card) {
+              var a = parseInt(card.getAttribute('data-price-cents'), 10) / 100;
+              if (!isFinite(a) || ((!hasG || a >= gte - 0.0001) && (!hasL || a <= lte + 0.0001))) c += 1;
+            });
+            numEl.textContent = String(c);
+            var lab = meta.querySelector('[data-results-label]'); if (lab) lab.textContent = c === 1 ? 'result' : 'results';
+          }
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync); else sync();
+        window.addEventListener('load', sync);
+      })();
+    </script>
+    <script>
+      /* Trello 732 reopen 3 Nov: an invalid range (Min > Max, or Min = Max) is never applied or swapped.
+         The hint names the field edited last; Apply / Apply all stay disabled and every submit path is blocked until the range is valid. */
+      (function () {
+        var root = document.currentScript && document.currentScript.closest('facet-filters');
+        if (!root || window.__ejPriceGuard2) return; window.__ejPriceGuard2 = true;
+        var pp = function (v) { v = String(v == null ? '' : v).trim(); if (!/^(\d+([.,]\d{1,2})?|\d{1,3}(\.\d{3})+(,\d{1,2})?|\d{1,3}(,\d{3})+(\.\d{1,2})?)$/.test(v)) return NaN; if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(v)) v = v.replace(/\./g, '').replace(',', '.'); else if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(v)) v = v.replace(/,/g, ''); else v = v.replace(',', '.'); return parseFloat(v); };
+        function val(el) { var v = String(el.value || '').trim(); return v === '' ? NaN : pp(v); }
+        function badFmt(el) { var v = String(el.value || '').trim(); return v !== '' && !/^-/.test(v) && !isFinite(pp(v)); }
+        function msg(box) {
+          var mn = box.querySelector('[data-facet-price="min"]'), mx = box.querySelector('[data-facet-price="max"]');
+          if (!mn || !mx) return '';
+          var a = val(mn), b = val(mx);
+          /* Trello 793: negative prices are rejected here, not silently dropped */
+          if ((isFinite(a) && a < 0) || (isFinite(b) && b < 0) || /^\s*-/.test(mn.value) || /^\s*-/.test(mx.value)) return 'Price can\u2019t be negative.';
+          /* Trello 793 reopen (5 Nov): 30+5, 1e3, letters or 5- are rejected */
+          if (badFmt(mn) || badFmt(mx)) return 'Please enter a valid price (numbers only).';
+          if (!isFinite(a) || !isFinite(b)) return '';
+          if (a > b) return 'Minimum price can\u2019t be higher than maximum price.';
+          if (a === b) return 'Max price must be higher than Min price.';
+          return '';
+        }
+        function bad() {
+          var r = false;
+          document.querySelectorAll('.ejuno-facet-pill__price').forEach(function (box) {
+            var m = msg(box), hint = box.parentNode.querySelector('[data-ej-price-hint]');
+            var live = !box.querySelector('[data-facet-price]:disabled') && box.getClientRects().length;
+            box.querySelectorAll('[data-facet-price]').forEach(function (i) { var own = m && (m !== 'Please enter a valid price (numbers only).' || badFmt(i)); if (own) { i.setAttribute('aria-invalid', 'true'); i.style.borderColor = '#b42318'; i.style.boxShadow = '0 0 0 1px #b42318'; } else { i.removeAttribute('aria-invalid'); i.style.borderColor = ''; i.style.boxShadow = ''; } });
+            if (m && live) {
+              r = true;
+              if (!hint) { hint = document.createElement('p'); hint.setAttribute('data-ej-price-hint', ''); hint.setAttribute('role', 'alert'); hint.style.cssText = 'color:#b42318;font-size:13px;margin:8px 0 0'; box.parentNode.insertBefore(hint, box.nextSibling); }
+              hint.textContent = m;
+            } else if (hint) { hint.remove(); }
+          });
+          return r;
+        }
+        function sync() {
+          var isBad = bad();
+          document.querySelectorAll('[data-facet-apply-panel], [data-facets-apply], .ejuno-facets__apply-all').forEach(function (b) {
+            if (isBad) { b.disabled = true; b.setAttribute('data-ej-price-blocked', ''); b.setAttribute('aria-disabled', 'true'); b.style.opacity = '.45'; b.style.cursor = 'not-allowed'; }
+            else if (b.hasAttribute('data-ej-price-blocked')) { b.disabled = false; b.removeAttribute('data-ej-price-blocked'); b.removeAttribute('aria-disabled'); b.style.opacity = ''; b.style.cursor = ''; }
+          });
+          return isBad;
+        }
+        window.ejunoPriceGuardSync = sync;
+        /* Trello 793 reopen: bad text (30+5, 1e3, letters) is shown and flagged as typed rather than silently stripped; valid values are tidied (1.000 -> 1000) so the filter gets a plain number */
+        document.addEventListener('change', function (e) {
+          var el = e.target; if (!el || !el.matches || !el.matches('[data-facet-price]')) return;
+          var n = val(el); if (isFinite(n) && n >= 0 && String(n) !== String(el.value).trim()) el.value = String(n);
+        }, true);
+        document.addEventListener('click', function (e) {
+          if (!(e.target && e.target.closest && e.target.closest('[data-facet-apply-panel], [data-facets-apply], .ejuno-facets__apply-all'))) return;
+          document.querySelectorAll('[data-facet-price]').forEach(function (el) { var n = val(el); if (isFinite(n) && n >= 0) el.value = String(n); });
+        }, true);
+        try {
+          if (sessionStorage.getItem('ejPriceUrlInvalid')) {
+            sessionStorage.removeItem('ejPriceUrlInvalid');
+            var note = document.createElement('p'); note.setAttribute('role', 'alert'); note.setAttribute('data-ej-price-url-note', '');
+            note.style.cssText = 'color:#b42318;font-size:13px;margin:8px 0';
+            note.textContent = 'That price wasn\u2019t valid (numbers only), so the price filter wasn\u2019t applied.';
+            root.insertBefore(note, root.firstChild);
+          }
+        } catch (e) {}
+        ['input', 'change', 'keyup', 'blur', 'focusout'].forEach(function (t) {
+          window.addEventListener(t, function (e) {
+            var el = e.target;
+            if (!el || !el.matches || !el.matches('[data-facet-price]')) return;
+            if (t === 'input' || t === 'change' || t === 'keyup') { var box = el.closest('.ejuno-facet-pill__price'); if (box) box.setAttribute('data-ej-last', el.getAttribute('data-facet-price')); }
+            sync();
+          }, true);
+        });
+        /* belt and braces: no click on Apply, Enter in a price field or form submit gets through while invalid */
+        document.addEventListener('click', function (e) {
+          var b = e.target && e.target.closest && e.target.closest('[data-facet-apply-panel], [data-facets-apply], .ejuno-facets__apply-all');
+          if (b && sync()) { e.preventDefault(); e.stopImmediatePropagation(); }
+        }, true);
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' && e.target && e.target.matches && e.target.matches('[data-facet-price]') && sync()) { e.preventDefault(); e.stopImmediatePropagation(); }
+        }, true);
+        document.addEventListener('submit', function (e) {
+          if (e.target && e.target.id === 'FacetFiltersForm' && sync()) { e.preventDefault(); e.stopImmediatePropagation(); }
+        }, true);
+        document.addEventListener('toggle', function () { setTimeout(sync, 0); }, true);
+        document.addEventListener('click', function () { setTimeout(sync, 0); });
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync); else sync();
+      })();
+    </script>
+  </facet-filters>
+{% endif %}

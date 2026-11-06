@@ -1,0 +1,115 @@
+{% comment %}
+  Floating booking / registry guide for venue, service, and product PDPs.
+{% endcomment %}
+{% liquid
+  if catalog
+    assign guide_mode = 'product'
+  elsif service
+    assign guide_mode = 'service'
+  else
+    assign guide_mode = 'venue'
+  endif
+  assign guide_title = section.settings.guide_title | default: 'How it works'
+  assign guide_fab_label = section.settings.guide_fab_label | default: 'Guide'
+%}
+
+<div
+  class="ejuno-pdp-guide"
+  data-ejuno-pdp-guide
+  data-guide-mode="{{ guide_mode }}"
+  data-guide-title-default="{{ guide_title | escape }}"
+  data-guide-title-olivers="How Your Reservation Works"
+>
+  <button
+    type="button"
+    class="ejuno-pdp-guide__fab"
+    data-guide-open
+    aria-haspopup="dialog"
+    aria-controls="EjunoPdpGuideDialog"
+    aria-expanded="false"
+  >
+    <span class="ejuno-pdp-guide__fab-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/>
+        <path d="M12 11v5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+        <circle cx="12" cy="8" r="1" fill="currentColor"/>
+      </svg>
+    </span>
+    <span class="ejuno-pdp-guide__fab-text visually-hidden">{{ guide_fab_label }}</span>
+  </button>
+
+  <div class="ejuno-pdp-guide__backdrop" data-guide-close hidden></div>
+  <div
+    class="ejuno-pdp-guide__dialog"
+    id="EjunoPdpGuideDialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="EjunoPdpGuideTitle"
+    hidden
+  >
+    <div class="ejuno-pdp-guide__dialog-inner">
+      <header class="ejuno-pdp-guide__head">
+        <div>
+          <p class="ejuno-pdp-guide__kicker">Quick help</p>
+          <h2 class="ejuno-pdp-guide__title" id="EjunoPdpGuideTitle">{{ guide_title }}</h2>
+        </div>
+        <button type="button" class="ejuno-pdp-guide__close" data-guide-close aria-label="Close guide">&times;</button>
+      </header>
+
+      <div class="ejuno-pdp-guide__panels">
+        <div class="ejuno-pdp-guide__panel" data-guide-panel="venue"{% if guide_mode != 'venue' %} hidden{% endif %}>
+          <ol class="ejuno-pdp-guide__steps">
+            <li><strong>Choose your package</strong> if more than one option is listed in the sidebar.</li>
+            <li><strong>Select check-in &amp; check-out</strong> using the dates field or calendar.</li>
+            <li><strong>Personalise with add-ons</strong> (optional) — pick extras, then confirm dates if prompted.</li>
+            <li>Tap <strong>{{ section.settings.button_label | default: 'Request availability' }}</strong> to start the booking.</li>
+            <li><strong>Sign in</strong> when asked — guest details, then billing address if required.</li>
+            <li><strong>Review and confirm</strong> your reservation; pay a deposit when checkout is offered.</li>
+          </ol>
+          <p class="ejuno-pdp-guide__note">Need dates first? The site will open the calendar automatically when you request availability.</p>
+          <button type="button" class="ejuno-pdp-guide__cta" data-guide-scroll="booking">Go to booking</button>
+        </div>
+
+        <div class="ejuno-pdp-guide__panel" data-guide-panel="olivers" hidden>
+          <ol class="ejuno-pdp-guide__steps">
+            <li><strong>Request availability</strong> Tap <strong>Request availability</strong> to start your reservation.</li>
+            <li><strong>Choose your dates</strong> Select your check-in and check-out, then confirm.</li>
+            <li><strong>Guest details</strong> Enter your guest details and confirm the booking.</li>
+            <li><strong>Billing address</strong> Add your billing address and continue with the reservation.</li>
+            <li><strong>Wait for approval</strong> Our team will review your request. Once approved, you’ll get an email to pay the initial deposit.</li>
+            <li><strong>Final payment</strong> Complete the remaining payment later from your Couple dashboard under Reservations.</li>
+          </ol>
+          <p class="ejuno-pdp-guide__note">After you request availability, the date picker opens automatically so you can choose your dates.</p>
+          <button type="button" class="ejuno-pdp-guide__cta" data-guide-scroll="booking">Go to booking</button>
+        </div>
+
+        <div class="ejuno-pdp-guide__panel" data-guide-panel="service"{% if guide_mode != 'service' %} hidden{% endif %}>
+          <ol class="ejuno-pdp-guide__steps">
+            <li><strong>Pick your package or option</strong> from the sidebar if variants are shown.</li>
+            <li><strong>Select your preferred date</strong> (and time if shown) on the calendar.</li>
+            <li>Tap <strong>{{ section.settings.button_label | default: 'Request availability' }}</strong> to continue.</li>
+            <li><strong>Sign in</strong> and complete any guest or contact details requested.</li>
+            <li><strong>Confirm the booking</strong> and follow payment steps if a deposit applies.</li>
+          </ol>
+          <p class="ejuno-pdp-guide__note">Services may use a single date instead of a date range — the calendar will guide you.</p>
+          <button type="button" class="ejuno-pdp-guide__cta" data-guide-scroll="booking">Go to booking</button>
+        </div>
+
+        <div class="ejuno-pdp-guide__panel" data-guide-panel="product"{% if guide_mode != 'product' %} hidden{% endif %}>
+          <ol class="ejuno-pdp-guide__steps">
+            <li><strong>Choose the option</strong> (size, style, or variant) in the sidebar if available.</li>
+            <li><strong>Add to cart</strong> to buy now, or adjust quantity before checkout.</li>
+            <li><strong>Add to registry</strong> to save this gift for your wedding list — sign in with a couple account when prompted.</li>
+            <li>Registry items can include <strong>preferred dates or notes</strong> when the product supports them.</li>
+            <li>Checkout and registry gifts use the same secure sign-in as venue booking.</li>
+          </ol>
+          <p class="ejuno-pdp-guide__note">Registry is for couples planning their wedding; use Add to cart for immediate purchase.</p>
+          <div class="ejuno-pdp-guide__cta-row">
+            <button type="button" class="ejuno-pdp-guide__cta" data-guide-scroll="commerce">Go to add to cart</button>
+            <button type="button" class="ejuno-pdp-guide__cta ejuno-pdp-guide__cta--secondary" data-guide-trigger="registry">Add to registry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

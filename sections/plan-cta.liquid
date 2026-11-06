@@ -1,0 +1,135 @@
+<section class="plan-cta{% if section.settings.plum %} plan-cta--plum{% endif %}" aria-labelledby="plan-cta-heading-{{ section.id }}">
+  <div class="container plan-cta__inner">
+    <h2 class="plan-cta__heading" id="plan-cta-heading-{{ section.id }}">
+      <span class="plan-cta__heading-line">{{ section.settings.heading_line_1 }}</span>
+      {% if section.settings.heading_line_2 != blank %}
+        <span class="plan-cta__heading-accent">{{ section.settings.heading_line_2 }}</span>
+      {% endif %}
+    </h2>
+    {% if section.settings.text != blank %}
+      <p class="plan-cta__text">{{ section.settings.text }}</p>
+    {% endif %}
+    {% if section.settings.button_label != blank %}
+      <a
+        class="btn primary plan-cta__btn"
+        href="{{ section.settings.button_url | default: 'https://ejuno-staging.web.app/couple-dashboard' }}"
+      >
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+.plan-cta {
+  background: linear-gradient(180deg, rgba(236, 229, 221, 0.55) 0%, rgba(246, 241, 235, 0.9) 100%);
+  padding: 88px 0 96px;
+  text-align: center;
+}
+
+.plan-cta__inner {
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plan-cta__heading {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(28px, 4.6vw, 48px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.plan-cta__heading-line {
+  display: block;
+}
+
+.plan-cta__heading-accent {
+  display: inline;
+  color: var(--berry);
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 92%;
+  background-repeat: no-repeat;
+  background-size: 100% 2px;
+  padding-bottom: 2px;
+}
+
+.plan-cta__text {
+  margin: 22px 0 0;
+  max-width: 58ch;
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.35vw, 17px);
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.plan-cta__btn {
+  margin-top: 28px;
+  min-width: 180px;
+}
+
+@media (max-width: 760px) {
+  .plan-cta {
+    padding: 64px 0 72px;
+  }
+
+  .plan-cta__text {
+    margin-top: 18px;
+  }
+
+  .plan-cta__btn {
+    margin-top: 22px;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Plan CTA",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    { "type": "checkbox", "id": "plum", "label": "Plum background (Trello 679)", "default": true },
+    {
+      "type": "text",
+      "id": "heading_line_1",
+      "label": "Heading line 1",
+      "default": "Effortless Planning."
+    },
+    {
+      "type": "text",
+      "id": "heading_line_2",
+      "label": "Heading line 2 (accent)",
+      "default": "Exceptional Weddings."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Supporting text",
+      "default": "eJuno elevates your wedding journey with a seamless, intuitive platform that brings clarity to every step. Discover venues, connect with trusted vendors, and curate each moment with confidence, all in one place."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Start Planning"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Plan CTA"
+    }
+  ]
+}
+{% endschema %}

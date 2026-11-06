@@ -1,0 +1,122 @@
+{% liquid
+  assign ejuno_search_blob = product.title | append: ' ' | append: product.vendor | append: ' ' | append: product.type
+  for tag in product.tags
+    assign ejuno_search_blob = ejuno_search_blob | append: ' ' | append: tag
+  endfor
+  # Trello 660: home hero Location filter must match the venue location metafield, not just tags.
+  assign ejuno_locs = product.metafields.custom.location.value
+  for loc in ejuno_locs
+    assign ejuno_search_blob = ejuno_search_blob | append: ' ' | append: loc
+    if loc contains 'Lake' or loc contains 'lake'
+      assign ejuno_search_blob = ejuno_search_blob | append: ' italian lakes'
+    endif
+  endfor
+  assign ejuno_price_cents = product.price_min
+  if ejuno_price_cents == blank
+    assign ejuno_price_cents = product.price
+  endif
+%}
+<a
+  href="{{ product.url }}"
+  class="result-card{% if featured %} featured-result{% endif %}"
+  data-collection-item
+  data-search-keys="{{ ejuno_search_blob | strip | downcase | escape }}"
+  data-locations="{{ ejuno_locs | join: '|' | downcase | escape }}"
+  {% if ejuno_price_cents != blank %}data-price-cents="{{ ejuno_price_cents }}"{% endif %}
+>
+  {% if product.featured_media %}
+    {%- comment -%} Trello 689 BUG-10: responsive srcset (never wider than the uploaded photo) so cards stay sharp on retina. {%- endcomment -%}
+    {%- liquid
+      assign ej_card_w = product.featured_media.width | default: 1200 | at_most: 2000
+      assign ej_card_srcset = ''
+      assign ej_card_widths = '360,480,640,800,1000,1200,1600' | split: ','
+      for cw in ej_card_widths
+        assign cwn = cw | plus: 0
+        if cwn < ej_card_w
+          assign ej_card_u = product.featured_media | image_url: width: cwn
+          assign ej_card_srcset = ej_card_srcset | append: ej_card_u | append: ' ' | append: cwn | append: 'w, '
+        endif
+      endfor
+      assign ej_card_u = product.featured_media | image_url: width: ej_card_w
+      assign ej_card_srcset = ej_card_srcset | append: ej_card_u | append: ' ' | append: ej_card_w | append: 'w'
+    -%}
+    <img
+      src="{{ product.featured_media | image_url: width: 1200 }}"
+      srcset="{{ ej_card_srcset }}"
+      sizes="(min-width: 1200px) 560px, (min-width: 750px) 50vw, 100vw"
+      style="object-fit:cover"
+      alt="{{ product.featured_media.alt | default: product.title | escape }}"
+      width="{{ product.featured_media.width }}"
+      height="{{ product.featured_media.height }}"
+      loading="{% if eager %}eager{% else %}lazy{% endif %}"
+    >
+  {% else %}
+    <img src="{{ 'VEN-IMG-002.webp' | asset_url }}" alt="{{ product.title | escape }}" width="1200" height="900" loading="lazy">
+  {% endif %}
+  <div class="result-body">
+    <h3 class="result-card__title">{{ product.title }}</h3>
+    {%- comment -%} Trello 714 DISC-31: card meta = real location (custom.location) · type; never a placeholder. {%- endcomment -%}
+    {%- liquid
+      assign ejuno_card_type = product.type | strip
+      assign ejuno_meta_parts = ''
+      for loc in ejuno_locs limit: 2
+        assign loc_s = loc | strip
+        if loc_s != blank
+          assign ejuno_meta_parts = ejuno_meta_parts | append: loc_s | append: '||'
+        endif
+      endfor
+      if ejuno_card_type != blank
+        assign ejuno_meta_parts = ejuno_meta_parts | append: ejuno_card_type
+      endif
+      assign ejuno_card_meta = ejuno_meta_parts | split: '||' | join: ' · ' | strip
+    -%}
+    {% if ejuno_card_meta != blank %}
+      <div class="result-meta">{{ ejuno_card_meta }}</div>
+    {% endif %}
+    <div class="tagline">
+      {%- comment -%} Trello 656/657: chips lead with the tag the shopper filtered by (guest range or accommodation type), then one guest range at most, never three mixed ranges. {%- endcomment -%}
+      {%- liquid
+        assign ej_cur = '|'
+        for ct in current_tags
+          assign ej_cur = ej_cur | append: ct | handleize | append: '|'
+        endfor
+        # Trello 807: never show the vendor name as a card tag.
+        assign ej_vendor_h = product.vendor | handleize
+        assign ej_first = ''
+        assign ej_has_guest = false
+        for pt in product.tags
+          assign pth = pt | handleize
+          if ej_vendor_h != blank and pth == ej_vendor_h
+            continue
+          endif
+          assign ptn = '|' | append: pt | handleize | append: '|'
+          if ej_cur contains ptn
+            assign ej_first = ej_first | append: pt | append: '§'
+            assign ptl = pt | downcase
+            if ptl contains 'guest'
+              assign ej_has_guest = true
+            endif
+          endif
+        endfor
+        assign ej_firsts = ej_first | split: '§'
+        assign ej_tag_n = 0
+      -%}
+      {%- for pt in ej_firsts -%}{%- if ej_tag_n < 3 -%}<span class="tag is-match">{{ pt }}</span>{%- assign ej_tag_n = ej_tag_n | plus: 1 -%}{%- endif -%}{%- endfor -%}
+      {%- for tag in product.tags -%}
+        {%- if ej_tag_n >= 3 -%}{%- break -%}{%- endif -%}
+        {%- assign th = tag | handleize -%}
+        {%- if ej_vendor_h != blank and th == ej_vendor_h -%}{%- continue -%}{%- endif -%}
+        {%- assign tn = '|' | append: tag | handleize | append: '|' -%}
+        {%- if ej_cur contains tn -%}{%- continue -%}{%- endif -%}
+        {%- assign tl = tag | downcase -%}
+        {%- if tl contains 'guest' -%}
+          {%- if ej_has_guest -%}{%- continue -%}{%- endif -%}
+          {%- assign ej_has_guest = true -%}
+        {%- endif -%}
+        <span class="tag">{{ tag }}</span>
+        {%- assign ej_tag_n = ej_tag_n | plus: 1 -%}
+      {%- endfor -%}
+    </div>
+    {% render 'ejuno-card-price', product: product %}
+  </div>
+</a>

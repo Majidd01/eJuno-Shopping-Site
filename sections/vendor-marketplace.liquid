@@ -1,0 +1,61 @@
+{% render 'ejuno-vendor-marketplace-mount',
+  search_placeholder: section.settings.search_placeholder,
+  search_button_label: section.settings.search_button_label,
+  api_base: section.settings.api_base,
+  detail_page_url: section.settings.detail_page_url,
+  load_more_label: section.settings.load_more_label,
+  load_more_loading: section.settings.load_more_loading,
+  featured_vendor_id: section.settings.featured_vendor_id
+%}
+
+{% schema %}
+{
+  "name": "Vendor marketplace grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search by name..."
+    },
+    {
+      "type": "text",
+      "id": "search_button_label",
+      "label": "Search button",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "api_base",
+      "label": "Vendors API base URL",
+      "default": "https://ejuno-dev.skylinxtech.co/api/vendors"
+    },
+    {
+      "type": "text",
+      "id": "detail_page_url",
+      "label": "Vendor detail URL prefix",
+      "default": "/pages/vendor-detail?id="
+    },
+    {
+      "type": "text",
+      "id": "featured_vendor_id",
+      "label": "Featured first vendor (API id)",
+      "default": "69e9087bed415e607ba5961c",
+      "info": "Marco Giovannetti · Tekne Visual"
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Load more label",
+      "default": "Load more vendors"
+    },
+    {
+      "type": "text",
+      "id": "load_more_loading",
+      "label": "Load more loading label",
+      "default": "Loading…"
+    }
+  ],
+  "presets": [{ "name": "Vendor marketplace grid" }]
+}
+{% endschema %}

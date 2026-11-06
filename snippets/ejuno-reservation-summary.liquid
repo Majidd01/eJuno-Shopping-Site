@@ -1,0 +1,94 @@
+{%- comment -%} Trello 753 (staging): reservation summary shown with the vendor-confirmation 'request received' message. Called from ejuno-product-booking-scripts. {%- endcomment -%}
+<script>
+(function(){
+function vcRequestedDates(req){ var out=[]; ['date','checkInDate','checkOutDate','checkoutDate'].forEach(function(k){ if (req && req[k]) out.push(String(req[k]).slice(0,10)); }); if (req && Array.isArray(req.dates)) req.dates.forEach(function(d){ out.push(String(d).slice(0,10)); }); return out.filter(function(v,i,a){ return v && a.indexOf(v) === i; }); }
+function vcIsService(){ if (window.ejunoVendorType) return String(window.ejunoVendorType).toLowerCase() === 'service'; var pd = window.productDetails || {}; return String(pd.vendorType || pd.type || '').toLowerCase() === 'service'; }/* Trello 753: reservation summary under the request-received message, built from what the guest selected plus any id/status the API returns. */
+function vcPick(o, keys){ if (!o || typeof o !== 'object') return ''; for (var i=0;i<keys.length;i++){ var v=o[keys[i]]; if (v!=null && v!=='' && typeof v!=='object') return String(v); } return ''; }
+function vcFmtDate(d){ if (!d) return ''; try { var x=new Date(String(d).slice(0,10)+'T00:00:00'); if (isNaN(x)) return String(d); return x.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); } catch(e){ return String(d); } }
+function vcShowSummary(data, raw, payload){
+  try {
+    var box = document.getElementById('ejuno-vendor-confirm-msg'); if (!box || !box.parentNode) return;
+    var api = (data && data.data && typeof data.data === 'object') ? data.data : (data || {});
+    var pd = window.productDetails || {};
+    var id = vcPick(api, ['bookingId','reservationId','requestId','confirmationId','orderNumber','_id','id']) || vcPick(data, ['bookingId','reservationId','requestId','_id','id']);
+    var name = pd.title || (document.querySelector('h1') && document.querySelector('h1').textContent.trim()) || '';
+    var dates = vcRequestedDates(raw || payload);
+    var sel = Array.isArray(window.selectedDates) ? window.selectedDates.map(function(d){ return String(d).slice(0,10); }) : [];
+    var useCheckout = typeof window.usesCheckInCheckOutDates === 'function' && window.usesCheckInCheckOutDates();
+    var dateText = '';
+    if (useCheckout && (raw && (raw.checkoutDate || raw.checkOutDate) || sel.length > 1)) dateText = vcFmtDate(dates[0] || sel[0]) + ' to ' + vcFmtDate((raw && (raw.checkoutDate || raw.checkOutDate)) || sel[sel.length-1]);
+    else dateText = (dates.length ? dates : sel).map(vcFmtDate).join(', ');
+    var guests = vcPick(raw, ['capacity','noOfGuests','numberOfGuests','guests','noOfPersons','adults']) || vcPick(payload, ['capacity']) || vcPick(api, ['capacity','noOfGuests','numberOfGuests']);
+    var vid = String((payload && payload.variantId) || (raw && raw.variantId) || '');
+    var v = (pd.variants || []).find(function(x){ return String(x.variantId) === vid || String(x.id) === vid; }) || null;
+    var pkg = v ? (v.title || v.name || v.packageName || '') : '';
+    if (/^default title$/i.test(pkg)) pkg = '';
+    var vcNumOf = function(x){ if (x==null || x==='') return NaN; if (typeof x==='number') return x; var t=String(x).replace(/[^\d.,-]/g,''); if (/,\d{1,2}$/.test(t)) t=t.replace(/\./g,'').replace(',','.'); else t=t.replace(/,/g,''); return parseFloat(t); };
+    var vcMoney = function(n){ var sym='€'; try { if (typeof getCurrencySymbol==='function') sym=getCurrencySymbol()||sym; } catch(e){} n = Math.round(Number(n)*100)/100; var wh = Math.abs(n % 1) < 0.005; return sym + n.toLocaleString('de-DE',{minimumFractionDigits:wh?0:2,maximumFractionDigits:wh?0:2}); };
+    var addons = []; try { if (typeof getSelectedAddOns==='function') addons = (getSelectedAddOns(pd)||[]).map(function(x){ return x.name||x.title||''; }).filter(Boolean); } catch(e){}
+    var addonsTotal = 0; try { if (typeof getSelectedAddOnsTotal==='function') addonsTotal = Number(getSelectedAddOnsTotal(pd))||0; } catch(e){}
+    var total = vcNumOf(raw && raw.calculatedPrice);
+    if (!(total>0)) total = vcNumOf(vcPick(api, ['totalAmount','totalPrice','amount','total']));
+    if (!(total>0)) ['summary-total-price','olivers-total-price','bundle-total-price'].some(function(k){ var el=document.getElementById(k); var n=vcNumOf(el && el.textContent); if (n>0){ total=n; return true; } return false; });
+    if (!(total>0) && v && Number(v.price)>0 && useCheckout && dates.length) { var co=(raw && (raw.checkoutDate||raw.checkOutDate)) || sel[sel.length-1]; var nn=Math.round((new Date(String(co).slice(0,10)) - new Date(dates[0]))/86400000); if (nn>0) total = Number(v.price)*nn + addonsTotal; }
+    var depPct = pd.paymentPolicy && pd.paymentPolicy.depositPercentage;
+    if (depPct==null || depPct==='') { var dpe=document.getElementById('depositPackage'); depPct = dpe ? vcNumOf(dpe.textContent) : NaN; }
+    depPct = Number(depPct); var hasDep = isFinite(depPct) && depPct > 0; var hasTot = total > 0;
+    var depAmt = hasDep && hasTot ? Math.round(total*depPct)/100 : 0;
+    /* Trello 791: use the same figures the guest saw on the payment review step */
+    var bd = raw && raw._ejunoBreakdown; if (bd && bd.total > 0) { total = bd.total; hasTot = true; depAmt = bd.deposit || 0; hasDep = depAmt > 0; if (bd.depPct != null) depPct = bd.depPct; else if (hasDep) depPct = Math.round(depAmt / total * 1000) / 10; }
+    var locEl = document.getElementById('venueLocationValue'); var loc = locEl ? locEl.textContent.trim() : '';
+    var pay = vcPick(api, ['paymentStatus','financialStatus']) || 'Not charged yet';
+    var status = vcPick(api, ['reservationStatus','bookingStatus','status']) || 'Awaiting vendor confirmation';
+    if (/^(true|false|success|ok)$/i.test(status)) status = 'Awaiting vendor confirmation';
+    var st = status.replace(/_/g,' '); st = st.charAt(0).toUpperCase() + st.slice(1);
+    var rows = [[vcIsService() ? 'Service' : 'Venue', name], [vcIsService() ? 'Areas served' : 'Location', loc], ['Dates', dateText], ['Guests', guests], ['Package', bd && bd.venue ? '' : pkg], ['Add-ons', bd && bd.addons ? '' : addons.join(', ')], ['Status', st]];
+    var prow = [['Total', hasTot ? vcMoney(total) : ''], ['Initial deposit', hasDep ? (depPct + '%' + (hasTot ? ' (' + vcMoney(depAmt) + ')' : '')) : ''], ['Balance (final payment)', hasDep && hasTot ? vcMoney(total - depAmt) : '']];
+    var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+    var msg = (box.textContent || '').trim() || "We've received your request.";
+    box.style.display = 'none'; box.innerHTML = '';
+    var old = document.getElementById('ejuno-reservation-summary'); if (old && !old.closest('.ejuno-rs-modal')) old.remove();
+    var html = '<div class="ejuno-rs-msg" role="status"><span class="ejuno-rs-tick" aria-hidden="true">&#10003;</span><span>' + esc(msg) + '</span></div>'
+      + '<div id="ejuno-reservation-summary" class="ejuno-reservation-summary"><div class="ejuno-rs-h">Your request summary</div>' + rows.filter(function(r){ return r[1]; }).map(function(r){ return '<div class="ejuno-rs-row"><span>' + esc(r[0]) + '</span><strong>' + esc(r[1]) + '</strong></div>'; }).join('') + '<div class="ejuno-rs-h ejuno-rs-sub">Payment breakdown</div>' + ((bd && bd.total > 0 && typeof window.ejunoPaymentGroupsHTML === 'function') ? window.ejunoPaymentGroupsHTML(bd) : prow.filter(function(r){ return r[1]; }).map(function(r){ return '<div class="ejuno-rs-row"><span>' + esc(r[0]) + '</span><strong>' + esc(r[1]) + '</strong></div>'; }).join('')) + '</div>';
+    vcOpenModal(html);
+    /* Trello 753: clear the submitted dates so they can't be re-sent by accident (summary above already captured them) */
+    try { if (typeof window.ejunoClearBookingDates === 'function') window.ejunoClearBookingDates(false); } catch (e) {}
+    vcClearDateErrors();
+  } catch (e) { console.warn('[eJuno vendor-confirmation] summary failed', e); }
+}
+var vcPrevOverflow = '', vcKey = null;
+function vcCloseModal(){ var m = document.getElementById('ejuno-rs-modal'); if (!m) return; m.remove(); document.documentElement.style.overflow = ''; document.body.style.overflow = vcPrevOverflow; if (vcKey) document.removeEventListener('keydown', vcKey); vcKey = null; }
+function vcOpenModal(inner){
+  vcCloseModal();
+  var m = document.createElement('div'); m.id = 'ejuno-rs-modal'; m.className = 'ejuno-rs-modal';
+  m.innerHTML = '<div class="ejuno-rs-dialog" role="dialog" aria-modal="true" aria-labelledby="ejuno-rs-title"><button type="button" class="ejuno-rs-x" aria-label="Close">&times;</button><h2 id="ejuno-rs-title" class="ejuno-rs-title">Request sent</h2>' + inner + '<button type="button" class="ejuno-rs-done">Done</button></div>';
+  m.addEventListener('click', function(e){ if (e.target === m || e.target.closest('.ejuno-rs-x, .ejuno-rs-done')) vcCloseModal(); });
+  document.body.appendChild(m);
+  vcPrevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; document.documentElement.style.overflow = 'hidden';
+  vcKey = function(e){ if (e.key === 'Escape') vcCloseModal(); }; document.addEventListener('keydown', vcKey);
+  var d = m.querySelector('.ejuno-rs-done'); if (d) d.focus();
+}
+function vcClearDateErrors(){ try { document.querySelectorAll('.notification, [class*="toast"]').forEach(function(n){ if (/minimum|night|check-in|check-out|date/i.test(n.textContent || '')) n.remove(); }); } catch (e) {} }
+document.addEventListener('click', function(e){ if (e.target && e.target.closest && e.target.closest('#clear-dates-btn')) setTimeout(vcClearDateErrors, 0); }, true);
+window.ejunoClearDateErrors = vcClearDateErrors;
+window.ejunoShowReservationSummary = vcShowSummary;
+window.ejunoCloseReservationSummary = vcCloseModal;
+})();
+</script>
+<style>
+.ejuno-rs-modal{position:fixed;inset:0;z-index:100000;background:rgba(32,28,25,.55);display:flex;align-items:center;justify-content:center;padding:20px;}
+.ejuno-rs-dialog{position:relative;background:#fff;color:#201c19;border-radius:14px;max-width:480px;width:100%;max-height:calc(100vh - 40px);overflow:auto;padding:28px 24px 22px;box-shadow:0 20px 60px rgba(0,0,0,.25);font-size:14px;line-height:1.45;text-align:left;}
+.ejuno-rs-x{position:absolute;top:10px;right:12px;width:36px;height:36px;border:0;background:none;font-size:28px;line-height:1;color:#201c19;cursor:pointer;border-radius:50%;}
+.ejuno-rs-x:hover{background:#f4efe9;}
+.ejuno-rs-title{margin:0 40px 14px 0;font-size:22px;line-height:1.25;font-weight:500;}
+.ejuno-rs-msg{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;margin:0 0 14px;border-radius:8px;background:#eaf6ee;border:1px solid #b9e0c6;color:#1d5b33;}
+.ejuno-rs-tick{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#2e7d4f;color:#fff;font-size:12px;display:inline-flex;align-items:center;justify-content:center;margin-top:1px;}
+.ejuno-reservation-summary{padding:14px 16px;border:1px solid var(--line,#e5ddd3);border-radius:8px;background:#fff;}
+.ejuno-rs-h{font-weight:600;margin:0 0 8px;}.ejuno-rs-sub{margin:14px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#7a3f52;}
+.ejuno-rs-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid #f1ece6;}
+.ejuno-rs-row span{color:#5a524b;}
+.ejuno-rs-row strong{font-weight:600;text-align:right;}
+.ejuno-rs-done{display:block;width:100%;margin:18px 0 0;padding:13px 18px;border:0;border-radius:999px;background:#7a3f52;color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+.ejuno-rs-done:hover{background:#663444;}
+@media (max-width:600px){.ejuno-rs-modal{align-items:flex-end;padding:0;}.ejuno-rs-dialog{max-width:none;border-radius:16px 16px 0 0;max-height:90vh;padding:24px 18px calc(18px + env(safe-area-inset-bottom));}}
+</style>

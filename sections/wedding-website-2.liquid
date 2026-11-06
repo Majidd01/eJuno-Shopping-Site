@@ -1,0 +1,33 @@
+<section class="section tight"><div class="container"><div class="product-demo"><div class="browser"><div class="browser-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="browser-canvas website-preview"><div class="website-photo"><img src="{% if section.settings.image_1 != blank %}{{ section.settings.image_1 | image_url: width: 2000 }}{% else %}{{ section.settings.fallback_1 | asset_url }}{% endif %}" width="1672" height="941" loading="lazy"></div><div class="website-mock"><div class="eyebrow">{{ section.settings.eyebrow }}</div><h3>We’re getting married</h3><div class="website-nav"><span>Our Story</span><span>Travel</span><span>Registry</span><span>RSVP</span></div><p style="color:var(--muted)">A calm place for the details your guests actually need.</p><a class="btn primary" href="https://ejuno-staging.web.app/couple-dashboard">Create Your Website</a></div></div></div></div></div></section>
+
+{% schema %}
+{
+  "name": "wedding-website 2",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (WEB-IMG-001.webp)"
+    },
+    {
+      "type": "text",
+      "id": "fallback_1",
+      "label": "Fallback asset 1",
+      "default": "WEB-IMG-001.webp"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Sofia & Daniel"
+    }
+  ],
+  "presets": [
+    {
+      "name": "wedding-website 2"
+    }
+  ]
+}
+{% endschema %}

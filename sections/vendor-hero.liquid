@@ -1,0 +1,45 @@
+<section class="b2b-hero">
+  {% if section.settings.image != blank %}
+    <img src="{{ section.settings.image | image_url: width: 2400 }}" width="1672" height="941" loading="lazy" alt="">
+  {% else %}
+    <img src="{{ 'PART-IMG-001.webp' | asset_url }}" width="1672" height="941" loading="lazy" alt="">
+  {% endif %}
+  <div class="b2b-copy">
+    <div class="eyebrow">{{ section.settings.eyebrow }}</div>
+    <h1 class="h1">{{ section.settings.heading }}</h1>
+    <p>Clear standards, a stronger showcase and a direct route to couples planning destination weddings.</p>
+    <a href="#vendorForm" class="btn primary">Start Application</a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Vendor hero",
+  "tag": "div",
+  "class": "ejuno-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Become a partner"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join a Curated Network, Not Another Listing Site"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vendor hero"
+    }
+  ]
+}
+{% endschema %}
