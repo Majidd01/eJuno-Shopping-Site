@@ -234,24 +234,11 @@
     return ((c.firstName || '') + ' ' + (c.lastName || '')).replace(/\s+/g, ' ').trim() || 'eJuno couple';
   }
 
-  // Trello 821: targeted date overrides for specific reviews (presentation only).
-  // Maps couple email to forced display date. Remove entry when backend data is corrected.
-  var reviewDateOverrides = {
-    // Add couple emails here if their weddingDate needs display override, e.g.:
-    // 'couple@example.com': 'Sep 2026'
-  };
-
   function weddingDetail(couple) {
     var w = (couple && couple.wedding) || {};
-    var c = couple || {};
     var parts = [];
     if (w.location) parts.push(String(w.location).trim());
-
-    // Trello 821: check for targeted date override first
-    var coupleEmail = String(c.email || '').toLowerCase().trim();
-    if (coupleEmail && reviewDateOverrides[coupleEmail]) {
-      parts.push(reviewDateOverrides[coupleEmail]);
-    } else if (w.weddingDate) {
+    if (w.weddingDate) {
       try {
         // Trello 675: fixed three-letter months ("Sep 2026", never "Sept").
         var d = new Date(w.weddingDate);
