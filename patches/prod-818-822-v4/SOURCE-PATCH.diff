@@ -1,0 +1,60 @@
+--- snippets/ejuno-product-booking-scripts.liquid.ORIGINAL
++++ snippets/ejuno-product-booking-scripts.liquid.PATCHED
+@@ Source Guard (RAW):
+@@ Size: 251,020 bytes
+@@ SHA256: 86a8ce251ba94a53d26c8dec256749bd7479a34dc9db61db8e51a4b480778442
+
+================================================================================
+TRANSFORM 1: Cancellation Guard at L3737
+================================================================================
+
+CONTEXT (lines 3735-3740):
+```javascript
+return response.json();
+})
+.then(data => {
+if (data && data.data) {
+popup.remove();
+showLoaderFull();
+```
+
+FIND (exact string):
+```
+.then(data => {
+if (data && data.data) {
+```
+
+REPLACE WITH:
+```
+.then(data => {
+if (data && data._818_cancelled) { if (typeof hideLoaderFull === 'function') hideLoaderFull(); window._ejuno818Restoring = false; return; }
+if (data && data.data) {
+```
+
+================================================================================
+TRANSFORM 2: Add helper script include (venue-detail.liquid)
+================================================================================
+
+FIND:
+```
+{% render 'ejuno-product-booking-scripts' %}
+```
+
+APPEND AFTER:
+```
+<script src="{{ 'ejuno-prod-818-822-v4.js' | asset_url }}"></script>
+```
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After applying Transform 1, the .then(data => handler at L3737 will:
+1. Check for _818_cancelled flag first
+2. If cancelled: hide loader, clear restoring flag, return (no error, no Stripe)
+3. If not cancelled: continue normal flow
+
+This is a NARROW, DETERMINISTIC guard that only activates when the helper
+explicitly sets _818_cancelled=true in the response data.
+
+================================================================================
