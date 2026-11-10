@@ -156,12 +156,21 @@
   }
 
   function isServiceRegistryContext() {
+    // Canonical: product API { type: "Service" }.
+    var pd = window.productDetails;
+    if (pd && String(pd.type || '').trim().toLowerCase() === 'service') return true;
+    if (pd && pd.vendor && String(pd.vendor.type || '').trim().toLowerCase() === 'service') {
+      return true;
+    }
+    if (typeof window.ejunoBookingIsService === 'function' && window.ejunoBookingIsService()) {
+      return true;
+    }
     var pdp = document.querySelector('.ejuno-pdp');
     if (pdp && pdp.classList.contains('ejuno-pdp--service')) return true;
     if (pdp && pdp.getAttribute('data-ejuno-service-hint') === '1') return true;
-    if (typeof window.ejunoBookingIsService === 'function' && window.ejunoBookingIsService()) return true;
-    var vt = String(window.ejunoVendorType || '').toLowerCase();
-    return vt === 'service';
+    return String(window.ejunoVendorType || window.vendorType || '')
+      .trim()
+      .toLowerCase() === 'service';
   }
 
   window.syncCdpRegistryButtonVisibility = function syncCdpRegistryButtonVisibility() {

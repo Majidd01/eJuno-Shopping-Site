@@ -669,17 +669,28 @@
   }
   window.ejunoSyncCommerceAvailability = syncCommerceAvailability;
 
+  /** Canonical service signal from product API: type === "Service". */
+  function isApiServiceType(value) {
+    return String(value || '').trim().toLowerCase() === 'service';
+  }
+
   function isServiceProduct(pd) {
+    // Prefer live API payload: { type: "Service" }.
+    if (pd && isApiServiceType(pd.type)) return true;
+    if (pd && pd.vendor && isApiServiceType(pd.vendor.type)) return true;
+    if (isApiServiceType(window.ejunoVendorType) || isApiServiceType(window.vendorType)) {
+      return true;
+    }
+    // Pre-API Liquid hint only (before productDetails arrives).
     var pdp = document.querySelector('.ejuno-pdp');
     if (!pd) {
-      return pdp?.classList.contains('ejuno-pdp--service') || pdp?.getAttribute('data-ejuno-service-hint') === '1' || false;
+      return (
+        pdp?.classList.contains('ejuno-pdp--service') ||
+        pdp?.getAttribute('data-ejuno-service-hint') === '1' ||
+        false
+      );
     }
-    var apiType = (pd.type || '').toLowerCase();
-    if (apiType === 'service') return true;
-    var vt = (window.ejunoVendorType || '').toLowerCase();
-    if (vt === 'service') return true;
-    if (pd && String(pd.vendorType || '').toLowerCase() === 'service') return true;
-    return pdp?.getAttribute('data-ejuno-service-hint') === '1' || false;
+    return false;
   }
 
   function syncPdpGuideMode() {
@@ -742,13 +753,83 @@
   }
   window.ejunoApplyVenueBookingCtaFromProduct = applyVenueBookingCtaFromProduct;
 
+  function ensureServiceRegistryTriggers() {
+    var label =
+      (document.querySelector('[data-ejuno-service-registry="1"]') || {}).textContent ||
+      'Add to registry';
+    label = String(label).trim() || 'Add to registry';
+
+    function makeBtn(extraAttrs) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className =
+        'btn secondary ejuno-registry-trigger ejuno-service-registry-trigger';
+      btn.setAttribute('data-ejuno-registry-trigger', '');
+      btn.setAttribute('data-ejuno-service-registry', '1');
+      if (extraAttrs) {
+        Object.keys(extraAttrs).forEach(function (key) {
+          btn.setAttribute(key, extraAttrs[key]);
+        });
+      }
+      btn.style.width = '100%';
+      btn.style.marginTop = '10px';
+      btn.textContent = label;
+      return btn;
+    }
+
+    var cardSubmit = document.querySelector(
+      '#ejuno-request-availability .ejuno-booking-submit[data-ejuno-request-booking]',
+    );
+    if (
+      cardSubmit &&
+      !document.querySelector(
+        '#ejuno-request-availability [data-ejuno-service-registry="1"]',
+      )
+    ) {
+      cardSubmit.insertAdjacentElement('afterend', makeBtn());
+    }
+
+    var sticky = document.querySelector('.ejuno-pdp-sticky-cta.ejuno-pdp-booking-ui');
+    if (
+      sticky &&
+      !sticky.querySelector('[data-ejuno-service-registry="1"]')
+    ) {
+      var stickyBtn = makeBtn({ 'data-ejuno-scroll-booking': '' });
+      stickyBtn.style.marginTop = '8px';
+      sticky.appendChild(stickyBtn);
+    }
+
+    if (typeof window.ejunoAddServiceToRegistry === 'function') {
+      // Re-bind delegated handlers from the standalone service-registry asset.
+      try {
+        document.dispatchEvent(new Event('productDetailsLoaded'));
+      } catch (e) {}
+    }
+    if (typeof window.syncCdpRegistryButtonVisibility === 'function') {
+      window.syncCdpRegistryButtonVisibility();
+    }
+  }
+
   function applyServiceProductMode(isService) {
     var pdp = document.querySelector('.ejuno-pdp');
     if (!pdp) return;
     pdp.classList.toggle('ejuno-pdp--service', !!isService);
-
     if (isService) {
+      pdp.classList.remove('ejuno-pdp--catalog');
+      pdp.setAttribute('data-ejuno-service-hint', '1');
+      pdp.setAttribute('data-ejuno-catalog-hint', '0');
+      // Catalog CSS hides booking CTAs — force booking UI back on for services.
+      applyCatalogProductMode(false);
       setServiceBookingCtaLabel();
+      ensureServiceRegistryTriggers();
+      document.querySelectorAll('[data-ejuno-request-booking]').forEach(function (btn) {
+        btn.removeAttribute('hidden');
+        btn.style.removeProperty('display');
+      });
+      document.querySelectorAll('.ejuno-pdp-booking-ui').forEach(function (el) {
+        el.removeAttribute('hidden');
+        el.style.removeProperty('display');
+      });
     }
 
     document.querySelectorAll('.ejuno-booking-field--guests').forEach(function (el) {
@@ -790,6 +871,10 @@
   }
 
   function isCatalogProduct(pd) {
+    // Service offerings keep booking CTAs (Request availability + Add to registry).
+    // Never treat them as catalog/gift commerce even if Shopify tags say "registry product".
+    if (isServiceProduct(pd)) return false;
+
     var pdp = document.querySelector('.ejuno-pdp');
     var catalogHint = pdp ? pdp.getAttribute('data-ejuno-catalog-hint') : null;
     if (catalogHint === '1') return true;

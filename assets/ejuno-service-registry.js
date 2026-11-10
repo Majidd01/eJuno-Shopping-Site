@@ -40,6 +40,12 @@
 
   function isServiceContext(btn) {
     if (btn && btn.getAttribute('data-ejuno-service-registry') === '1') return true;
+    // Canonical: product API { type: "Service" }.
+    var pd = window.productDetails || window.productData;
+    if (pd && String(pd.type || '').trim().toLowerCase() === 'service') return true;
+    if (pd && pd.vendor && String(pd.vendor.type || '').trim().toLowerCase() === 'service') {
+      return true;
+    }
     if (typeof window.ejunoBookingIsService === 'function' && window.ejunoBookingIsService()) {
       return true;
     }
@@ -51,8 +57,7 @@
     ) {
       return true;
     }
-    var vt = String(window.ejunoVendorType || '').toLowerCase();
-    return vt === 'service';
+    return String(window.ejunoVendorType || '').trim().toLowerCase() === 'service';
   }
 
   /** Services are single-day only — take exactly one preferred date. */

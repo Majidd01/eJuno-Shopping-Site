@@ -373,7 +373,7 @@ popup.remove();
 }
 let vendorType = '';
 /* Trello 699: one service check for the booking flow. The backend metafield (vendorType) can be missing or say Venue for services created in the admin panel, while the product itself (product.type / custom.vendorType hint, or the API productDetails) says Service. */
-window.ejunoBookingIsService = function () { try { if (vendorType === 'Service') return true; if (String(window.ejunoVendorType || '').toLowerCase() === 'service') return true; var pdp = document.querySelector('.ejuno-pdp'); if (pdp && pdp.getAttribute('data-ejuno-catalog-hint') === '1') return false; if (pdp && pdp.getAttribute('data-ejuno-service-hint') === '1') return true; var pd = window.productDetails; if (pd && typeof pd === 'object' && !(pd instanceof Element)) { if (String(pd.type || '').toLowerCase() === 'service') return true; if (String(pd.vendorType || '').toLowerCase() === 'service') return true; if (pd.vendor && String(pd.vendor.type || '').toLowerCase() === 'service') return true; } } catch (e) {} return false; };
+window.ejunoBookingIsService = function () { try { function isSvcType(v){return String(v||'').trim().toLowerCase()==='service';} var pd = window.productDetails; if (pd && typeof pd === 'object' && !(pd instanceof Element)) { if (isSvcType(pd.type)) return true; if (pd.vendor && isSvcType(pd.vendor.type)) return true; } if (isSvcType(vendorType) || isSvcType(window.ejunoVendorType) || isSvcType(window.vendorType)) return true; var pdp = document.querySelector('.ejuno-pdp'); if (!pd && pdp && (pdp.getAttribute('data-ejuno-service-hint') === '1' || pdp.classList.contains('ejuno-pdp--service'))) return true; } catch (e) {} return false; };
 window.ejunoNormalizeServiceVendorType = function () { if (vendorType === 'Service' || !window.ejunoBookingIsService()) return false; vendorType = 'Service'; window.ejunoVendorType = 'Service'; if (typeof window.ejunoApplyServiceMode === 'function') window.ejunoApplyServiceMode(true); if (typeof window.ejunoSetServiceBookingCtaLabel === 'function') window.ejunoSetServiceBookingCtaLabel(); if (typeof applyEjunoCalProductRules === 'function') applyEjunoCalProductRules(); return true; };
 let selectedDates = [];
 window.getCdpSelectedDates = function () { return selectedDates; };
@@ -1818,13 +1818,15 @@ metafields.forEach(metafield => {
 if (metafield.key === 'vendorType') {
 vendorType = metafield.value;
 window.ejunoVendorType = metafield.value;
-if (metafield.value === 'Venue' || metafield.value === 'Service') {
+var _vt = String(metafield.value || '').toLowerCase();
+var _isServiceVendor = _vt === 'service' || (typeof window.ejunoBookingIsService === 'function' && window.ejunoBookingIsService());
+if (metafield.value === 'Venue' || metafield.value === 'Service' || _isServiceVendor) {
 showButton = true;
 }
 if (typeof window.ejunoApplyServiceMode === 'function') {
-window.ejunoApplyServiceMode(metafield.value === 'Service');
+window.ejunoApplyServiceMode(_isServiceVendor);
 }
-if (metafield.value === 'Service' && typeof window.ejunoSetServiceBookingCtaLabel === 'function') {
+if (_isServiceVendor && typeof window.ejunoSetServiceBookingCtaLabel === 'function') {
 window.ejunoSetServiceBookingCtaLabel();
 }
 if (typeof applyEjunoCalProductRules === 'function') {

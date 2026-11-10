@@ -5,39 +5,46 @@
   assign ejuno_service_pdp = false
   assign ejuno_product_type = product.type | downcase | strip
   assign ejuno_vendor_type = product.metafields.custom.vendorType.value | default: product.metafields.custom.vendorType | downcase | strip
-  if ejuno_product_type == 'product' or ejuno_vendor_type == 'product' or ejuno_vendor_type contains 'product vendor'
-    assign ejuno_catalog_pdp = true
-  endif
-  unless ejuno_catalog_pdp
-    for tag in product.tags
-      assign ejuno_tag = tag | downcase | strip
-      if ejuno_tag == 'catalog' or ejuno_tag == 'shop' or ejuno_tag == 'shop product' or ejuno_tag == 'registry product'
-        assign ejuno_catalog_pdp = true
-        break
-      endif
-    endfor
-  endunless
+
+  # Detect services first (API type, vendorType, category labels, collections).
   if ejuno_product_type == 'service' or ejuno_vendor_type == 'service'
     assign ejuno_service_pdp = true
   endif
-  # Card 716: service categories (product.type holds the category, e.g. "Photo & Film") also count as services.
-  assign ej_service_types = 'photo & film|beauty & fashion|design & artistry|entertainment|gastronomy & bar|catering|celebrant|wedding party|wedding planner|planning|music|florist|officiant' | split: '|'
+  assign ej_service_types = 'photo & film|beauty & fashion|design & artistry|entertainment|gastronomy & bar|catering|celebrant|wedding party|wedding planner|planning|music|florist|officiant|photo|film|beauty|fashion|design|artistry|gastronomy|bar' | split: '|'
   if ej_service_types contains ejuno_product_type
     assign ejuno_service_pdp = true
   endif
   for c in product.collections
     assign ej_ch = c.handle | downcase
-    if ej_ch == 'services' or ej_ch == 'all-services' or ej_ch == 'photo-film' or ej_ch == 'beauty-fashion' or ej_ch == 'design-artistry' or ej_ch == 'entertainment' or ej_ch == 'gastronomy-bar'
+    if ej_ch == 'services' or ej_ch == 'all-services' or ej_ch == 'photo-film' or ej_ch == 'beauty-fashion' or ej_ch == 'design-artistry' or ej_ch == 'entertainment' or ej_ch == 'gastronomy-bar' or ej_ch contains 'service'
       assign ejuno_service_pdp = true
     endif
   endfor
-  if ejuno_catalog_pdp
-    assign ejuno_service_pdp = false
-  endif
+  for tag in product.tags
+    assign ejuno_tag = tag | downcase | strip
+    if ejuno_tag == 'service' or ejuno_tag == 'services' or ejuno_tag == 'service offering'
+      assign ejuno_service_pdp = true
+    endif
+  endfor
+
+  # Catalog / gift products only when this is NOT a service offering.
+  # Tags like "registry product" must not hide Request availability on services.
+  unless ejuno_service_pdp
+    if ejuno_product_type == 'product' or ejuno_vendor_type == 'product' or ejuno_vendor_type contains 'product vendor'
+      assign ejuno_catalog_pdp = true
+    endif
+    unless ejuno_catalog_pdp
+      for tag in product.tags
+        assign ejuno_tag = tag | downcase | strip
+        if ejuno_tag == 'catalog' or ejuno_tag == 'shop' or ejuno_tag == 'shop product' or ejuno_tag == 'registry product'
+          assign ejuno_catalog_pdp = true
+          break
+        endif
+      endfor
+    endunless
+  endunless
+
   assign ejuno_booking_cta_label = 'Request availability'
-  if ejuno_service_pdp
-    assign ejuno_booking_cta_label = 'Request availability'
-  endif
   assign ejuno_date_placeholder = 'Select dates'
 %}
 
