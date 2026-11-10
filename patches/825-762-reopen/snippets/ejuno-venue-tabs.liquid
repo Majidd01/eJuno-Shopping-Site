@@ -1,0 +1,46 @@
+{%- comment -%}
+  Trello 762: Venue category tabs. Shown on the Venues collection.
+  Uses the same chip UX and tag-URL pattern as accommodation tabs.
+  A type tab only shows when at least one venue listing carries that tag.
+  
+  Categories (from card): Castle / Historic Property, Restaurant, Event Space, Other
+  Tag handles assumed: castle-historic-property, restaurant, event-space, other
+{%- endcomment -%}
+{%- liquid
+  assign vt_coll = collections[venue_handle]
+  assign vt_url = '/collections/' | append: venue_handle
+  # Trello 762: venue categories - Castle / Historic Property, Restaurant, Event Space, Other
+  assign vt_defs = 'Castle / Historic Property:castle-historic-property,Restaurant:restaurant,Event Space:event-space,Other:other' | split: ','
+  assign vt_tags = '|'
+  if vt_coll != blank
+    for t in vt_coll.all_tags
+      assign th = t | handleize
+      assign vt_tags = vt_tags | append: th | append: '|'
+    endfor
+  endif
+  assign vt_active = ''
+  if collection.handle == venue_handle and current_tags.size > 0
+    assign vt_active = current_tags | first | handleize
+  endif
+-%}
+<nav class="ejuno-venue-tabs" aria-label="Venue type">
+  <a class="ejuno-venue-tab{% if vt_active == blank %} is-active{% endif %}" href="{{ vt_url }}"{% if vt_active == blank %} aria-current="page"{% endif %}>All</a>
+  {%- for def in vt_defs -%}
+    {%- assign parts = def | split: ':' -%}
+    {%- assign t = parts[1] | strip | handleize -%}
+    {%- assign needle = '|' | append: t | append: '|' -%}
+    {%- assign t_url = vt_url | append: '/' | append: t -%}
+    {%- assign show = false -%}
+    {%- if vt_tags contains needle -%}{%- assign show = true -%}{%- endif -%}
+    {%- if show -%}
+      <a class="ejuno-venue-tab{% if vt_active == t %} is-active{% endif %}" href="{{ t_url }}"{% if vt_active == t %} aria-current="page"{% endif %}>{{ parts[0] | strip }}</a>
+    {%- endif -%}
+  {%- endfor -%}
+</nav>
+<style>
+  .ejuno-venue-tabs{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 0 22px;padding:2px 0 4px}
+  .ejuno-venue-tabs::-webkit-scrollbar{display:none}
+  .ejuno-venue-tab{flex:0 0 auto;padding:10px 18px;border:1px solid var(--line,#e5ddd3);border-radius:999px;background:rgba(255,255,255,.72);font-size:14px;color:#5c534c;text-decoration:none;white-space:nowrap}
+  .ejuno-venue-tab:hover{border-color:var(--berry,#9b5068);color:var(--berry,#9b5068)}
+  .ejuno-venue-tab.is-active{background:var(--berry,#9b5068);border-color:var(--berry,#9b5068);color:#fff}
+</style>
