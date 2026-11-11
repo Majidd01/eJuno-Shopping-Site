@@ -140,6 +140,31 @@
       var existing = document.getElementById('ejuno-service-registry-confirm');
       if (existing) existing.remove();
 
+      var isBundle = Boolean(opts.isBundle);
+      var minGuests = opts.minGuests || 1;
+      var maxGuests = opts.maxGuests || null;
+      var unitPrice = opts.unitPrice != null ? Number(opts.unitPrice) : null;
+      var currentCapacity = minGuests;
+      var currentTotalPrice = unitPrice != null ? (isBundle ? unitPrice * currentCapacity : unitPrice) : null;
+
+      var capacityFieldHtml = '';
+      if (isBundle) {
+        var rangeHint = maxGuests ? 'Between ' + minGuests + ' and ' + maxGuests + ' guests' : (minGuests > 1 ? 'Minimum ' + minGuests + ' guests' : '');
+        capacityFieldHtml = [
+          '<div class="ejuno-sr-row ejuno-sr-row--capacity" style="display:flex;flex-direction:column;align-items:stretch;gap:6px;">',
+          '<div style="display:flex;justify-content:space-between;align-items:center;">',
+          '<label for="ejuno-sr-capacity" style="font-size:13px;font-weight:600;color:var(--ink,#201c19);margin:0;">Guest capacity <span style="color:#b03a3a;">*</span></label>',
+          (rangeHint ? '<span style="font-size:12px;color:var(--muted,#6d645d);">' + rangeHint + '</span>' : ''),
+          '</div>',
+          '<input type="number" id="ejuno-sr-capacity" min="' + minGuests + '" ' + (maxGuests ? 'max="' + maxGuests + '" ' : '') + 'value="' + currentCapacity + '" style="width:100%;height:40px;padding:8px 12px;border:1px solid var(--line,#ded5ca);border-radius:10px;font-size:14px;box-sizing:border-box;" required />',
+          '<p id="ejuno-sr-capacity-error" style="display:none;color:#b03a3a;font-size:12px;margin:2px 0 0;"></p>',
+          '</div>',
+        ].join('');
+      }
+
+      var priceRowLabel = isBundle ? 'Amount to be paid by guest' : 'Price';
+      var initialPriceDisplay = currentTotalPrice != null ? (isBundle ? formatMoney(currentTotalPrice) + ' (' + currentCapacity + ' guests × ' + formatMoney(unitPrice) + ')' : formatMoney(currentTotalPrice)) : (opts.priceLabel || 'See listing');
+
       var overlay = document.createElement('div');
       overlay.id = 'ejuno-service-registry-confirm';
       overlay.setAttribute('role', 'dialog');
@@ -158,8 +183,9 @@
         '<div class="ejuno-sr-row"><span>Preferred date</span><strong>' +
         (opts.dateLabel || '') +
         '</strong></div>' +
-        '<div class="ejuno-sr-row"><span>Price</span><strong>' +
-        (opts.priceLabel || '') +
+        capacityFieldHtml +
+        '<div class="ejuno-sr-row"><span>' + priceRowLabel + '</span><strong id="ejuno-sr-total-price">' +
+        initialPriceDisplay +
         '</strong></div>' +
         '</div>' +
         '<p class="ejuno-sr-note">Services are for one day only. This date is a preference for guests — it does not reserve the vendor calendar. You can add the same service again for a different date.</p>' +
@@ -172,6 +198,48 @@
 
       document.body.appendChild(overlay);
 
+      var capacityInput = overlay.querySelector('#ejuno-sr-capacity');
+      var errorEl = overlay.querySelector('#ejuno-sr-capacity-error');
+      var totalPriceEl = overlay.querySelector('#ejuno-sr-total-price');
+      var confirmBtn = overlay.querySelector('[data-confirm]');
+
+      function validateCapacity() {
+        if (!isBundle || !capacityInput) return true;
+        var val = parseInt(capacityInput.value, 10);
+        if (isNaN(val) || val < minGuests) {
+          if (errorEl) {
+            errorEl.textContent = 'Minimum ' + minGuests + ' guest' + (minGuests > 1 ? 's' : '') + ' required.';
+            errorEl.style.display = 'block';
+          }
+          if (confirmBtn) confirmBtn.disabled = true;
+          return false;
+        }
+        if (maxGuests != null && val > maxGuests) {
+          if (errorEl) {
+            errorEl.textContent = 'Maximum ' + maxGuests + ' guests allowed.';
+            errorEl.style.display = 'block';
+          }
+          if (confirmBtn) confirmBtn.disabled = true;
+          return false;
+        }
+        if (errorEl) {
+          errorEl.textContent = '';
+          errorEl.style.display = 'none';
+        }
+        if (confirmBtn) confirmBtn.disabled = false;
+        currentCapacity = val;
+        if (unitPrice != null && totalPriceEl) {
+          currentTotalPrice = unitPrice * val;
+          totalPriceEl.textContent = formatMoney(currentTotalPrice) + ' (' + val + ' guests × ' + formatMoney(unitPrice) + ')';
+        }
+        return true;
+      }
+
+      if (capacityInput) {
+        capacityInput.addEventListener('input', validateCapacity);
+        capacityInput.addEventListener('change', validateCapacity);
+      }
+
       function close(result) {
         overlay.remove();
         resolve(result);
@@ -179,14 +247,19 @@
 
       overlay.querySelectorAll('[data-cancel]').forEach(function (el) {
         el.addEventListener('click', function () {
-          close(false);
+          close(null);
         });
       });
       overlay.querySelector('[data-confirm]').addEventListener('click', function () {
-        close(true);
+        if (isBundle && !validateCapacity()) return;
+        close({
+          confirmed: true,
+          guestCapacity: isBundle ? currentCapacity : null,
+          totalPrice: currentTotalPrice != null ? currentTotalPrice : unitPrice,
+        });
       });
       overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) close(false);
+        if (e.target === overlay) close(null);
       });
     });
   }
@@ -278,21 +351,45 @@
       (pd && pd.shopifyProductId) ||
       (typeof window.productId !== 'undefined' ? window.productId : null);
 
+    var isBundle =
+      String((pd && pd.priceType) || '').trim().toLowerCase() === 'bundle';
+    var variants = (pd && pd.variants) || [];
+    var selectedVariant =
+      variants.find(function (v) {
+        return String(v.id || v.variantId) === String(variantId);
+      }) || variants[0];
+    var minGuests =
+      selectedVariant && selectedVariant.minGuests != null
+        ? parseInt(selectedVariant.minGuests, 10)
+        : 1;
+    if (!minGuests || minGuests < 1) minGuests = 1;
+    var maxGuests =
+      selectedVariant && selectedVariant.maxGuests != null
+        ? parseInt(selectedVariant.maxGuests, 10)
+        : null;
+
     confirmAdd({
       dateLabel: formatDateLabel(preferredDate),
       priceLabel: price != null ? formatMoney(price) : 'See listing',
-    }).then(function (ok) {
-      if (!ok) {
+      unitPrice: price,
+      isBundle: isBundle,
+      minGuests: minGuests,
+      maxGuests: maxGuests,
+    }).then(function (res) {
+      if (!res || !res.confirmed) {
         if (btn) btn.disabled = false;
         return;
       }
+      var finalPrice = res.totalPrice != null ? res.totalPrice : price;
       postRegistry(
         {
           shopifyProductId: shopifyProductId,
           variantId: variantId,
           preferredDate: preferredDate,
           date: preferredDate,
-          listedPrice: price,
+          listedPrice: finalPrice,
+          guestCapacity: res.guestCapacity,
+          capacity: res.guestCapacity,
           offeringType: 'Service',
         },
         btn,
