@@ -496,10 +496,14 @@
           country: country,
         };
 
-        var coupleId = localStorage.getItem('coupleId') || localStorage.getItem('userId');
+        var activeCustomerId =
+          customerId ||
+          localStorage.getItem('customerId') ||
+          new URLSearchParams(window.location.search).get('customerId') ||
+          '';
+
         var payload = {
-          customerId: Number(customerId) || customerId,
-          coupleId: coupleId || undefined,
+          customerId: Number(activeCustomerId) || activeCustomerId,
           shipping_address: shippingAddress,
           billing_address: shippingAddress,
         };
@@ -535,10 +539,16 @@
   }
 
   function ensureDeliveryAddress(apiBase, token, customerId) {
+    var activeCustomerId =
+      customerId ||
+      localStorage.getItem('customerId') ||
+      new URLSearchParams(window.location.search).get('customerId') ||
+      '';
+
     var url =
       apiBase +
       '/shopify/checkout/address-status?customerId=' +
-      encodeURIComponent(customerId);
+      encodeURIComponent(activeCustomerId);
 
     return fetch(url, {
       method: 'GET',
