@@ -12,20 +12,31 @@
     var style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = [
-      '#ejuno-service-registry-confirm{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:rgba(22,18,15,.72);backdrop-filter:blur(6px);}',
-      '#ejuno-service-registry-confirm .ejuno-sr-dialog{width:min(440px,100%);background:var(--paper,#fffdf9);border:1px solid var(--line,#ded5ca);border-radius:20px;box-shadow:var(--shadow,0 18px 50px rgba(32,28,25,.18));overflow:hidden;font-family:inherit;color:var(--ink,#201c19);}',
-      '#ejuno-service-registry-confirm .ejuno-sr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 22px 0;}',
-      '#ejuno-service-registry-confirm .ejuno-sr-kicker{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--olive,#536046);}',
-      '#ejuno-service-registry-confirm .ejuno-sr-title{margin:0;font-family:var(--serif,Georgia,serif);font-size:28px;font-weight:400;line-height:1.15;color:var(--ink,#201c19);}',
-      '#ejuno-service-registry-confirm .ejuno-sr-close{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;padding:0;border:0;border-radius:50%;background:var(--soft,#ece5dd);color:var(--muted,#6d645d);font-size:26px;line-height:1;cursor:pointer;}',
-      '#ejuno-service-registry-confirm .ejuno-sr-body{padding:16px 22px 8px;}',
+      '#ejuno-service-registry-confirm, #ejuno-delivery-address-modal{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:rgba(22,18,15,.72);backdrop-filter:blur(6px);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-dialog, #ejuno-delivery-address-modal .ejuno-sr-dialog{width:min(480px,100%);background:var(--paper,#fffdf9);border:1px solid var(--line,#ded5ca);border-radius:20px;box-shadow:var(--shadow,0 18px 50px rgba(32,28,25,.18));overflow:hidden;font-family:inherit;color:var(--ink,#201c19);max-height:min(92vh,760px);display:flex;flex-direction:column;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-head, #ejuno-delivery-address-modal .ejuno-sr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 22px 0;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-kicker, #ejuno-delivery-address-modal .ejuno-sr-kicker{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--olive,#536046);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-title, #ejuno-delivery-address-modal .ejuno-sr-title{margin:0;font-family:var(--serif,Georgia,serif);font-size:26px;font-weight:400;line-height:1.15;color:var(--ink,#201c19);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-close, #ejuno-delivery-address-modal .ejuno-sr-close{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;padding:0;border:0;border-radius:50%;background:var(--soft,#ece5dd);color:var(--muted,#6d645d);font-size:26px;line-height:1;cursor:pointer;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-body, #ejuno-delivery-address-modal .ejuno-sr-body{padding:16px 22px 8px;overflow-y:auto;flex:1;}',
       '#ejuno-service-registry-confirm .ejuno-sr-rows{display:grid;gap:10px;margin:0 0 14px;}',
       '#ejuno-service-registry-confirm .ejuno-sr-row{display:flex;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--line,#ded5ca);border-radius:14px;background:rgba(255,255,255,.72);}',
       '#ejuno-service-registry-confirm .ejuno-sr-row span{color:var(--muted,#6d645d);font-size:13px;}',
       '#ejuno-service-registry-confirm .ejuno-sr-row strong{font-size:14px;color:var(--ink,#201c19);text-align:right;}',
-      '#ejuno-service-registry-confirm .ejuno-sr-note{margin:0;font-size:13px;line-height:1.5;color:var(--muted,#6d645d);}',
-      '#ejuno-service-registry-confirm .ejuno-sr-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;padding:18px 22px 22px;}',
-      '#ejuno-service-registry-confirm .ejuno-sr-actions .btn{min-height:44px;padding:0 20px;}',
+      '#ejuno-service-registry-confirm .ejuno-sr-note, #ejuno-delivery-address-modal .ejuno-sr-note{margin:0;font-size:13px;line-height:1.5;color:var(--muted,#6d645d);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-actions, #ejuno-delivery-address-modal .ejuno-sr-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;padding:18px 22px 22px;border-top:1px solid var(--line,#ded5ca);background:var(--paper,#fffdf9);}',
+      '#ejuno-service-registry-confirm .ejuno-sr-actions .btn, #ejuno-delivery-address-modal .ejuno-sr-actions .btn{min-height:44px;padding:0 20px;}',
+      '.ejuno-addr-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}',
+      '.ejuno-addr-field label{font-size:13px;font-weight:600;color:var(--ink,#201c19);margin:0;}',
+      '.ejuno-addr-field label span{color:#b03a3a;}',
+      '.ejuno-addr-input{width:100%;height:40px;padding:8px 12px;border:1px solid var(--line,#ded5ca);border-radius:10px;font-size:14px;box-sizing:border-box;background:#fff;color:var(--ink,#201c19);font-family:inherit;}',
+      '.ejuno-addr-input:focus{outline:none;border-color:var(--olive,#536046);box-shadow:0 0 0 2px rgba(83,96,70,.15);}',
+      '.ejuno-addr-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%3E%3Cpath%20fill%3D%22%236d645d%22%20d%3D%22M1.41%200L6%204.58%2010.59%200%2012%201.41l-6%206-6-6z%22%2F%3E%3C%2Fsvg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer;}',
+      '.ejuno-addr-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}',
+      '@media(max-width:480px){.ejuno-addr-grid-2{grid-template-columns:1fr;gap:0;}}',
+      '.ejuno-addr-error{display:none;background:#fdf2f2;border:1px solid #f8b4b4;color:#b03a3a;padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.4;margin:0 0 14px;}',
+      '.ejuno-addr-check{display:flex;align-items:center;gap:8px;margin-top:4px;margin-bottom:8px;font-size:13px;color:var(--ink,#201c19);cursor:pointer;}',
+      '.ejuno-addr-check input{width:16px;height:16px;accent-color:var(--olive,#536046);margin:0;cursor:pointer;}',
     ].join('');
     document.head.appendChild(style);
   }
@@ -305,46 +316,277 @@
       });
   }
 
-  function addServiceToRegistry(triggerBtn) {
-    var btn = triggerBtn || document.querySelector('[data-ejuno-service-registry="1"]');
-    var role = String(
-      localStorage.getItem('customerRole') || localStorage.getItem('customerType') || '',
-    ).toLowerCase();
-    if (role === 'guest') {
-      notify('Add to registry is available for couples. Sign in with a couple account.', 'warn');
-      return;
-    }
+  function escHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
-    var customerId = localStorage.getItem('customerId');
-    var authToken = localStorage.getItem('authToken');
-    if (!customerId || !authToken) {
-      if (typeof window.showLoginPopups === 'function') {
-        return window.showLoginPopups(function () {
-          addServiceToRegistry(btn);
+  var COMMON_COUNTRIES = [
+    'United Kingdom',
+    'United States',
+    'France',
+    'Italy',
+    'Spain',
+    'Germany',
+    'Ireland',
+    'Canada',
+    'Australia',
+    'Netherlands',
+    'Belgium',
+    'Switzerland',
+    'Portugal',
+    'Austria',
+    'Greece',
+    'Sweden',
+    'Norway',
+    'Denmark',
+    'Finland',
+    'Poland',
+    'Czech Republic',
+    'Croatia',
+    'Cyprus',
+    'Malta',
+    'United Arab Emirates',
+    'India',
+    'Pakistan',
+    'South Africa',
+    'New Zealand',
+    'Singapore',
+    'Japan',
+    'Mexico',
+    'Brazil',
+    'Argentina',
+    'Chile',
+    'Colombia',
+    'Egypt',
+    'Indonesia',
+    'Israel',
+    'Malaysia',
+    'Morocco',
+    'Philippines',
+    'Saudi Arabia',
+    'Thailand',
+    'Turkey',
+    'Vietnam',
+  ];
+
+  function promptDeliveryAddressModal(opts) {
+    ensureStyles();
+    return new Promise(function (resolve) {
+      var existing = document.getElementById('ejuno-delivery-address-modal');
+      if (existing) existing.remove();
+
+      var apiBase = opts.apiBase;
+      var token = opts.token;
+      var customerId = opts.customerId;
+      var prefill = opts.prefill || {};
+
+      var overlay = document.createElement('div');
+      overlay.id = 'ejuno-delivery-address-modal';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+
+      var defaultCountry = prefill.country || 'United Kingdom';
+      var countryOptionsHtml = [
+        '<option value="">Select country</option>',
+        COMMON_COUNTRIES.map(function (c) {
+          var isSel = c.toLowerCase() === defaultCountry.toLowerCase();
+          return '<option value="' + escHtml(c) + '"' + (isSel ? ' selected' : '') + '>' + escHtml(c) + '</option>';
+        }).join(''),
+      ].join('');
+
+      overlay.innerHTML =
+        '<div class="ejuno-sr-dialog" role="document">' +
+        '<div class="ejuno-sr-head">' +
+        '<div>' +
+        '<p class="ejuno-sr-kicker">Delivery Address</p>' +
+        '<h3 class="ejuno-sr-title" style="font-size:24px;">Enter your delivery address</h3>' +
+        '</div>' +
+        '<button type="button" class="ejuno-sr-close" data-addr-cancel aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div class="ejuno-sr-body">' +
+        '<p class="ejuno-sr-note" style="margin-bottom:14px;">Delivery address is required to continue (You can also update it later)</p>' +
+        '<div id="ejuno-addr-error" class="ejuno-addr-error"></div>' +
+        '<form id="ejuno-delivery-address-form" onsubmit="return false;">' +
+        '<div class="ejuno-addr-field">' +
+        '<label for="ejuno-addr-address1">Address <span>*</span></label>' +
+        '<input type="text" id="ejuno-addr-address1" class="ejuno-addr-input" placeholder="Street address" value="' + escHtml(prefill.address1 || '') + '" required />' +
+        '</div>' +
+        '<div class="ejuno-addr-grid-2">' +
+        '<div class="ejuno-addr-field">' +
+        '<label for="ejuno-addr-city">City <span>*</span></label>' +
+        '<input type="text" id="ejuno-addr-city" class="ejuno-addr-input" placeholder="City" value="' + escHtml(prefill.city || '') + '" required />' +
+        '</div>' +
+        '<div class="ejuno-addr-field">' +
+        '<label for="ejuno-addr-province">State / Province</label>' +
+        '<input type="text" id="ejuno-addr-province" class="ejuno-addr-input" placeholder="State / Province" value="' + escHtml(prefill.province || '') + '" />' +
+        '</div>' +
+        '</div>' +
+        '<div class="ejuno-addr-grid-2">' +
+        '<div class="ejuno-addr-field">' +
+        '<label for="ejuno-addr-zip">Zip / Postal code <span>*</span></label>' +
+        '<input type="text" id="ejuno-addr-zip" class="ejuno-addr-input" placeholder="Postal / ZIP code" value="' + escHtml(prefill.zip || '') + '" required />' +
+        '</div>' +
+        '<div class="ejuno-addr-field">' +
+        '<label for="ejuno-addr-country">Country <span>*</span></label>' +
+        '<select id="ejuno-addr-country" class="ejuno-addr-input ejuno-addr-select" required>' +
+        countryOptionsHtml +
+        '</select>' +
+        '</div>' +
+        '</div>' +
+        '<label class="ejuno-addr-check">' +
+        '<input type="checkbox" id="ejuno-addr-same-billing" checked />' +
+        '<span>Billing address is the same as delivery</span>' +
+        '</label>' +
+        '</form>' +
+        '</div>' +
+        '<div class="ejuno-sr-actions">' +
+        '<button type="button" class="btn secondary" data-addr-cancel>Cancel</button>' +
+        '<button type="button" class="btn primary" id="ejuno-addr-submit-btn">Save delivery address</button>' +
+        '</div>' +
+        '</div>';
+
+      document.body.appendChild(overlay);
+
+      var close = function (result) {
+        overlay.remove();
+        resolve(result);
+      };
+
+      overlay.querySelectorAll('[data-addr-cancel]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          close(null);
         });
-      }
-      notify('Please sign in to use your registry.', 'error');
-      return;
-    }
+      });
 
-    if (btn) btn.disabled = true;
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) close(null);
+      });
 
-    var pd = window.productDetails || window.productData || {};
-    var preferredDate = getPreferredServiceDate();
-    if (!preferredDate) {
-      notify('Please select one preferred date, then confirm it before adding to registry.', 'error');
-      if (btn) btn.disabled = false;
-      var openDates = document.querySelector(
-        '[data-ejuno-open-dates], #selected-date-div, .ejuno-booking-field--dates button, .ejuno-booking-field--dates',
-      );
-      if (openDates && typeof openDates.click === 'function') {
-        try {
-          openDates.click();
-        } catch (e) {}
-      }
-      return;
-    }
+      var submitBtn = overlay.querySelector('#ejuno-addr-submit-btn');
+      var errEl = overlay.querySelector('#ejuno-addr-error');
 
+      submitBtn.addEventListener('click', function () {
+        var addr1 = (overlay.querySelector('#ejuno-addr-address1').value || '').trim();
+        var city = (overlay.querySelector('#ejuno-addr-city').value || '').trim();
+        var province = (overlay.querySelector('#ejuno-addr-province').value || '').trim();
+        var zip = (overlay.querySelector('#ejuno-addr-zip').value || '').trim();
+        var country = (overlay.querySelector('#ejuno-addr-country').value || '').trim();
+
+        if (!addr1 || !city || !zip || !country) {
+          errEl.textContent = 'Please complete all required fields (Address, City, Zip, Country).';
+          errEl.style.display = 'block';
+          return;
+        }
+
+        errEl.textContent = '';
+        errEl.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving address…';
+
+        var shippingAddress = {
+          address1: addr1,
+          city: city,
+          province: province,
+          zip: zip,
+          country: country,
+        };
+
+        var coupleId = localStorage.getItem('coupleId') || localStorage.getItem('userId');
+        var payload = {
+          customerId: Number(customerId) || customerId,
+          coupleId: coupleId || undefined,
+          shipping_address: shippingAddress,
+          billing_address: shippingAddress,
+        };
+
+        fetch(apiBase + '/shopify/checkout/verify-address', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token.indexOf('Bearer ') === 0 ? token : 'Bearer ' + token,
+          },
+          body: JSON.stringify(payload),
+        })
+          .then(function (res) {
+            return res.json().then(function (body) {
+              if (!res.ok || body.status === false) {
+                throw new Error(body.message || 'Failed to save delivery address');
+              }
+              return body;
+            });
+          })
+          .then(function () {
+            notify('Delivery address verified successfully!', 'success');
+            close({ success: true, shippingAddress: shippingAddress });
+          })
+          .catch(function (err) {
+            errEl.textContent = err.message || 'Error saving delivery address. Please try again.';
+            errEl.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save delivery address';
+          });
+      });
+    });
+  }
+
+  function ensureDeliveryAddress(apiBase, token, customerId) {
+    var url =
+      apiBase +
+      '/shopify/checkout/address-status?customerId=' +
+      encodeURIComponent(customerId);
+
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token.indexOf('Bearer ') === 0 ? token : 'Bearer ' + token,
+      },
+    })
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error('Failed to verify delivery address status');
+        }
+        return res.json();
+      })
+      .then(function (body) {
+        var data = body && body.data;
+        var hasShipping = !!(
+          data &&
+          data.shippingAddress &&
+          data.shippingAddress.address1 &&
+          String(data.shippingAddress.address1).trim().length > 0
+        );
+
+        if (hasShipping) {
+          return { ok: true, shippingAddress: data.shippingAddress };
+        }
+
+        notify('Delivery address is required, provide it to continue', 'info');
+        return promptDeliveryAddressModal({
+          apiBase: apiBase,
+          token: token,
+          customerId: customerId,
+          prefill: (data && data.shippingAddress) || {},
+        });
+      })
+      .catch(function (err) {
+        console.warn('Address check failed, prompting address modal:', err);
+        notify('Delivery address is required, provide it to continue', 'info');
+        return promptDeliveryAddressModal({
+          apiBase: apiBase,
+          token: token,
+          customerId: customerId,
+          prefill: {},
+        });
+      });
+  }
+
+  function proceedWithAddService(btn, pd, preferredDate) {
     var variantId = getVariantId(pd);
     var price = getVariantPrice(pd, variantId);
     var shopifyProductId =
@@ -397,6 +639,62 @@
     });
   }
 
+  function addServiceToRegistry(triggerBtn) {
+    var btn = triggerBtn || document.querySelector('[data-ejuno-service-registry="1"]');
+    var role = String(
+      localStorage.getItem('customerRole') || localStorage.getItem('customerType') || '',
+    ).toLowerCase();
+    if (role === 'guest') {
+      notify('Add to registry is available for couples. Sign in with a couple account.', 'warn');
+      return;
+    }
+
+    var customerId = localStorage.getItem('customerId');
+    var authToken = localStorage.getItem('authToken');
+    if (!customerId || !authToken) {
+      if (typeof window.showLoginPopups === 'function') {
+        return window.showLoginPopups(function () {
+          addServiceToRegistry(btn);
+        });
+      }
+      notify('Please sign in to use your registry.', 'error');
+      return;
+    }
+
+    if (btn) btn.disabled = true;
+
+    var pd = window.productDetails || window.productData || {};
+    var preferredDate = getPreferredServiceDate();
+    if (!preferredDate) {
+      notify('Please select one preferred date, then confirm it before adding to registry.', 'error');
+      if (btn) btn.disabled = false;
+      var openDates = document.querySelector(
+        '[data-ejuno-open-dates], #selected-date-div, .ejuno-booking-field--dates button, .ejuno-booking-field--dates',
+      );
+      if (openDates && typeof openDates.click === 'function') {
+        try {
+          openDates.click();
+        } catch (e) {}
+      }
+      return;
+    }
+
+    var apiBase = String(window.EJUNO_API || '').replace(/\/$/, '');
+    if (!apiBase) {
+      notify('API is not configured.', 'error');
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    ensureDeliveryAddress(apiBase, authToken, customerId).then(function (addrRes) {
+      if (!addrRes) {
+        if (btn) btn.disabled = false;
+        return;
+      }
+      proceedWithAddService(btn, pd, preferredDate);
+    });
+  }
+
   function bindServiceRegistryButtons() {
     document.querySelectorAll('[data-ejuno-service-registry="1"]').forEach(function (btn) {
       if (btn.dataset.ejunoServiceRegistryBound === '1') return;
@@ -418,11 +716,46 @@
     if (isServiceContext(triggerBtn)) {
       return addServiceToRegistry(triggerBtn);
     }
+    var role = String(
+      localStorage.getItem('customerRole') || localStorage.getItem('customerType') || '',
+    ).toLowerCase();
+    if (role === 'guest') {
+      notify('Add to registry is available for couples. Sign in with a couple account.', 'warn');
+      return;
+    }
+    var customerId = localStorage.getItem('customerId');
+    var authToken = localStorage.getItem('authToken');
+    if (!customerId || !authToken) {
+      if (typeof window.showLoginPopups === 'function') {
+        return window.showLoginPopups(function () {
+          window.ejunoAddProductToRegistry(triggerBtn);
+        });
+      }
+      notify('Please sign in to use your registry.', 'error');
+      return;
+    }
+
+    var apiBase = String(window.EJUNO_API || '').replace(/\/$/, '');
+    if (apiBase) {
+      if (triggerBtn) triggerBtn.disabled = true;
+      ensureDeliveryAddress(apiBase, authToken, customerId).then(function (addrRes) {
+        if (!addrRes) {
+          if (triggerBtn) triggerBtn.disabled = false;
+          return;
+        }
+        if (typeof previousAdd === 'function') {
+          return previousAdd(triggerBtn);
+        }
+      });
+      return;
+    }
+
     if (typeof previousAdd === 'function') {
       return previousAdd(triggerBtn);
     }
   };
   window.ejunoAddServiceToRegistry = addServiceToRegistry;
+  window.ejunoEnsureDeliveryAddress = ensureDeliveryAddress;
 
   function boot() {
     bindServiceRegistryButtons();
