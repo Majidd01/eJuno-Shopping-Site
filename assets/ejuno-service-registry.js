@@ -458,13 +458,18 @@
       };
 
       overlay.querySelectorAll('[data-addr-cancel]').forEach(function (el) {
-        el.addEventListener('click', function () {
+        el.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
           close(null);
         });
       });
 
       overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) close(null);
+        if (e.target === overlay || e.target.closest('[data-addr-cancel]')) {
+          e.preventDefault();
+          close(null);
+        }
       });
 
       var submitBtn = overlay.querySelector('#ejuno-addr-submit-btn');
